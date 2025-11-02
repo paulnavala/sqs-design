@@ -15,6 +15,7 @@
   const JS_FILES = [
     // utilities.js loads first as other scripts may depend on it
     '/js/utilities.js',
+    '/js/component-loader.js',
     '/js/elegant-footer.js',
     '/js/fortune-peach.js',
     '/js/mobile-menu.js',

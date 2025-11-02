@@ -88,11 +88,33 @@ This will load all JavaScript files sitewide (in order):
 
 ## Using Components
 
-Once the global loaders are set up, you can use any component by adding its HTML structure to a Code Block:
+### Method 1: Component Loader (Recommended) ⭐ NEW!
 
-### Twin Gallery Component
+Use the Component Loader to dynamically load components from GitHub Pages. **No more copy/paste!**
+
+**One-time setup:** Add to Squarespace Code Injection → Footer:
+```html
+<script src="https://assets.peachless.design/js/component-loader.js"></script>
+```
+
+**Usage in Code Block:**
+```html
+<div data-component="fortune-peach-loader"></div>
+```
+
+**Benefits:**
+- ✅ Update component on GitHub → all Squarespace pages update automatically
+- ✅ No more copying/pasting HTML
+- ✅ Simple attribute-based loading
+
+See [`COMPONENT-LOADER-USAGE.md`](./COMPONENT-LOADER-USAGE.md) for complete instructions.
+
+### Method 2: Copy/Paste HTML
+
+You can still copy/paste component HTML directly:
+
 1. Add a **Code Block** in Squarespace
-2. Open `twin-gallery-loader.html`
+2. Open the component HTML file (e.g., `fortune-peach-loader.html`)
 3. Copy the content and paste into the code block
 4. Update image URLs and links as needed
 

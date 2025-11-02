@@ -1,7 +1,7 @@
 # Components Registry
 
 > Auto-generated component registry  
-> Last updated: 02/11/2025, 21:45:23
+> Last updated: 02/11/2025, 21:47:28
 
 This registry contains all available HTML components that can be used in Squarespace Code Blocks.
 
