@@ -145,7 +145,7 @@
 .flw-btn:active { transform: scale(.97); filter: brightness(.98); }
 
 /* ANIMATIONS */
-@keyframes flwFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes flwFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
 @keyframes flwGlow { 0%,100%{opacity:.3; transform:scale(1)} 50%{opacity:.55; transform:scale(1.12)} }
 @keyframes flwPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
 @keyframes flwLeft {
