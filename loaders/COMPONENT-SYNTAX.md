@@ -1,6 +1,6 @@
 # Component Syntax Reference
 
-Generated: 02/11/2025, 23:19:41
+Generated: 02/11/2025, 23:22:18
 
 Quick reference for using components in Squarespace Code Blocks.
 
@@ -18,17 +18,17 @@ Quick reference for using components in Squarespace Code Blocks.
     <tr>
       <td>Fortune Peach</td>
       <td><code class="copyable" data-copy="fortune-peach">fortune-peach</code></td>
-      <td><code class="copyable" data-copy="<div data-component=&quot;fortune-peach&quot;></div>"><div data-component="fortune-peach"></div></code></td>
+      <td><code class="copyable" data-copy="<div data-component=&quot;fortune-peach&quot;></div>">&lt;div data-component=&quot;fortune-peach&quot;&gt;&lt;/div&gt;</code></td>
     </tr>
     <tr>
       <td>Portfolio Uiux</td>
       <td><code class="copyable" data-copy="portfolio-uiux">portfolio-uiux</code></td>
-      <td><code class="copyable" data-copy="<div data-component=&quot;portfolio-uiux&quot;></div>"><div data-component="portfolio-uiux"></div></code></td>
+      <td><code class="copyable" data-copy="<div data-component=&quot;portfolio-uiux&quot;></div>">&lt;div data-component=&quot;portfolio-uiux&quot;&gt;&lt;/div&gt;</code></td>
     </tr>
     <tr>
       <td>Twin Gallery</td>
       <td><code class="copyable" data-copy="twin-gallery">twin-gallery</code></td>
-      <td><code class="copyable" data-copy="<div data-component=&quot;twin-gallery&quot;></div>"><div data-component="twin-gallery"></div></code></td>
+      <td><code class="copyable" data-copy="<div data-component=&quot;twin-gallery&quot;></div>">&lt;div data-component=&quot;twin-gallery&quot;&gt;&lt;/div&gt;</code></td>
     </tr>
   </tbody>
 </table>

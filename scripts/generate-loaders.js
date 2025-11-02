@@ -702,14 +702,25 @@ Quick reference for using components in Squarespace Code Blocks.
   <tbody>
 `;
 
+  // Helper function to escape HTML for display
+  const escapeHtml = (text) => {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+
   // Add table rows with click-to-copy
   uniqueComponents.forEach(comp => {
     const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
     const copyCode = `<div data-component="${componentKey}"></div>`;
+    const escapedCopyCode = escapeHtml(copyCode);
     md += `    <tr>
       <td>${comp.name}</td>
       <td><code class="copyable" data-copy="${componentKey}">${componentKey}</code></td>
-      <td><code class="copyable" data-copy="${copyCode.replace(/"/g, '&quot;')}">${copyCode}</code></td>
+      <td><code class="copyable" data-copy="${copyCode.replace(/"/g, '&quot;')}">${escapedCopyCode}</code></td>
     </tr>
 `;
   });
