@@ -1,9 +1,11 @@
 # Components Registry
 
 > Auto-generated component registry  
-> Last updated: 02/11/2025, 21:57:58
+> Last updated: 02/11/2025, 22:06:23
 
 This registry contains all available HTML components that can be used in Squarespace Code Blocks.
+
+**Note:** Duplicate components (same base name) are shown once, preferring the `-loader` version.
 
 ## Components
 
@@ -15,7 +17,29 @@ This registry contains all available HTML components that can be used in Squares
 
 **GitHub Pages URL:** [https://assets.peachless.design/html/fortune-peach-loader.html](https://assets.peachless.design/html/fortune-peach-loader.html)
 
-**Usage:** Copy the content from the file above and paste it into a Squarespace Code Block.
+**Component Loader Syntax:**
+```html
+<div data-component="fortune-peach"></div>
+```
+
+**Usage:** Use the Component Loader syntax above, or copy the content from the file and paste it into a Squarespace Code Block.
+
+---
+
+### Portfolio Uiux
+
+**Description:** Modern portfolio showcase with filtering, Figma embeds, intro/CTA cards, and fullscreen modal views.
+
+**File:** `portfolio-uiux-loader.html`
+
+**GitHub Pages URL:** [https://assets.peachless.design/html/portfolio-uiux-loader.html](https://assets.peachless.design/html/portfolio-uiux-loader.html)
+
+**Component Loader Syntax:**
+```html
+<div data-component="portfolio-uiux"></div>
+```
+
+**Usage:** Use the Component Loader syntax above, or copy the content from the file and paste it into a Squarespace Code Block.
 
 ---
 
@@ -27,19 +51,12 @@ This registry contains all available HTML components that can be used in Squares
 
 **GitHub Pages URL:** [https://assets.peachless.design/html/twin-gallery-loader.html](https://assets.peachless.design/html/twin-gallery-loader.html)
 
-**Usage:** Copy the content from the file above and paste it into a Squarespace Code Block.
+**Component Loader Syntax:**
+```html
+<div data-component="twin-gallery"></div>
+```
 
----
-
-### Twin Gallery
-
-**Description:** Twin Gallery component for Squarespace
-
-**File:** `twin-gallery.html`
-
-**GitHub Pages URL:** [https://assets.peachless.design/html/twin-gallery.html](https://assets.peachless.design/html/twin-gallery.html)
-
-**Usage:** Copy the content from the file above and paste it into a Squarespace Code Block.
+**Usage:** Use the Component Loader syntax above, or copy the content from the file and paste it into a Squarespace Code Block.
 
 ---
 

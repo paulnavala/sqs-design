@@ -236,14 +236,34 @@ function getHTMLComponents() {
  * Generate component registry JSON
  */
 function generateComponentRegistry(components) {
+  // Deduplicate components - prefer -loader versions when both exist
+  const componentMap = new Map();
+  components.forEach(comp => {
+    const baseName = comp.filename.replace('-loader.html', '').replace('.html', '');
+    
+    if (!componentMap.has(baseName)) {
+      componentMap.set(baseName, comp);
+    } else {
+      // Prefer -loader version if it exists
+      const existing = componentMap.get(baseName);
+      if (comp.filename.includes('-loader') && !existing.filename.includes('-loader')) {
+        componentMap.set(baseName, comp);
+      }
+    }
+  });
+  
+  const uniqueComponents = Array.from(componentMap.values())
+    .sort((a, b) => a.name.localeCompare(b.name));
+  
   const registry = {
     generated: new Date().toISOString(),
     baseUrl: BASE_URL,
-    components: components.map(comp => ({
+    components: uniqueComponents.map(comp => ({
       name: comp.name,
       description: comp.description,
       url: comp.url,
-      filename: comp.filename
+      filename: comp.filename,
+      syntax: `<div data-component="${comp.filename.replace('-loader.html', '').replace('.html', '')}"></div>`
     }))
   };
   
@@ -254,6 +274,25 @@ function generateComponentRegistry(components) {
  * Generate component registry Markdown
  */
 function generateComponentRegistryMarkdown(components) {
+  // Deduplicate components - prefer -loader versions when both exist
+  const componentMap = new Map();
+  components.forEach(comp => {
+    const baseName = comp.filename.replace('-loader.html', '').replace('.html', '');
+    
+    if (!componentMap.has(baseName)) {
+      componentMap.set(baseName, comp);
+    } else {
+      // Prefer -loader version if it exists
+      const existing = componentMap.get(baseName);
+      if (comp.filename.includes('-loader') && !existing.filename.includes('-loader')) {
+        componentMap.set(baseName, comp);
+      }
+    }
+  });
+  
+  const uniqueComponents = Array.from(componentMap.values())
+    .sort((a, b) => a.name.localeCompare(b.name));
+  
   let md = `# Components Registry
 
 > Auto-generated component registry  
@@ -261,21 +300,24 @@ function generateComponentRegistryMarkdown(components) {
 
 This registry contains all available HTML components that can be used in Squarespace Code Blocks.
 
+**Note:** Duplicate components (same base name) are shown once, preferring the \`-loader\` version.
+
 ## Components
 
 `;
   
-  if (components.length === 0) {
+  if (uniqueComponents.length === 0) {
     md += '_No components found._\n';
     return md;
   }
   
-  components.forEach(comp => {
+  uniqueComponents.forEach(comp => {
     md += `### ${comp.name}\n\n`;
     md += `**Description:** ${comp.description}\n\n`;
     md += `**File:** \`${comp.filename}\`\n\n`;
     md += `**GitHub Pages URL:** [${comp.url}](${comp.url})\n\n`;
-    md += `**Usage:** Copy the content from the file above and paste it into a Squarespace Code Block.\n\n`;
+    md += `**Component Loader Syntax:**\n\`\`\`html\n<div data-component="${comp.filename.replace('-loader.html', '').replace('.html', '')}"></div>\n\`\`\`\n\n`;
+    md += `**Usage:** Use the Component Loader syntax above, or copy the content from the file and paste it into a Squarespace Code Block.\n\n`;
     md += `---\n\n`;
   });
   

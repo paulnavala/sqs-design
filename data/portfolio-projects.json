@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Portfolio projects data file - easy to edit and maintain",
+  "projects": [
+    {
+      "id": "cern-01",
+      "title": "CERN Prototype",
+      "description": "An interactive exploration of interface systems for CERN's design evolution. This prototype demonstrates structure, flow, and motion language in a responsive context.",
+      "figma": "https://www.figma.com/proto/OUowEnozqwEO4wIcu5qcxh/CERN?node-id=1-105&page-id=0%3A1&starting-point-node-id=1%3A105&scaling=scale-down-width&show-proto-sidebar=0",
+      "case": "/projects/cern",
+      "badges": ["Prototype", "Figma"],
+      "categories": ["prototype", "cern"],
+      "year": 2025,
+      "accent": ""
+    },
+    {
+      "id": "cern-02",
+      "title": "CERN Prototype (Flows)",
+      "description": "Focused on end-to-end flow cohesion, interaction density, and timing heuristics for high-clarity task completion.",
+      "figma": "https://www.figma.com/proto/OUowEnozqwEO4wIcu5qcxh/CERN?node-id=1-105&page-id=0%3A1&starting-point-node-id=1%3A105&scaling=scale-down-width&show-proto-sidebar=0",
+      "case": "/projects/cern-flows",
+      "badges": ["Prototype", "Motion"],
+      "categories": ["prototype", "cern"],
+      "year": 2025,
+      "accent": "#D29A84"
+    },
+    {
+      "id": "cern-03",
+      "title": "CERN Prototype (Systems)",
+      "description": "Systemized component language across viewports—rhythm, hierarchy, and composability for rapid product evolution.",
+      "figma": "https://www.figma.com/proto/OUowEnozqwEO4wIcu5qcxh/CERN?node-id=1-105&page-id=0%3A1&starting-point-node-id=1%3A105&scaling=scale-down-width&show-proto-sidebar=0",
+      "case": "/projects/cern-systems",
+      "badges": ["Design System", "Prototype"],
+      "categories": ["prototype", "cern"],
+      "year": 2025,
+      "accent": "#58433B"
+    }
+  ],
+  "settings": {
+    "defaultYear": null,
+    "defaultAccent": ""
+  }
+}
+

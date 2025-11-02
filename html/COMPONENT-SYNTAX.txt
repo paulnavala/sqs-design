@@ -1,11 +1,14 @@
 COMPONENT SYNTAX REFERENCE
-Generated: 02/11/2025, 21:57:58
+Generated: 02/11/2025, 22:06:23
 
 COPY-PASTE READY SYNTAX:
 ========================
 
 Fortune Peach:
 <div data-component="fortune-peach"></div>
+
+Portfolio Uiux:
+<div data-component="portfolio-uiux"></div>
 
 Twin Gallery:
 <div data-component="twin-gallery"></div>

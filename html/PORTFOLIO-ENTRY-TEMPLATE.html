@@ -1,0 +1,108 @@
+<!-- 
+  Portfolio Entry Template
+  Copy and paste this template for each new project entry.
+  
+  Required fields: id, title, figma
+  Optional fields: description, case, badges, categories, year, accent
+-->
+
+<li
+  data-id="project-identifier"
+  data-title="Project Title"
+  data-description="Brief description of the project. This appears below the title on the card."
+  data-figma="https://www.figma.com/proto/YOUR_PROTOTYPE_URL"
+  data-case="/projects/your-project-slug"
+  data-badges="Badge1|Badge2|Badge3"
+  data-categories="category1|category2"
+  data-year="2025"
+  data-accent="#D29A84"
+></li>
+
+<!-- 
+  FIELD DESCRIPTIONS:
+  
+  data-id
+  - Unique identifier for this project (used internally)
+  - Format: lowercase, hyphens (e.g., "cern-01", "app-redesign")
+  - REQUIRED
+  
+  data-title
+  - The project title displayed on the card
+  - REQUIRED
+  
+  data-description
+  - Brief description (1-2 sentences) shown below the title
+  - Optional but recommended
+  
+  data-figma
+  - Full Figma prototype URL
+  - Can be share link or embed link
+  - Will be converted to embed format automatically
+  - REQUIRED
+  
+  data-case
+  - Internal link to full case study page
+  - Format: "/projects/your-slug" or "/projects/your-slug"
+  - Optional (use "#" to disable)
+  
+  data-badges
+  - Display badges separated by | or ,
+  - Examples: "Prototype|Figma", "Design System, Motion"
+  - Multiple badges will be rendered as separate badge elements
+  - Optional
+  
+  data-categories
+  - Used for filtering - separated by | or ,
+  - Must match filter button values in portfolio__filters
+  - Examples: "prototype|cern", "mobile,web"
+  - Optional (but needed if you want filtering to work)
+  
+  data-year
+  - Year displayed in caption
+  - Defaults to current year if not specified
+  - Optional
+  
+  data-accent
+  - Custom accent color (hex code)
+  - Used for the accent bar and badge dot
+  - Examples: "#D29A84", "#58433B", ""
+  - If empty, uses default clay color
+  - Optional
+-->
+
+<!-- 
+  EXAMPLES:
+  
+  Example 1: Minimal entry
+  <li
+    data-id="my-project"
+    data-title="My Project"
+    data-figma="https://www.figma.com/proto/..."
+  ></li>
+  
+  Example 2: Full entry
+  <li
+    data-id="app-redesign"
+    data-title="Mobile App Redesign"
+    data-description="A complete redesign focusing on user flow and accessibility."
+    data-figma="https://www.figma.com/proto/abc123/..."
+    data-case="/projects/app-redesign"
+    data-badges="Prototype|Mobile|Figma"
+    data-categories="prototype|mobile"
+    data-year="2024"
+    data-accent="#58433B"
+  ></li>
+  
+  Example 3: Multiple categories for filtering
+  <li
+    data-id="cern-website"
+    data-title="CERN Website"
+    data-description="Design system implementation for scientific organization."
+    data-figma="https://www.figma.com/proto/..."
+    data-case="/projects/cern"
+    data-badges="Design System|Web"
+    data-categories="prototype|cern|web|design-system"
+    data-year="2025"
+  ></li>
+-->
+

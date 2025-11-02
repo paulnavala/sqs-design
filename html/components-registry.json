@@ -1,24 +1,27 @@
 {
-  "generated": "2025-11-02T20:57:58.104Z",
+  "generated": "2025-11-02T21:06:23.926Z",
   "baseUrl": "https://assets.peachless.design",
   "components": [
     {
       "name": "Fortune Peach",
       "description": "Interactive fortune reveal widget with cracking animation and particle effects.",
       "url": "https://assets.peachless.design/html/fortune-peach-loader.html",
-      "filename": "fortune-peach-loader.html"
+      "filename": "fortune-peach-loader.html",
+      "syntax": "<div data-component=\"fortune-peach\"></div>"
+    },
+    {
+      "name": "Portfolio Uiux",
+      "description": "Modern portfolio showcase with filtering, Figma embeds, intro/CTA cards, and fullscreen modal views.",
+      "url": "https://assets.peachless.design/html/portfolio-uiux-loader.html",
+      "filename": "portfolio-uiux-loader.html",
+      "syntax": "<div data-component=\"portfolio-uiux\"></div>"
     },
     {
       "name": "Twin Gallery",
       "description": "Clickable image gallery with two panels and a guidelines section.",
       "url": "https://assets.peachless.design/html/twin-gallery-loader.html",
-      "filename": "twin-gallery-loader.html"
-    },
-    {
-      "name": "Twin Gallery",
-      "description": "Twin Gallery component for Squarespace",
-      "url": "https://assets.peachless.design/html/twin-gallery.html",
-      "filename": "twin-gallery.html"
+      "filename": "twin-gallery-loader.html",
+      "syntax": "<div data-component=\"twin-gallery\"></div>"
     }
   ]
 }

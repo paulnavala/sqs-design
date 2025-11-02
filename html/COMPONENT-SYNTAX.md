@@ -1,7 +1,7 @@
 # Component Syntax Reference
 
 > Auto-generated component syntax guide  
-> Last updated: 02/11/2025, 21:57:58
+> Last updated: 02/11/2025, 22:06:23
 
 Quick reference for using components in Squarespace Code Blocks.
 
@@ -35,6 +35,24 @@ All components use the same simple syntax with the `data-component` attribute:
 
 ---
 
+### Portfolio Uiux
+
+**Description:** Modern portfolio showcase with filtering, Figma embeds, intro/CTA cards, and fullscreen modal views.
+
+**Syntax:**
+
+```html
+<div data-component="portfolio-uiux"></div>
+```
+
+**Copy this code:**
+
+```
+<div data-component="portfolio-uiux"></div>
+```
+
+---
+
 ### Twin Gallery
 
 **Description:** Clickable image gallery with two panels and a guidelines section.
@@ -59,6 +77,7 @@ All components use the same simple syntax with the `data-component` attribute:
 
 ```html
 <div data-component="fortune-peach"></div>
+<div data-component="portfolio-uiux"></div>
 <div data-component="twin-gallery"></div>
 ```
 

@@ -5,6 +5,11 @@
   "scripts": {
     "generate-loaders": "node scripts/generate-loaders.js",
     "update-loaders": "node scripts/generate-loaders.js",
+    "portfolio-entry": "node scripts/generate-portfolio-entry.js",
+    "portfolio-add": "node scripts/add-portfolio-project.js",
+    "portfolio-build": "node scripts/build-portfolio-data.js",
+    "portfolio-validate": "node scripts/build-portfolio-data.js --validate-only",
+    "build": "npm run portfolio-build && npm run generate-loaders",
     "test": "echo 'Open test/index.html or test/index-auto.html in your browser'",
     "serve": "npx http-server . -p 8080 -o test/index-auto.html"
   },
