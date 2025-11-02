@@ -1,8 +1,18 @@
 # Component Syntax Reference
 
-Generated: 02/11/2025, 22:55:51
+Generated: 02/11/2025, 23:16:34
 
 Quick reference for using components in Squarespace Code Blocks.
+
+## Quick Copy Table
+
+| Component Name | Syntax | Copy Code |
+|----------------|--------|-----------|
+| Fortune Peach | `fortune-peach` | `<div data-component="fortune-peach"></div>` |
+| Portfolio Uiux | `portfolio-uiux` | `<div data-component="portfolio-uiux"></div>` |
+| Twin Gallery | `twin-gallery` | `<div data-component="twin-gallery"></div>` |
+
+---
 
 ## Component Loader Syntax
 

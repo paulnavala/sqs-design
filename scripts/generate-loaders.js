@@ -689,6 +689,21 @@ Generated: ${new Date().toLocaleString()}
 
 Quick reference for using components in Squarespace Code Blocks.
 
+## Quick Copy Table
+
+| Component Name | Syntax | Copy Code |
+|----------------|--------|-----------|
+`;
+
+  // Add table rows
+  uniqueComponents.forEach(comp => {
+    const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
+    md += `| ${comp.name} | \`${componentKey}\` | \`<div data-component="${componentKey}"></div>\` |\n`;
+  });
+
+  md += `
+---
+
 ## Component Loader Syntax
 
 All components use the same simple syntax with the \`data-component\` attribute:
