@@ -1,0 +1,18 @@
+{
+  "name": "sqs-design-components",
+  "version": "1.0.0",
+  "description": "Squarespace design components with auto-generated loaders",
+  "scripts": {
+    "generate-loaders": "node scripts/generate-loaders.js",
+    "update-loaders": "node scripts/generate-loaders.js"
+  },
+  "keywords": [
+    "squarespace",
+    "components",
+    "css",
+    "javascript"
+  ],
+  "author": "",
+  "license": "ISC"
+}
+

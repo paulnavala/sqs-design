@@ -1,20 +1,21 @@
 <!-- 
-  Twin Gallery Complete Component for Squarespace
+  Twin Gallery Component HTML for Squarespace
+  
+  Description: Clickable image gallery with two panels and a guidelines section. Features hover effects with contrast pop animations.
+  
+  Prerequisites:
+  - Add global-css-loader.html to Settings > Advanced > Code Injection > Header
+  - Add global-js-loader.html to Settings > Advanced > Code Injection > Footer
   
   Usage in Squarespace:
   1. Add a Code Block in Squarespace
   2. Paste this ENTIRE file content into the code block
   3. Update the image URLs and links as needed
   
-  Or use the loader script instead:
-  <script src="https://assets.peachless.design/twin-gallery-loader.js"></script>
-  Then add just the HTML structure below (without the style/script tags)
+  Note: CSS and JS are loaded globally via the header/footer injection,
+  so this file only contains the HTML structure.
 -->
 
-<!-- Load CSS from GitHub Pages -->
-<link rel="stylesheet" href="https://assets.peachless.design/css/twin-gallery.css">
-
-<!-- Twin Gallery HTML Structure -->
 <div class="twin-gallery">
   <a href="/projects/graphic-design" class="panel left">
     <img src="https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f512cc5216c20e648fac2b/1760891596909/asdfghj.png" alt="Graphic Design">
@@ -29,7 +30,4 @@
     <img src="https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/6907986146cca3245b5d9ec8/1762105444570/Group+3+%282%29.png" alt="Guidelines">
   </a>
 </div>
-
-<!-- Load JavaScript from GitHub Pages -->
-<script src="https://assets.peachless.design/js/twin-gallery.js"></script>
 
