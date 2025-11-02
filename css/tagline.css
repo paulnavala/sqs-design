@@ -1,0 +1,128 @@
+/**
+ * Tagline Component
+ * Cinematic typewriter effect with soft caret fade
+ */
+
+.tagline-hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 55vh;
+  text-align: center;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* Inherit your heading font, italic, slightly larger */
+.tagline.typewriter {
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: italic;
+  font-size: calc(1.6 * var(--heading-font-size, 2rem));
+  line-height: 1.2;
+  color: inherit;
+  text-align: center;
+  white-space: nowrap;
+  position: relative;
+}
+
+/* Characters (normal spacing) */
+.tagline.typewriter .text span {
+  display: inline;
+  white-space: nowrap;
+}
+
+/* === CARET — aligned, glowing, now fades smoothly === */
+.caret {
+  display: inline-block;
+  position: relative;
+  width: 3px;
+  height: 0.9em;
+  top: 0.05em;
+  margin-left: 3px;
+  vertical-align: baseline;
+  background: currentColor;
+  border-radius: 2px;
+  box-shadow: 0 0 6px currentColor;
+  opacity: 1;
+  transform-origin: bottom center;
+}
+
+/* Soft blink */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.3;
+    box-shadow: 0 0 4px currentColor;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px currentColor;
+  }
+}
+
+/* Fade-in caret at start */
+.caret.fade-in {
+  animation: caretFadeIn 0.6s ease forwards;
+}
+@keyframes caretFadeIn {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Long, soft caret fade-out — no abrupt disappearance */
+.caret.exit {
+  animation: caretExit 2.2s ease forwards;
+}
+@keyframes caretExit {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+    box-shadow: 0 0 8px currentColor;
+  }
+  80% {
+    transform: translateX(0.4em);
+    opacity: 0.6;
+    box-shadow: 0 0 4px currentColor;
+  }
+  100% {
+    transform: translateX(0.4em);
+    opacity: 0;
+    box-shadow: none;
+  }
+}
+
+/* Tagline fade-out — stays in place (no upward float) */
+.tagline.typewriter.fade {
+  animation: fadeout 2.5s ease-in-out forwards;
+}
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0); /* no upward motion */
+  }
+}
+
+/* Glow effect for each newly typed letter (adaptive color) */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 8px currentColor;
+    opacity: 1;
+  }
+  80% {
+    text-shadow: 0 0 3px currentColor;
+  }
+  100% {
+    text-shadow: none;
+    opacity: 1;
+  }
+}
+

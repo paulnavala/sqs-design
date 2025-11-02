@@ -1,0 +1,278 @@
+/**
+ * Prototype Showcase Component
+ * Two-column editorial prototype showcase with Figma embeds
+ */
+
+.proto-showcase.split {
+  background: #fff;
+  color: #111;
+  padding: 120px 24px;
+}
+
+.proto-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  align-items: center;
+  gap: 60px;
+  width: min(1200px, 92vw);
+  margin: 0 auto;
+}
+
+/* --- Left Text Column --- */
+.proto-text {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.proto-title {
+  font-size: clamp(1.8rem, 2.3vw + 1rem, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0 0 16px 0;
+}
+.proto-sub {
+  color: #444;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 28px;
+  max-width: 480px;
+}
+.proto-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: #111;
+  color: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
+}
+.proto-btn:hover {
+  background: #ff8a42;
+  color: #111;
+  transform: translateY(-2px);
+}
+
+/* --- Right Figma Frame --- */
+.figma-embed-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 71.1%; /* precise ratio for 1440×1024 */
+  border-radius: 22px;
+  overflow: hidden;
+  background: #f7f7f7;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s, box-shadow 0.4s ease;
+  will-change: transform;
+}
+.figma-embed-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 10px rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+/* "Try the prototype" hint */
+.figma-embed-wrapper::after {
+  content: "Try the prototype";
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  background: rgba(17, 17, 17, 0.65);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: translateY(0);
+  pointer-events: none;
+}
+.figma-embed-wrapper:hover::after {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.figma-embed-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  transition: transform 0.4s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: scale(1.003);
+}
+
+/* Hover micro-interaction */
+@media (hover: hover) {
+  .figma-embed-wrapper:hover iframe {
+    transform: scale(1.01);
+  }
+  .figma-embed-wrapper:hover {
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* --- Reveal Animation --- */
+.proto-showcase.split.is-inview .proto-text,
+.proto-showcase.split.is-inview .figma-embed-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Sticky on desktop */
+@media (min-width: 901px) {
+  .proto-showcase.split .figma-embed-wrapper {
+    position: sticky;
+    top: 80px;
+  }
+}
+
+/* --- Caption --- */
+.proto-cap {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 24px;
+  text-align: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .proto-wrap {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .proto-text {
+    text-align: center;
+  }
+  .proto-sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+@media (max-width: 600px) {
+  .proto-showcase.split {
+    padding: 80px 16px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .proto-text,
+  .figma-embed-wrapper {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Proto button: elegant hover with proportional expand */
+:root {
+  --uiux-bg: url("https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f54ad86aae337867bf55e5/1760905944294/uiux.png");
+}
+
+/* Base button */
+.proto-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: #111;
+  color: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transform-origin: center;
+  transition: background 0.3s ease, transform 0.35s cubic-bezier(0.25, 0.85, 0.25, 1), color 0.2s ease;
+}
+
+/* Background image (hidden initially) */
+.proto-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--uiux-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.06);
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.45s ease;
+  z-index: -2;
+}
+
+/* Dark overlay for better contrast */
+.proto-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.18); /* slightly deeper overlay */
+  opacity: 1;
+  transition: opacity 0.1s ease;
+  z-index: -1;
+}
+
+/* Hover: reveal image and overlay, scale evenly */
+.proto-btn:hover {
+  color: #fff;
+  background: transparent;
+  transform: translateY(-2px) scale(1.05);
+}
+.proto-btn:hover::before {
+  opacity: 1;
+  transform: scale(1.02);
+}
+.proto-btn:hover::after {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.22); /* slightly stronger on hover */
+}
+
+/* Keyboard focus = same feedback */
+.proto-btn:focus-visible {
+  outline: 2px solid #ff8a42;
+  outline-offset: 3px;
+  color: #fff;
+  background: transparent;
+  transform: translateY(-2px) scale(1.05);
+}
+.proto-btn:focus-visible::before {
+  opacity: 1;
+  transform: scale(1.02);
+}
+.proto-btn:focus-visible::after {
+  opacity: 1;
+}
+
+/* Motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .proto-btn,
+  .proto-btn::before,
+  .proto-btn::after {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Figma fallback */
+.figma-fallback {
+  display: none;
+}
+.figma-fallback[hidden] {
+  display: none;
+}
+

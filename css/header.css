@@ -1,0 +1,55 @@
+/**
+ * Header Component
+ * Squarespace header logo centering styles
+ */
+
+/* Make the real header container flex + positionable */
+.header .header-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  position: relative; /* lets us absolutely center the logo */
+  gap: 24px;
+}
+
+/* Absolutely center the logo pseudo-element */
+.header .header-inner::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); /* perfectly center */
+  width: 100px; /* adjust as needed */
+  height: 40px; /* adjust as needed */
+  background-image: url("https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f500918457c367c8204f24/1760886929259/Untitled-1.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none; /* don't block clicks on nav */
+  z-index: 1;
+}
+
+/* Optional: hide Squarespace's built-in logo if present */
+.header .site-logo,
+.header .header-branding img {
+  display: none !important;
+}
+
+/* Optional: ensure title stays left and nav right on many 7.1 headers */
+.header .header-title,
+.header .site-title {
+  margin-right: auto;
+}
+.header .header-actions,
+.header .header-nav {
+  margin-left: auto;
+}
+
+/* Mobile tweak */
+@media (max-width: 768px) {
+  .header .header-inner::before {
+    width: 120px;
+    height: 50px;
+  }
+}
+

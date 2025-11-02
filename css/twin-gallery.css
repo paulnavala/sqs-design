@@ -1,0 +1,209 @@
+/**
+ * Twin Gallery Component
+ * Clickable panels with contrast pop effect
+ */
+
+.twin-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Each panel acts as a button/link */
+.twin-gallery .panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #0000000d;
+  cursor: pointer;
+  text-decoration: none; /* removes underline */
+  color: inherit;
+}
+
+/* Keep aspect ratio for 1447x1024 (≈0.707) */
+.twin-gallery .panel::before {
+  content: "";
+  display: block;
+  padding-top: 70.7%;
+}
+
+/* Image styling */
+.twin-gallery .panel img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transform: scale(1.02);
+  opacity: 0.9;
+  filter: brightness(0.95) contrast(1);
+  transition: transform 0.6s ease, filter 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+/* When hovering the gallery, fade both slightly */
+.twin-gallery:hover .panel img {
+  opacity: 0.4;
+  filter: brightness(0.75) contrast(0.9);
+  transform: scale(1.0);
+}
+
+/* The hovered (or focused) panel pops */
+.twin-gallery .panel:hover img,
+.twin-gallery .panel:focus img {
+  opacity: 1;
+  filter: brightness(1.1) contrast(1.25);
+  transform: scale(1.09) translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+/* Sweep highlight layer */
+.twin-gallery::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 60%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(0%);
+  opacity: 0;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+/* Highlight movement */
+.twin-gallery:hover::after {
+  opacity: 1;
+}
+.twin-gallery.hover-left::after {
+  transform: translateX(-10%);
+}
+.twin-gallery.hover-right::after {
+  transform: translateX(100%);
+}
+
+/* Ken Burns gentle motion */
+@keyframes drift {
+  0% {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.06) translate3d(0, -1.5%, 0);
+  }
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  .twin-gallery {
+    grid-template-columns: 1fr;
+  }
+  .twin-gallery .panel::before {
+    padding-top: 70.7%;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .twin-gallery .panel img {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+  .twin-gallery::after {
+    display: none;
+  }
+}
+
+.twin-gallery .panel:hover {
+  cursor: pointer;
+}
+.twin-gallery .panel:active img {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Touch mode for mobile devices */
+.twin-gallery.touch-mode .panel img {
+  transition: filter 0.3s ease;
+}
+.twin-gallery.touch-mode .panel.tap-focus img {
+  filter: brightness(1.1) contrast(1.25);
+}
+
+/* Guidelines panel - same behavior as twin-gallery panels */
+.guidelines-wrapper {
+  position: relative;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.guidelines-panel {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #0000000d;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.guidelines-panel img {
+  width: 100%;
+  height: 70px;
+  object-fit: cover;
+  display: block;
+  border-radius: 18px;
+  transform: scale(1.02);
+  opacity: 0.9;
+  filter: brightness(0.95) contrast(1);
+  transition: transform 0.6s ease, filter 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+/* Hover behavior - same pop effect */
+.guidelines-panel:hover img,
+.guidelines-panel:focus img {
+  opacity: 1;
+  filter: brightness(1.1) contrast(1.25);
+  transform: scale(1.09) translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.guidelines-panel:active img {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Touch mode for guidelines */
+.guidelines-wrapper.touch-mode .guidelines-panel img {
+  transition: filter 0.3s ease;
+}
+.guidelines-wrapper.touch-mode .guidelines-panel.tap-focus img {
+  filter: brightness(1.1) contrast(1.25);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .guidelines-panel img {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+

@@ -1,0 +1,274 @@
+/**
+ * Elegant Footer Component
+ * Light footer with white background and black text
+ */
+
+#elegant-footer {
+  background: #ffffff;
+  color: #111111;
+  padding: 100px 40px 60px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Animated top gradient accent */
+#elegant-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #ff8a42, #ffcd94, #ff8a42);
+  background-size: 200% 100%;
+  animation: border-flow 8s linear infinite;
+}
+
+@keyframes border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* Grid layout */
+#elegant-footer .footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  grid-template-areas:
+    "brand nav social"
+    "brand newsletter newsletter"
+    "line line line"
+    "legal legal legal";
+  gap: 36px;
+  align-items: start;
+}
+
+/* Brand */
+#elegant-footer .brand-name {
+  grid-area: brand;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+#elegant-footer .brand-tagline {
+  color: #444;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Navigation */
+#elegant-footer .footer-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+#elegant-footer .footer-nav li a {
+  color: #111;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+#elegant-footer .footer-nav li a:hover {
+  color: #ff8a42;
+  transform: translateX(3px);
+}
+
+/* Social icons */
+#elegant-footer .footer-social {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+#elegant-footer .footer-social a {
+  color: #111;
+  font-size: 1.3rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+#elegant-footer .footer-social a:hover {
+  color: #ff8a42;
+  transform: scale(1.2);
+}
+
+/* Newsletter */
+#elegant-footer .footer-newsletter {
+  grid-area: newsletter;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+#elegant-footer .footer-newsletter input {
+  flex: 1;
+  max-width: 260px;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  color: #111;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+#elegant-footer .footer-newsletter input:focus {
+  outline: none;
+  border-color: #ff8a42;
+}
+#elegant-footer .footer-newsletter button {
+  background: #111;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+#elegant-footer .footer-newsletter button:hover {
+  background: #ff8a42;
+  transform: translateY(-2px);
+}
+
+/* Divider line */
+#elegant-footer .footer-line {
+  grid-area: line;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  animation: fadein 1s ease both;
+}
+
+/* Legal */
+#elegant-footer .footer-legal {
+  grid-area: legal;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#elegant-footer .footer-legal a {
+  color: #444;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+#elegant-footer .footer-legal a:hover {
+  color: #ff8a42;
+}
+
+/* Subtle fade-in */
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Screenreader utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Start hidden */
+#elegant-footer {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+/* Reveal when in view */
+#elegant-footer.is-inview {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Optional: stagger inner pieces for a slick entrance */
+#elegant-footer .footer-inner > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+#elegant-footer.is-inview .footer-inner > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+#elegant-footer.is-inview .footer-brand {
+  transition-delay: 80ms;
+}
+#elegant-footer.is-inview .footer-nav {
+  transition-delay: 140ms;
+}
+#elegant-footer.is-inview .footer-social {
+  transition-delay: 200ms;
+}
+#elegant-footer.is-inview .footer-newsletter {
+  transition-delay: 260ms;
+}
+#elegant-footer.is-inview .footer-line {
+  transition-delay: 320ms;
+}
+#elegant-footer.is-inview .footer-legal {
+  transition-delay: 380ms;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #elegant-footer,
+  #elegant-footer .footer-inner > * {
+    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  #elegant-footer .footer-inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "brand"
+      "nav"
+      "social"
+      "newsletter"
+      "line"
+      "legal";
+    text-align: center;
+    gap: 24px;
+  }
+  #elegant-footer .footer-social {
+    justify-content: center;
+  }
+  #elegant-footer .footer-nav ul {
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+  }
+}
+
