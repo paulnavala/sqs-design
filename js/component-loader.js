@@ -62,9 +62,24 @@
         target.innerHTML = cleanHtml;
         
         // Dispatch custom event when component is loaded
-        target.dispatchEvent(new CustomEvent('componentLoaded', {
+        const event = new CustomEvent('componentLoaded', {
           detail: { componentName: filename, target: target }
-        }));
+        });
+        target.dispatchEvent(event);
+        
+        // Also dispatch on document for components that might listen globally
+        document.dispatchEvent(event);
+        
+        // Manually trigger initialization for known components
+        if (window.initFortuneLogoWidget) {
+          window.initFortuneLogoWidget();
+        }
+        if (window.initFortunePeach) {
+          window.initFortunePeach();
+        }
+        if (window.initTwinGallery) {
+          window.initTwinGallery();
+        }
       })
       .catch(error => {
         console.error('Error loading component:', error);

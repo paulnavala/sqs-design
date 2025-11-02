@@ -65,12 +65,16 @@ Common components:
 
 ## Setup (One-Time)
 
-1. **Add the Component Loader to Squarespace:**
-   - Go to **Settings → Advanced → Code Injection**
-   - **Footer section:** Add: `<script src="https://assets.peachless.design/js/component-loader.js"></script>`
-   - **Save**
+**Good news:** The Component Loader is **already included** in the Global JS Loader! 
 
-   OR add it per-page in a Code Block (more flexible).
+If you've already set up the Global JS Loader (see `SQUARESPACE-SETUP.md`), you're all set! The component-loader.js is automatically loaded.
+
+**If you need to add it separately** (not recommended):
+- Go to **Settings → Advanced → Code Injection**
+- **Footer section:** Add: `<script src="https://assets.peachless.design/js/component-loader.js"></script>`
+- **Important:** Add it AFTER the Global JS Loader
+
+See [`LOADER-ORDER.md`](./LOADER-ORDER.md) for complete setup order.
 
 2. **Use Components Anywhere:**
    - Add a **Code Block** on any page
