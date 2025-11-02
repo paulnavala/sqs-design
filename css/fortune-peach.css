@@ -1,115 +1,183 @@
 /**
  * Fortune Peach Component
- * Compact, raised layout with interactive fortune reveal
+ * Interactive fortune reveal with cracking animation and particle effects
  */
 
-:root{
-  --bg:#efe1d4;
-  --cream:#E8D9C9;
+.fortune-logo-widget {
+  --c1: #F4A79D; /* peach */
+  --c2: #E8B4A8;
+  --c3: #D4827A;
+  --c4: #C17068;
+  --ink: #8B5A54;
+  --card: #ffffffee;
+  position: relative;
+  padding: 48px 16px;
+  background: #efe1d4;
+  overflow: hidden;
+  text-align: center;
 }
 
-/* Section wrapper */
-.fp-wrap{
-  position:relative; 
-  min-height:55vh;               /* was 70vh → more compact */
-  background:var(--bg);
-  display:flex; align-items:center; justify-content:center;
-  padding:24px 12px;             /* tighter padding */
-  overflow:hidden;
-  font-family:system-ui,-apple-system,"Segoe UI",Inter,Roboto,Arial,sans-serif;
+.flw-title h1 {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  font-size: clamp(28px, 4vw, 48px);
+  margin: 0 0 6px;
+  background: linear-gradient(90deg, var(--c3), var(--c4), var(--c3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.flw-title p {
+  color: var(--c4);
+  opacity: .9;
+  margin: 0 0 20px;
+  animation: flwPulse 2s ease-in-out infinite;
 }
 
-/* Center container (we'll raise it a bit on reveal) */
-.fp-center{
-  width:min(720px,92vw);
-  text-align:center;
-  transition:all .4s ease;
-  position: relative;            /* stacking context */
+.flw-logoBtn {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 12px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  outline-offset: 4px;
+}
+.flw-logoBtn:hover { transform: scale(1.03); transition: transform .25s; }
+.flw-logoBtn:active { transform: scale(0.97); }
+
+.flw-shadow {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: 200px; height: 30px;
+  transform: translateY(170px);
+  pointer-events: none;
+}
+.flw-logo {
+  position: relative;
+  width: 200px; height: 200px;
+  margin: 0 auto;
+  filter: drop-shadow(0 10px 30px rgba(212,130,122,.35));
+  animation: flwFloat 2s ease-in-out infinite;
+}
+.flw-logo::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 9999px;
+  filter: blur(28px);
+  opacity: .45;
+  background: linear-gradient(90deg, var(--c1), var(--c2));
+  animation: flwGlow 2s ease-in-out infinite;
+  z-index: -1;
+}
+.flw-logo-svg { width: 100%; height: 100%; display: block; }
+
+/* CRACKING */
+.flw-crack-wrap {
+  position: relative;
+  width: 200px; height: 200px;
+  margin: 0 auto 8px;
+}
+.flw-crack-svg {
+  width: 100%; height: 100%;
+}
+.flw-half { transform-origin: 50% 50%; }
+.flw-left { animation: flwLeft 1.5s ease-out forwards; }
+.flw-right { animation: flwRight 1.5s ease-out forwards; }
+
+.flw-particles { position: absolute; inset: 0; pointer-events: none; }
+.flw-p { position: absolute; width: 8px; height: 8px; border-radius: 9999px; background: var(--c1); opacity: 0; }
+.flw-p.animate { animation: flwParticle 1s ease-out forwards; }
+
+.flw-status { color: var(--c4); font-size: 20px; animation: flwPulse 1.2s ease-in-out infinite; }
+
+/* REVEALED CARD */
+.flw-card {
+  position: relative;
+  width: min(92vw, 560px);
+  margin: 0 auto 16px;
+  border-radius: 24px;
+  background: var(--card);
+  border: 2px solid #F4D4CC;
+  box-shadow: 0 20px 50px rgba(212,130,122,.25);
+  overflow: hidden;
+}
+.flw-card-glow {
+  position: absolute; inset: -40% -10%;
+  background: radial-gradient(60% 60% at 50% 30%, rgba(244,167,157,.35), transparent 70%),
+              radial-gradient(40% 40% at 70% 70%, rgba(232,180,168,.35), transparent 70%);
+  filter: blur(30px);
+  animation: flwGlow 3s ease-in-out infinite;
+}
+.flw-card-inner { position: relative; padding: 32px 24px 28px; }
+.flw-star { font-size: 36px; color: var(--c3); animation: flwSpin 3s linear infinite; }
+.flw-card h2 {
+  background: linear-gradient(90deg, var(--c3), var(--c4), var(--c3));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  margin: 8px 0 12px; font-size: 28px;
+  background-size: 200% 100%; animation: flwSlide 4s linear infinite;
+}
+.flw-quote {
+  color: var(--ink); font-style: italic; font-size: 18px; line-height: 1.6;
+  margin: 0 0 16px;
+  animation: flwFadeIn .6s ease-out both .4s;
+}
+.flw-divider {
+  height: 1px; margin: 10px 0 16px;
+  background: linear-gradient(90deg, transparent, var(--c1), transparent);
+  transform-origin: left; animation: flwGrow .5s ease-out both .6s;
+}
+.flw-lucky span { display:block; color: var(--c4); margin-bottom: 8px; }
+.flw-balls { display:flex; gap:8px; flex-wrap: wrap; justify-content: center; }
+.flw-ball {
+  width: 44px; height: 44px; border-radius: 9999px; color: white; display:grid; place-items:center;
+  background: linear-gradient(135deg, var(--c1), var(--c3));
+  box-shadow: 0 10px 20px rgba(212,130,122,.25);
+  transform: scale(0); animation: flwPop .5s cubic-bezier(.2,.9,.3,1.4) forwards;
 }
 
-/* When revealed: place content a bit higher (not dead-center) */
-.revealed .fp-center{
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;    /* push content up */
-  align-items:center;
-  min-height:55vh;               /* match wrapper */
-  padding-top:clamp(12px, 6vh, 56px);  /* height-aware top offset */
+.flw-cta { margin-top: 8px; }
+.flw-btn {
+  appearance: none; border: 0; cursor: pointer;
+  padding: 12px 22px; border-radius: 9999px; color: #fff; font-weight: 600;
+  background: linear-gradient(90deg, var(--c3), var(--c4));
+  box-shadow: 0 10px 20px rgba(212,130,122,.25);
+  transition: transform .2s, box-shadow .2s, filter .2s;
 }
+.flw-btn:hover { transform: scale(1.05); box-shadow: 0 14px 28px rgba(212,130,122,.32); }
+.flw-btn:active { transform: scale(.97); filter: brightness(.98); }
 
-/* Logo block */
-.logo-block{
-  display:inline-block;
-  position:relative;
-  transition: opacity .45s ease, transform .45s ease;
-  transform: translateY(0);
-  will-change: transform, opacity;
-  z-index: 1;
+/* ANIMATIONS */
+@keyframes flwFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes flwGlow { 0%,100%{opacity:.3; transform:scale(1)} 50%{opacity:.55; transform:scale(1.12)} }
+@keyframes flwPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+@keyframes flwLeft {
+  0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateX(-40px) rotate(-15deg); opacity: .2; }
 }
-.logo-peach{
-  width:min(240px,60vw);         /* smaller peach */
-  height:auto; display:block;
-  filter: drop-shadow(0 16px 30px rgba(0,0,0,.16));
-  cursor:pointer;
+@keyframes flwRight {
+  0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateX(40px) rotate(15deg); opacity: .2; }
 }
-.logo-hint{
-  margin-top:6px; 
-  font-weight:600; letter-spacing:.2px;
-  font-size:12px; color:#7e5a50; opacity:.9;
+@keyframes flwParticle {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx, 0), var(--dy, 0)) scale(0); }
 }
-.logo-glow{
-  position:absolute; inset:-10% -14%; border-radius:40%;
-  background: radial-gradient(60% 60% at 50% 60%, rgba(0,0,0,.06), transparent 70%);
-  filter: blur(20px); pointer-events:none;
-}
+@keyframes flwSpin { to { transform: rotate(360deg) } }
+@keyframes flwSlide { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+@keyframes flwGrow { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes flwPop { to { transform: scale(1); } }
+@keyframes flwFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Slip (fortune card) */
-.slip{
-  position:relative;
-  width:min(420px,90vw);         /* smaller card */
-  margin:14px auto 0;
-  background:#fff; border:2px solid var(--cream); border-radius:14px;
-  padding:14px 14px 12px;
-  box-shadow:0 16px 28px rgba(0,0,0,.12);
-  opacity:0;                     /* hidden by default */
-  transform: translateY(8px) scale(.985);
-  transition: opacity .45s ease, transform .45s ease, margin-top .3s ease;
-  z-index: 2;                    /* above logo */
-}
-.slip p{ margin:0; color:#5b392f; font-size:16px; line-height:1.45; }
-.slip .nums{ margin-top:8px; font-size:12px; color:#87594f; }
+/* STATES */
+.flw-stage--unopened .flw-logoBtn { display: inline-block; }
+.flw-stage--unopened .flw-cta { display: block; }
 
-/* Reveal state — show slip clearly and remove extra spacing */
-.revealed .slip{
-  margin-top:0;
-  opacity:1;
-  transform: translateY(0) scale(1);
-}
+.flw-stage--cracking .flw-logoBtn,
+.flw-stage--cracking .flw-cta { display: none; }
+.flw-stage--cracking .flw-cracking { display: block; }
 
-/* Reveal state — logo swipes up + fades out */
-.revealed .logo-block{
-  opacity:0;
-  transform: translateY(-64px) scale(.98);
-  pointer-events:none;
-}
-
-/* Try again button */
-.try-wrap{ margin-top:14px; }
-.try-btn{
-  display:none;
-  border:none; border-radius:999px; padding:8px 14px;
-  color:#fff; font-weight:600; cursor:pointer; font-size:14px;
-  background:linear-gradient(90deg,#C97E64,#B56C56);
-  box-shadow:0 10px 22px rgba(0,0,0,.14);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.try-btn:hover{
-  transform: translateY(-2px);
-  box-shadow:0 14px 26px rgba(0,0,0,.18);
-}
-.revealed .try-btn{ display:inline-block; }
-
-/* Safety in case theme overrides text colors */
-#slipBox p{ color:#5b392f; }
-#slipBox .nums{ color:#87594f; }
-
+.flw-stage--revealed .flw-logoBtn,
+.flw-stage--revealed .flw-cta,
+.flw-stage--revealed .flw-cracking { display: none; }
+.flw-stage--revealed .flw-revealed { display: block; }
