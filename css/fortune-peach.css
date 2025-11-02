@@ -79,8 +79,14 @@
   width: 100%; height: 100%;
 }
 .flw-half { transform-origin: 50% 50%; }
-.flw-left { animation: flwLeft 1.5s ease-out forwards; }
-.flw-right { animation: flwRight 1.5s ease-out forwards; }
+.flw-left { 
+  animation: flwLeft 1.5s ease-out forwards;
+  z-index: 2;
+}
+.flw-right { 
+  animation: flwRight 1.5s ease-out forwards;
+  z-index: 1;
+}
 
 .flw-particles { position: absolute; inset: 0; pointer-events: none; }
 .flw-p { position: absolute; width: 8px; height: 8px; border-radius: 9999px; background: var(--c1); opacity: 0; }
@@ -127,7 +133,9 @@
 .flw-lucky span { display:block; color: var(--c4); margin-bottom: 8px; }
 .flw-balls { display:flex; gap:8px; flex-wrap: wrap; justify-content: center; }
 .flw-ball {
-  width: 44px; height: 44px; border-radius: 9999px; color: white; display:grid; place-items:center;
+  width: 44px; height: 44px; border-radius: 9999px; color: white; 
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; line-height: 1;
   background: linear-gradient(135deg, var(--c1), var(--c3));
   box-shadow: 0 10px 20px rgba(212,130,122,.25);
   transform: scale(0); animation: flwPop .5s cubic-bezier(.2,.9,.3,1.4) forwards;
