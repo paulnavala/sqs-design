@@ -1,0 +1,15 @@
+COMPONENT SYNTAX REFERENCE
+Generated: 02/11/2025, 21:54:46
+
+COPY-PASTE READY SYNTAX:
+========================
+
+Fortune Peach:
+<div data-component="fortune-peach"></div>
+
+Twin Gallery:
+<div data-component="twin-gallery"></div>
+
+Twin Gallery:
+<div data-component="twin-gallery"></div>
+

@@ -672,6 +672,86 @@ function updateTestFiles(cssFiles, jsFiles) {
 }
 
 /**
+ * Generate component syntax reference for easy copy-paste
+ */
+function generateComponentSyntaxReference(components) {
+  const HTML_DIR = path.join(__dirname, '..', 'html');
+  
+  // Generate Markdown reference
+  let md = `# Component Syntax Reference
+
+> Auto-generated component syntax guide  
+> Last updated: ${new Date().toLocaleString()}
+
+Quick reference for using components in Squarespace Code Blocks.
+
+## Component Loader Syntax
+
+All components use the same simple syntax with the \`data-component\` attribute:
+
+\`\`\`html
+<div data-component="COMPONENT-NAME"></div>
+\`\`\`
+
+---
+
+## Available Components
+
+`;
+  
+  components.forEach((comp, index) => {
+    // Extract component name from filename (remove -loader and .html)
+    const componentKey = comp.filename.replace('-loader.html', '').replace('.html', '');
+    
+    md += `### ${comp.name}\n\n`;
+    md += `**Description:** ${comp.description}\n\n`;
+    md += `**Syntax:**\n\n`;
+    md += `\`\`\`html\n<div data-component="${componentKey}"></div>\n\`\`\`\n\n`;
+    md += `**Copy this code:**\n\n`;
+    md += `\`\`\`\n<div data-component="${componentKey}"></div>\n\`\`\`\n\n`;
+    md += `---\n\n`;
+  });
+  
+  md += `## Quick Copy-Paste List\n\n`;
+  md += `### All Components at Once:\n\n\`\`\`html\n`;
+  
+  components.forEach(comp => {
+    const componentKey = comp.filename.replace('-loader.html', '').replace('.html', '');
+    md += `<div data-component="${componentKey}"></div>\n`;
+  });
+  
+  md += `\`\`\`\n\n`;
+  
+  md += `## Usage Notes\n\n`;
+  md += `- Make sure the **Component Loader** is set up (it's included in the Global JS Loader)\n`;
+  md += `- Just paste the \`<div data-component="..."></div>\` syntax in any Code Block\n`;
+  md += `- Components automatically load from GitHub Pages\n`;
+  md += `- Updates are automatic - change component on GitHub, Squarespace updates instantly\n\n`;
+  
+  md += `---\n\n`;
+  md += `> **Note:** This file is auto-generated. Run \`npm run generate-loaders\` to regenerate.\n`;
+  
+  const mdPath = path.join(HTML_DIR, 'COMPONENT-SYNTAX.md');
+  fs.writeFileSync(mdPath, md, 'utf8');
+  console.log(`✅ Generated: ${mdPath}`);
+  
+  // Also generate a simple text file for easy copy-paste
+  let txt = `COMPONENT SYNTAX REFERENCE\n`;
+  txt += `Generated: ${new Date().toLocaleString()}\n\n`;
+  txt += `COPY-PASTE READY SYNTAX:\n`;
+  txt += `========================\n\n`;
+  
+  components.forEach(comp => {
+    const componentKey = comp.filename.replace('-loader.html', '').replace('.html', '');
+    txt += `${comp.name}:\n<div data-component="${componentKey}"></div>\n\n`;
+  });
+  
+  const txtPath = path.join(HTML_DIR, 'COMPONENT-SYNTAX.txt');
+  fs.writeFileSync(txtPath, txt, 'utf8');
+  console.log(`✅ Generated: ${txtPath}`);
+}
+
+/**
  * Main function
  */
 function main() {
@@ -739,6 +819,12 @@ function main() {
   // Generate/update test files
   console.log('\n🧪 Updating test files...');
   updateTestFiles(cssFiles, jsFiles);
+  
+  // Generate component syntax reference
+  if (htmlComponents.length > 0) {
+    console.log('\n📚 Generating component syntax reference...');
+    generateComponentSyntaxReference(htmlComponents);
+  }
   
   console.log('\n✨ Done! All files have been updated.');
   console.log('💡 Remember to copy the new loader content to Squarespace Code Injection if needed.');
