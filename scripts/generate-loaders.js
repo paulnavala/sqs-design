@@ -691,17 +691,34 @@ Quick reference for using components in Squarespace Code Blocks.
 
 ## Quick Copy Table
 
-| Component Name | Syntax | Copy Code |
-|----------------|--------|-----------|
+<table>
+  <thead>
+    <tr>
+      <th>Component Name</th>
+      <th>Syntax</th>
+      <th>Copy Code</th>
+    </tr>
+  </thead>
+  <tbody>
 `;
 
-  // Add table rows
+  // Add table rows with click-to-copy
   uniqueComponents.forEach(comp => {
     const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
-    md += `| ${comp.name} | \`${componentKey}\` | \`<div data-component="${componentKey}"></div>\` |\n`;
+    const copyCode = `<div data-component="${componentKey}"></div>`;
+    md += `    <tr>
+      <td>${comp.name}</td>
+      <td><code class="copyable" data-copy="${componentKey}">${componentKey}</code></td>
+      <td><code class="copyable" data-copy="${copyCode.replace(/"/g, '&quot;')}">${copyCode}</code></td>
+    </tr>
+`;
   });
 
-  md += `
+  md += `  </tbody>
+</table>
+
+<p><em>💡 Click any code cell to copy it to your clipboard</em></p>
+
 ---
 
 ## Component Loader Syntax
@@ -725,8 +742,6 @@ All components use the same simple syntax with the \`data-component\` attribute:
     md += `**Description:** ${comp.description}\n\n`;
     md += `**Syntax:**\n\n`;
     md += `\`\`\`html\n<div data-component="${componentKey}"></div>\n\`\`\`\n\n`;
-    md += `**Copy this code:**\n\n`;
-    md += `\`\`\`\n<div data-component="${componentKey}"></div>\n\`\`\`\n\n`;
     md += `---\n\n`;
   });
   
@@ -748,7 +763,103 @@ All components use the same simple syntax with the \`data-component\` attribute:
   
   md += `---\n\n`;
   md += `> **Note:** This file is auto-generated. Run \`npm run generate-loaders\` to regenerate.\n`;
+
+  // Add click-to-copy JavaScript
+  md += `
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const copyableElements = document.querySelectorAll('.copyable');
+    
+    copyableElements.forEach(element => {
+      element.style.cursor = 'pointer';
+      element.style.userSelect = 'none';
+      element.title = 'Click to copy';
+      
+      element.addEventListener('click', function() {
+        const textToCopy = this.getAttribute('data-copy');
+        
+        // Use modern clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            // Visual feedback
+            const originalText = this.textContent;
+            this.textContent = '✓ Copied!';
+            this.style.color = '#28a745';
+            
+            setTimeout(() => {
+              this.textContent = originalText;
+              this.style.color = '';
+            }, 1500);
+          }).catch(err => {
+            console.error('Failed to copy:', err);
+          });
+        } else {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = textToCopy;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          
+          try {
+            document.execCommand('copy');
+            const originalText = this.textContent;
+            this.textContent = '✓ Copied!';
+            this.style.color = '#28a745';
+            
+            setTimeout(() => {
+              this.textContent = originalText;
+              this.style.color = '';
+            }, 1500);
+          } catch (err) {
+            console.error('Failed to copy:', err);
+          }
+          
+          document.body.removeChild(textarea);
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .copyable {
+    transition: color 0.2s ease;
+  }
   
+  .copyable:hover {
+    opacity: 0.8;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+  
+  table th,
+  table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+  
+  table code {
+    background-color: #f1f3f5;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+</style>
+`;
+
   // Write Markdown file
   const mdPath = path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.md');
   fs.writeFileSync(mdPath, md, 'utf8');
