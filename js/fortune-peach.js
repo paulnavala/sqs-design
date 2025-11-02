@@ -87,7 +87,9 @@
           const b = document.createElement('span');
           b.className = 'flw-ball';
           b.style.animationDelay = (0.1 * idx + 0.2) + 's';
-          b.textContent = n;
+          b.textContent = String(n);
+          b.style.margin = '0';
+          b.style.padding = '0';
           ballsEl.appendChild(b);
         });
         setStage('revealed');

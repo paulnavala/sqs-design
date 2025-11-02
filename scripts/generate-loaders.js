@@ -482,7 +482,193 @@ ${filesList}
   }
 })();
 </script>
-`;
+  `;
+}
+
+/**
+ * Generate test files with current CSS and JS file lists
+ */
+function updateTestFiles(cssFiles, jsFiles) {
+  const TEST_DIR = path.join(__dirname, '..', 'test');
+  
+  // Ensure test directory exists
+  if (!fs.existsSync(TEST_DIR)) {
+    fs.mkdirSync(TEST_DIR, { recursive: true });
+  }
+  
+  // Generate CSS files list for test
+  const cssFilesList = cssFiles
+    .map(file => `        '${file}'`)
+    .join(',\n');
+  
+  // Generate JS files list for test
+  const jsFilesList = jsFiles
+    .map(file => `        '${file}'`)
+    .join(',\n');
+  
+  // Template for test index-auto.html
+  const testHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Test - Local Development (Auto-Load)</title>
+  
+  <!-- Local CSS Loader -->
+  <script>
+    (function() {
+      'use strict';
+      
+      const BASE_URL = '..'; // Parent directory for local paths
+      const CSS_FILES = [
+` + cssFilesList + `
+      ];
+      
+      function loadCSS(href) {
+        const existing = document.querySelector(\`link[href*="\${href}"]\`);
+        if (existing) return;
+        
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = BASE_URL + href;
+        document.head.appendChild(link);
+      }
+      
+      CSS_FILES.forEach(function(file) {
+        loadCSS(file);
+      });
+    })();
+  </script>
+  
+  <!-- Local JS Loader -->
+  <script>
+    (function() {
+      'use strict';
+      
+      const BASE_URL = '..'; // Parent directory for local paths
+      const JS_FILES = [
+` + jsFilesList + `
+      ];
+      
+      function loadJS(src, callback) {
+        const existing = document.querySelector(\`script[src*="\${src}"]\`);
+        if (existing) {
+          if (callback) callback();
+          return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = BASE_URL + src;
+        script.onerror = function() {
+          console.warn('Failed to load:', src);
+          if (callback) callback();
+        };
+        if (callback) {
+          script.onload = callback;
+        }
+        document.head.appendChild(script);
+      }
+      
+      let index = 0;
+      function loadNext() {
+        if (index >= JS_FILES.length) return;
+        
+        loadJS(JS_FILES[index], function() {
+          index++;
+          loadNext();
+        });
+      }
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadNext);
+      } else {
+        loadNext();
+      }
+    })();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: system-ui, -apple-system, "Segoe UI", Inter, Roboto, Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .component-section {
+      background: white;
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 60px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .component-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    .component-info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 30px;
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1 style="text-align: center; margin-bottom: 40px;">Component Test Page</h1>
+    <p class="loading" id="loading">Loading components...</p>
+  </div>
+  
+  <!-- Auto-load all components from registry -->
+  <script src="components.js"></script>
+  <script>
+    // Hide loading message once components start loading
+    setTimeout(() => {
+      const loading = document.getElementById('loading');
+      if (loading) loading.style.display = 'none';
+    }, 500);
+  </script>
+</body>
+</html>`;
+
+  // Write test file
+  const testPath = path.join(TEST_DIR, 'index-auto.html');
+  fs.writeFileSync(testPath, testHtml, 'utf8');
+  console.log(`✅ Updated: ${testPath}`);
+  
+  // Also update index.html if it exists (keep manual test file as-is or update CSS/JS lists)
+  const indexHtmlPath = path.join(TEST_DIR, 'index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    let indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
+    
+    // Update CSS files list
+    const cssRegex = /const CSS_FILES = \[[\s\S]*?\];/;
+    const newCssList = 'const CSS_FILES = [\n' + cssFilesList + '\n      ];';
+    indexHtml = indexHtml.replace(cssRegex, newCssList);
+    
+    // Update JS files list
+    const jsRegex = /const JS_FILES = \[[\s\S]*?\];/;
+    const newJsList = 'const JS_FILES = [\n' + jsFilesList + '\n      ];';
+    indexHtml = indexHtml.replace(jsRegex, newJsList);
+    
+    fs.writeFileSync(indexHtmlPath, indexHtml, 'utf8');
+    console.log(`✅ Updated: ${indexHtmlPath}`);
+  }
 }
 
 /**
@@ -549,6 +735,10 @@ function main() {
   } else {
     console.log('\n⚠️  No HTML components found. Skipping registry generation.');
   }
+  
+  // Generate/update test files
+  console.log('\n🧪 Updating test files...');
+  updateTestFiles(cssFiles, jsFiles);
   
   console.log('\n✨ Done! All files have been updated.');
   console.log('💡 Remember to copy the new loader content to Squarespace Code Injection if needed.');
