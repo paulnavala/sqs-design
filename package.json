@@ -4,7 +4,9 @@
   "description": "Squarespace design components with auto-generated loaders",
   "scripts": {
     "generate-loaders": "node scripts/generate-loaders.js",
-    "update-loaders": "node scripts/generate-loaders.js"
+    "update-loaders": "node scripts/generate-loaders.js",
+    "test": "echo 'Open test/index.html or test/index-auto.html in your browser'",
+    "serve": "npx http-server . -p 8080 -o test/index-auto.html"
   },
   "keywords": [
     "squarespace",

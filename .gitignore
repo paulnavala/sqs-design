@@ -1,0 +1,17 @@
+# Test directory - can be excluded if you don't want to commit test files
+# Uncomment the line below if you want to ignore test files
+# test/
+
+# Node modules
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
