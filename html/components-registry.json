@@ -1,7 +1,13 @@
 {
-  "generated": "2025-11-02T19:44:56.093Z",
+  "generated": "2025-11-02T19:56:50.658Z",
   "baseUrl": "https://assets.peachless.design",
   "components": [
+    {
+      "name": "Fortune Peach",
+      "description": "Compact, raised layout with interactive fortune reveal.",
+      "url": "https://assets.peachless.design/html/fortune-peach-loader.html",
+      "filename": "fortune-peach-loader.html"
+    },
     {
       "name": "Twin Gallery",
       "description": "Clickable image gallery with two panels and a guidelines section.",

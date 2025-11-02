@@ -13,6 +13,7 @@
   // List of all CSS files to load (auto-generated)
   const CSS_FILES = [
     '/css/elegant-footer.css',
+    '/css/fortune-peach.css',
     '/css/header.css',
     '/css/mobile-menu.css',
     '/css/portfolio.css',

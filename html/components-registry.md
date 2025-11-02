@@ -1,11 +1,23 @@
 # Components Registry
 
 > Auto-generated component registry  
-> Last updated: 02/11/2025, 20:44:56
+> Last updated: 02/11/2025, 20:56:50
 
 This registry contains all available HTML components that can be used in Squarespace Code Blocks.
 
 ## Components
+
+### Fortune Peach
+
+**Description:** Compact, raised layout with interactive fortune reveal.
+
+**File:** `fortune-peach-loader.html`
+
+**GitHub Pages URL:** [https://assets.peachless.design/html/fortune-peach-loader.html](https://assets.peachless.design/html/fortune-peach-loader.html)
+
+**Usage:** Copy the content from the file above and paste it into a Squarespace Code Block.
+
+---
 
 ### Twin Gallery
 

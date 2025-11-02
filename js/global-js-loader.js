@@ -16,6 +16,7 @@
     // utilities.js loads first as other scripts may depend on it
     '/js/utilities.js',
     '/js/elegant-footer.js',
+    '/js/fortune-peach.js',
     '/js/mobile-menu.js',
     '/js/portfolio.js',
     '/js/project-card.js',
