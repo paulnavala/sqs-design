@@ -677,6 +677,26 @@ function updateTestFiles(cssFiles, jsFiles) {
 function generateComponentSyntaxReference(components) {
   const HTML_DIR = path.join(__dirname, '..', 'html');
   
+  // Deduplicate components - prefer -loader versions when both exist
+  const componentMap = new Map();
+  components.forEach(comp => {
+    const baseName = comp.filename.replace('-loader.html', '').replace('.html', '');
+    
+    if (!componentMap.has(baseName)) {
+      componentMap.set(baseName, comp);
+    } else {
+      // Prefer -loader version if it exists
+      const existing = componentMap.get(baseName);
+      if (comp.filename.includes('-loader') && !existing.filename.includes('-loader')) {
+        componentMap.set(baseName, comp);
+      }
+    }
+  });
+  
+  // Convert back to array and sort
+  const uniqueComponents = Array.from(componentMap.values())
+    .sort((a, b) => a.name.localeCompare(b.name));
+  
   // Generate Markdown reference
   let md = `# Component Syntax Reference
 
@@ -699,7 +719,7 @@ All components use the same simple syntax with the \`data-component\` attribute:
 
 `;
   
-  components.forEach((comp, index) => {
+  uniqueComponents.forEach((comp, index) => {
     // Extract component name from filename (remove -loader and .html)
     const componentKey = comp.filename.replace('-loader.html', '').replace('.html', '');
     
@@ -715,7 +735,7 @@ All components use the same simple syntax with the \`data-component\` attribute:
   md += `## Quick Copy-Paste List\n\n`;
   md += `### All Components at Once:\n\n\`\`\`html\n`;
   
-  components.forEach(comp => {
+  uniqueComponents.forEach(comp => {
     const componentKey = comp.filename.replace('-loader.html', '').replace('.html', '');
     md += `<div data-component="${componentKey}"></div>\n`;
   });
@@ -741,7 +761,7 @@ All components use the same simple syntax with the \`data-component\` attribute:
   txt += `COPY-PASTE READY SYNTAX:\n`;
   txt += `========================\n\n`;
   
-  components.forEach(comp => {
+  uniqueComponents.forEach(comp => {
     const componentKey = comp.filename.replace('-loader.html', '').replace('.html', '');
     txt += `${comp.name}:\n<div data-component="${componentKey}"></div>\n\n`;
   });

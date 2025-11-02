@@ -1,7 +1,7 @@
 # Component Syntax Reference
 
 > Auto-generated component syntax guide  
-> Last updated: 02/11/2025, 21:54:46
+> Last updated: 02/11/2025, 21:57:58
 
 Quick reference for using components in Squarespace Code Blocks.
 
@@ -53,31 +53,12 @@ All components use the same simple syntax with the `data-component` attribute:
 
 ---
 
-### Twin Gallery
-
-**Description:** Twin Gallery component for Squarespace
-
-**Syntax:**
-
-```html
-<div data-component="twin-gallery"></div>
-```
-
-**Copy this code:**
-
-```
-<div data-component="twin-gallery"></div>
-```
-
----
-
 ## Quick Copy-Paste List
 
 ### All Components at Once:
 
 ```html
 <div data-component="fortune-peach"></div>
-<div data-component="twin-gallery"></div>
 <div data-component="twin-gallery"></div>
 ```
 
