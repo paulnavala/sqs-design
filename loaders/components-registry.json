@@ -1,0 +1,30 @@
+{
+  "components": [
+    {
+      "filename": "fortune-peach-loader.html",
+      "name": "Fortune Peach",
+      "description": "Interactive fortune reveal widget with cracking animation and particle effects.",
+      "url": "https://assets.peachless.design/components/fortune-peach/fortune-peach-loader.html",
+      "localPath": "/components/fortune-peach/fortune-peach-loader.html",
+      "syntax": "fortune-peach"
+    },
+    {
+      "filename": "portfolio-uiux-loader.html",
+      "name": "Portfolio Uiux",
+      "description": "Modern portfolio showcase with filtering, Figma embeds, intro/CTA cards, and fullscreen modal views.",
+      "url": "https://assets.peachless.design/components/portfolio-uiux/portfolio-uiux-loader.html",
+      "localPath": "/components/portfolio-uiux/portfolio-uiux-loader.html",
+      "syntax": "portfolio-uiux"
+    },
+    {
+      "filename": "twin-gallery-loader.html",
+      "name": "Twin Gallery",
+      "description": "Clickable image gallery with two panels and optional guidelines section.",
+      "url": "https://assets.peachless.design/components/twin-gallery/twin-gallery-loader.html",
+      "localPath": "/components/twin-gallery/twin-gallery-loader.html",
+      "syntax": "twin-gallery"
+    }
+  ],
+  "generated": "2025-11-02T21:55:51.340Z",
+  "total": 3
+}

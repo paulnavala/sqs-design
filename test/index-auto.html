@@ -12,17 +12,17 @@
       
       const BASE_URL = '..'; // Parent directory for local paths
       const CSS_FILES = [
-        '/css/elegant-footer.css',
-        '/css/fortune-peach.css',
-        '/css/header.css',
-        '/css/mobile-menu.css',
-        '/css/portfolio-uiux.css',
-        '/css/portfolio.css',
-        '/css/project-cards.css',
-        '/css/prototype-showcase.css',
-        '/css/tagline.css',
-        '/css/twin-gallery.css'
-      ];
+    '/components/fortune-peach/fortune-peach.css',
+    '/components/portfolio-uiux/portfolio-uiux.css',
+    '/components/twin-gallery/twin-gallery.css',
+    '/core/elegant-footer.css',
+    '/core/header.css',
+    '/core/mobile-menu.css',
+    '/core/portfolio.css',
+    '/core/project-cards.css',
+    '/core/prototype-showcase.css',
+    '/core/tagline.css'
+];
       
       function loadCSS(href) {
         const existing = document.querySelector(`link[href*="${href}"]`);
@@ -47,17 +47,17 @@
       
       const BASE_URL = '..'; // Parent directory for local paths
       const JS_FILES = [
-        '/js/utilities.js',
-        '/js/component-loader.js',
-        '/js/elegant-footer.js',
-        '/js/fortune-peach.js',
-        '/js/mobile-menu.js',
-        '/js/portfolio.js',
-        '/js/project-card.js',
-        '/js/prototype-showcase.js',
-        '/js/tagline.js',
-        '/js/twin-gallery.js'
-      ];
+    '/core/utilities.js',
+    '/core/component-loader.js',
+    '/core/elegant-footer.js',
+    '/core/mobile-menu.js',
+    '/core/project-card.js',
+    '/core/prototype-showcase.js',
+    '/core/tagline.js',
+    '/components/fortune-peach/fortune-peach.js',
+    '/components/portfolio-uiux/portfolio.js',
+    '/components/twin-gallery/twin-gallery.js'
+];
       
       function loadJS(src, callback) {
         const existing = document.querySelector(`script[src*="${src}"]`);

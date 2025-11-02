@@ -1,0 +1,12 @@
+Component Syntax Reference
+Generated: 02/11/2025, 22:55:51
+
+Quick Copy-Paste List:
+
+<div data-component="fortune-peach"></div>
+<div data-component="portfolio-uiux"></div>
+<div data-component="twin-gallery"></div>
+
+---
+
+For full documentation, see COMPONENT-SYNTAX.md
