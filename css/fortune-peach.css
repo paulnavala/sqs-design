@@ -66,7 +66,7 @@
   border-radius: 9999px;
   filter: blur(28px);
   opacity: .45;
-  background: linear-gradient(90deg, var(--c1), var(--c2));
+  background: #FEF0E5;
   animation: flwGlow 2s ease-in-out infinite;
   z-index: -1;
 }
