@@ -1,5 +1,31 @@
 # Component Loaders for Squarespace
 
+## 🚀 Quick Start
+
+**New to this?** See the detailed setup guide: [`SQUARESPACE-SETUP.md`](./SQUARESPACE-SETUP.md)
+
+### TL;DR - How to Link Global Loaders:
+
+**Method 1: Link by URL (Recommended)** ⭐
+
+1. **In Squarespace:** Settings → Advanced → Code Injection
+2. **Header section:** Add: `<script src="https://assets.peachless.design/js/global-css-loader.js"></script>`
+3. **Footer section:** Add: `<script src="https://assets.peachless.design/js/global-js-loader.js"></script>`
+4. **Save**
+
+**Method 2: Copy/Paste Code**
+
+1. **In Squarespace:** Settings → Advanced → Code Injection
+2. **Header section:** Copy/paste entire content of `global-css-loader.html`
+3. **Footer section:** Copy/paste entire content of `global-js-loader.html`
+4. **Save**
+
+That's it! Your CSS and JS files will now load sitewide from GitHub Pages.
+
+**Why Method 1 is better:** Updates automatically when you regenerate loaders and push to GitHub. No need to update Squarespace!
+
+---
+
 ## 🔄 Auto-Generate Loaders
 
 The loader files are **auto-generated** from your `css/` and `js/` directories!

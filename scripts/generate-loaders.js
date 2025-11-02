@@ -46,6 +46,7 @@ function getCSSFiles() {
 /**
  * Get all JS files from js/ directory
  * Ensures utilities.js loads first if it exists
+ * Excludes global loader files (to avoid self-loading)
  */
 function getJSFiles() {
   if (!fs.existsSync(JS_DIR)) {
@@ -53,8 +54,11 @@ function getJSFiles() {
     return [];
   }
   
+  // Exclude global loader files - they're not loaded by themselves
+  const excludeFiles = ['global-css-loader.js', 'global-js-loader.js'];
+  
   const files = fs.readdirSync(JS_DIR)
-    .filter(file => file.endsWith('.js'))
+    .filter(file => file.endsWith('.js') && !excludeFiles.includes(file))
     .map(file => `/js/${file}`)
     .sort();
   
@@ -284,6 +288,124 @@ This registry contains all available HTML components that can be used in Squares
 }
 
 /**
+ * Generate CSS loader JavaScript (standalone .js file)
+ */
+function generateCSSLoaderJS(cssFiles) {
+  const filesList = cssFiles
+    .map(file => `    '${file}'`)
+    .join(',\n');
+  
+  return `/**
+ * Global CSS Loader for Squarespace
+ * Load all CSS files from GitHub Pages
+ * 
+ * Auto-generated - Run 'node scripts/generate-loaders.js' to regenerate.
+ */
+
+(function() {
+  'use strict';
+  
+  const BASE_URL = '${BASE_URL}';
+  
+  // List of all CSS files to load (auto-generated)
+  const CSS_FILES = [
+${filesList}
+  ];
+  
+  // Function to load CSS
+  function loadCSS(href) {
+    // Check if already loaded
+    const existing = document.querySelector(\`link[href*="\${href}"]\`);
+    if (existing) return;
+    
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = BASE_URL + href;
+    document.head.appendChild(link);
+  }
+  
+  // Load all CSS files
+  CSS_FILES.forEach(function(file) {
+    loadCSS(file);
+  });
+})();
+`;
+}
+
+/**
+ * Generate JS loader JavaScript (standalone .js file)
+ */
+function generateJSLoaderJS(jsFiles) {
+  const filesList = jsFiles
+    .map((file, index) => {
+      const prefix = index === 0 && file.includes('utilities.js') 
+        ? '    // utilities.js loads first as other scripts may depend on it\n    '
+        : '    ';
+      return prefix + `'${file}'`;
+    })
+    .join(',\n');
+  
+  return `/**
+ * Global JavaScript Loader for Squarespace
+ * Load all JavaScript files from GitHub Pages
+ * 
+ * Note: utilities.js loads first as other scripts may depend on it
+ * Auto-generated - Run 'node scripts/generate-loaders.js' to regenerate.
+ */
+
+(function() {
+  'use strict';
+  
+  const BASE_URL = '${BASE_URL}';
+  
+  // List of all JS files to load (in order) - auto-generated
+  const JS_FILES = [
+${filesList}
+  ];
+  
+  // Function to load JS (sequential loading to respect dependencies)
+  function loadJS(src, callback) {
+    // Check if already loaded
+    const existing = document.querySelector(\`script[src*="\${src}"]\`);
+    if (existing) {
+      if (callback) callback();
+      return;
+    }
+    
+    const script = document.createElement('script');
+    script.src = BASE_URL + src;
+    script.onerror = function() {
+      console.warn('Failed to load:', src);
+      if (callback) callback();
+    };
+    if (callback) {
+      script.onload = callback;
+    }
+    document.head.appendChild(script);
+  }
+  
+  // Load JS files sequentially
+  let index = 0;
+  function loadNext() {
+    if (index >= JS_FILES.length) return;
+    
+    loadJS(JS_FILES[index], function() {
+      index++;
+      loadNext();
+    });
+  }
+  
+  // Start loading when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadNext);
+  } else {
+    loadNext();
+  }
+})();
+`;
+}
+
+/**
  * Generate JS loader HTML
  */
 function generateJSLoader(jsFiles) {
@@ -395,6 +517,19 @@ function main() {
   const jsLoaderPath = path.join(HTML_DIR, 'global-js-loader.html');
   fs.writeFileSync(jsLoaderPath, jsLoader, 'utf8');
   console.log(`✅ Generated: ${jsLoaderPath}`);
+  
+  // Generate standalone .js loader files (for direct linking)
+  console.log('\n📦 Generating standalone loader files...');
+  
+  const cssLoaderJS = generateCSSLoaderJS(cssFiles);
+  const cssLoaderJSPath = path.join(JS_DIR, 'global-css-loader.js');
+  fs.writeFileSync(cssLoaderJSPath, cssLoaderJS, 'utf8');
+  console.log(`✅ Generated: ${cssLoaderJSPath}`);
+  
+  const jsLoaderJS = generateJSLoaderJS(jsFiles);
+  const jsLoaderJSPath = path.join(JS_DIR, 'global-js-loader.js');
+  fs.writeFileSync(jsLoaderJSPath, jsLoaderJS, 'utf8');
+  console.log(`✅ Generated: ${jsLoaderJSPath}`);
   
   // Generate component registry
   if (htmlComponents.length > 0) {
