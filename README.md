@@ -87,7 +87,9 @@ npm run serve
 
 ## 📦 Components
 
-**Quick Reference:** See [`loaders/COMPONENT-SYNTAX.md`](loaders/COMPONENT-SYNTAX.md) for component syntax and usage.
+**Quick Reference:** 
+- **Interactive HTML version** (with click-to-copy): Open [`loaders/COMPONENT-SYNTAX.html`](loaders/COMPONENT-SYNTAX.html) in a browser
+- **Markdown version**: See [`loaders/COMPONENT-SYNTAX.md`](loaders/COMPONENT-SYNTAX.md) for component syntax (note: copy functionality requires the HTML version)
 
 ### Fortune Peach
 Interactive fortune cookie widget with animations.

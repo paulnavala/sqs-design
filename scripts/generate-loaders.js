@@ -712,15 +712,24 @@ Quick reference for using components in Squarespace Code Blocks.
       .replace(/'/g, '&#39;');
   };
 
+  // Helper function to decode HTML entities
+  const decodeHtml = (html) => {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  };
+
   // Add table rows with click-to-copy
   uniqueComponents.forEach(comp => {
     const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
     const copyCode = `<div data-component="${componentKey}"></div>`;
     const escapedCopyCode = escapeHtml(copyCode);
+    // Store the raw code in data-copy (HTML entities will be auto-decoded by getAttribute, but we need to escape for attribute)
+    const dataCopyValue = copyCode.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     md += `    <tr>
       <td>${comp.name}</td>
-      <td><code class="copyable" data-copy="${componentKey}">${componentKey}</code></td>
-      <td><code class="copyable" data-copy="${copyCode.replace(/"/g, '&quot;')}">${escapedCopyCode}</code></td>
+      <td><code class="copyable" data-copy="${componentKey}">${componentKey} <span class="copy-icon">📋</span></code></td>
+      <td><code class="copyable" data-copy="${dataCopyValue}">${escapedCopyCode} <span class="copy-icon">📋</span></code></td>
     </tr>
 `;
   });
@@ -787,19 +796,25 @@ All components use the same simple syntax with the \`data-component\` attribute:
       element.title = 'Click to copy';
       
       element.addEventListener('click', function() {
+        // getAttribute automatically decodes HTML entities
         const textToCopy = this.getAttribute('data-copy');
         
         // Use modern clipboard API
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(textToCopy).then(() => {
             // Visual feedback
-            const originalText = this.textContent;
-            this.textContent = '✓ Copied!';
-            this.style.color = '#28a745';
+            const copyIcon = this.querySelector('.copy-icon');
+            const originalIcon = copyIcon ? copyIcon.textContent : '';
+            if (copyIcon) {
+              copyIcon.textContent = '✓';
+              copyIcon.style.color = '#28a745';
+            }
             
             setTimeout(() => {
-              this.textContent = originalText;
-              this.style.color = '';
+              if (copyIcon) {
+                copyIcon.textContent = originalIcon;
+                copyIcon.style.color = '';
+              }
             }, 1500);
           }).catch(err => {
             console.error('Failed to copy:', err);
@@ -815,13 +830,18 @@ All components use the same simple syntax with the \`data-component\` attribute:
           
           try {
             document.execCommand('copy');
-            const originalText = this.textContent;
-            this.textContent = '✓ Copied!';
-            this.style.color = '#28a745';
+            const copyIcon = this.querySelector('.copy-icon');
+            const originalIcon = copyIcon ? copyIcon.textContent : '';
+            if (copyIcon) {
+              copyIcon.textContent = '✓';
+              copyIcon.style.color = '#28a745';
+            }
             
             setTimeout(() => {
-              this.textContent = originalText;
-              this.style.color = '';
+              if (copyIcon) {
+                copyIcon.textContent = originalIcon;
+                copyIcon.style.color = '';
+              }
             }, 1500);
           } catch (err) {
             console.error('Failed to copy:', err);
@@ -867,6 +887,20 @@ All components use the same simple syntax with the \`data-component\` attribute:
     border-radius: 3px;
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
+    display: inline-block;
+    position: relative;
+  }
+  
+  .copy-icon {
+    margin-left: 6px;
+    font-size: 0.85em;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+  }
+  
+  .copyable:hover .copy-icon {
+    opacity: 1;
+    transform: scale(1.1);
   }
 </style>
 `;
@@ -874,6 +908,170 @@ All components use the same simple syntax with the \`data-component\` attribute:
   // Write Markdown file
   const mdPath = path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.md');
   fs.writeFileSync(mdPath, md, 'utf8');
+  
+  // Also create a standalone HTML version for better browser compatibility
+  const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Syntax Reference</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    h1 {
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+    }
+    
+    .copyable {
+      transition: color 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .copyable:hover {
+      opacity: 0.8;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    table th,
+    table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    
+    table code {
+      background-color: #f1f3f5;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      display: inline-block;
+      position: relative;
+    }
+    
+    .copy-icon {
+      margin-left: 6px;
+      font-size: 0.85em;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+    }
+    
+    .copyable:hover .copy-icon {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    
+    code {
+      background-color: #f1f3f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    
+    pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+${md.replace(/<script>[\s\S]*?<\/script>/g, '').replace(/<style>[\s\S]*?<\/style>/g, '')}
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const copyableElements = document.querySelectorAll('.copyable');
+      
+      copyableElements.forEach(element => {
+        element.title = 'Click to copy';
+        
+        element.addEventListener('click', function() {
+          // getAttribute automatically decodes HTML entities
+          const textToCopy = this.getAttribute('data-copy');
+          
+          // Use modern clipboard API
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+              // Visual feedback
+              const copyIcon = this.querySelector('.copy-icon');
+              const originalIcon = copyIcon ? copyIcon.textContent : '';
+              if (copyIcon) {
+                copyIcon.textContent = '✓';
+                copyIcon.style.color = '#28a745';
+              }
+              
+              setTimeout(() => {
+                if (copyIcon) {
+                  copyIcon.textContent = originalIcon;
+                  copyIcon.style.color = '';
+                }
+              }, 1500);
+            }).catch(err => {
+              console.error('Failed to copy:', err);
+              alert('Failed to copy to clipboard. Please try selecting the text manually.');
+            });
+          } else {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+              document.execCommand('copy');
+              const copyIcon = this.querySelector('.copy-icon');
+              const originalIcon = copyIcon ? copyIcon.textContent : '';
+              if (copyIcon) {
+                copyIcon.textContent = '✓';
+                copyIcon.style.color = '#28a745';
+              }
+              
+              setTimeout(() => {
+                if (copyIcon) {
+                  copyIcon.textContent = originalIcon;
+                  copyIcon.style.color = '';
+                }
+              }, 1500);
+            } catch (err) {
+              console.error('Failed to copy:', err);
+              alert('Failed to copy to clipboard. Please try selecting the text manually.');
+            }
+            
+            document.body.removeChild(textarea);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>`;
+  
+  const htmlPath = path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.html');
+  fs.writeFileSync(htmlPath, htmlContent, 'utf8');
   
   // Generate plain text version for quick copy-paste
   let txt = `Component Syntax Reference\n`;

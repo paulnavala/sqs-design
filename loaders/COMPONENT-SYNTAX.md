@@ -1,6 +1,6 @@
 # Component Syntax Reference
 
-Generated: 02/11/2025, 23:22:18
+Generated: 02/11/2025, 23:31:26
 
 Quick reference for using components in Squarespace Code Blocks.
 
@@ -17,18 +17,18 @@ Quick reference for using components in Squarespace Code Blocks.
   <tbody>
     <tr>
       <td>Fortune Peach</td>
-      <td><code class="copyable" data-copy="fortune-peach">fortune-peach</code></td>
-      <td><code class="copyable" data-copy="<div data-component=&quot;fortune-peach&quot;></div>">&lt;div data-component=&quot;fortune-peach&quot;&gt;&lt;/div&gt;</code></td>
+      <td><code class="copyable" data-copy="fortune-peach">fortune-peach <span class="copy-icon">📋</span></code></td>
+      <td><code class="copyable" data-copy="&lt;div data-component=&quot;fortune-peach&quot;&gt;&lt;/div&gt;">&lt;div data-component=&quot;fortune-peach&quot;&gt;&lt;/div&gt; <span class="copy-icon">📋</span></code></td>
     </tr>
     <tr>
       <td>Portfolio Uiux</td>
-      <td><code class="copyable" data-copy="portfolio-uiux">portfolio-uiux</code></td>
-      <td><code class="copyable" data-copy="<div data-component=&quot;portfolio-uiux&quot;></div>">&lt;div data-component=&quot;portfolio-uiux&quot;&gt;&lt;/div&gt;</code></td>
+      <td><code class="copyable" data-copy="portfolio-uiux">portfolio-uiux <span class="copy-icon">📋</span></code></td>
+      <td><code class="copyable" data-copy="&lt;div data-component=&quot;portfolio-uiux&quot;&gt;&lt;/div&gt;">&lt;div data-component=&quot;portfolio-uiux&quot;&gt;&lt;/div&gt; <span class="copy-icon">📋</span></code></td>
     </tr>
     <tr>
       <td>Twin Gallery</td>
-      <td><code class="copyable" data-copy="twin-gallery">twin-gallery</code></td>
-      <td><code class="copyable" data-copy="<div data-component=&quot;twin-gallery&quot;></div>">&lt;div data-component=&quot;twin-gallery&quot;&gt;&lt;/div&gt;</code></td>
+      <td><code class="copyable" data-copy="twin-gallery">twin-gallery <span class="copy-icon">📋</span></code></td>
+      <td><code class="copyable" data-copy="&lt;div data-component=&quot;twin-gallery&quot;&gt;&lt;/div&gt;">&lt;div data-component=&quot;twin-gallery&quot;&gt;&lt;/div&gt; <span class="copy-icon">📋</span></code></td>
     </tr>
   </tbody>
 </table>
@@ -116,19 +116,25 @@ All components use the same simple syntax with the `data-component` attribute:
       element.title = 'Click to copy';
       
       element.addEventListener('click', function() {
+        // getAttribute automatically decodes HTML entities
         const textToCopy = this.getAttribute('data-copy');
         
         // Use modern clipboard API
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(textToCopy).then(() => {
             // Visual feedback
-            const originalText = this.textContent;
-            this.textContent = '✓ Copied!';
-            this.style.color = '#28a745';
+            const copyIcon = this.querySelector('.copy-icon');
+            const originalIcon = copyIcon ? copyIcon.textContent : '';
+            if (copyIcon) {
+              copyIcon.textContent = '✓';
+              copyIcon.style.color = '#28a745';
+            }
             
             setTimeout(() => {
-              this.textContent = originalText;
-              this.style.color = '';
+              if (copyIcon) {
+                copyIcon.textContent = originalIcon;
+                copyIcon.style.color = '';
+              }
             }, 1500);
           }).catch(err => {
             console.error('Failed to copy:', err);
@@ -144,13 +150,18 @@ All components use the same simple syntax with the `data-component` attribute:
           
           try {
             document.execCommand('copy');
-            const originalText = this.textContent;
-            this.textContent = '✓ Copied!';
-            this.style.color = '#28a745';
+            const copyIcon = this.querySelector('.copy-icon');
+            const originalIcon = copyIcon ? copyIcon.textContent : '';
+            if (copyIcon) {
+              copyIcon.textContent = '✓';
+              copyIcon.style.color = '#28a745';
+            }
             
             setTimeout(() => {
-              this.textContent = originalText;
-              this.style.color = '';
+              if (copyIcon) {
+                copyIcon.textContent = originalIcon;
+                copyIcon.style.color = '';
+              }
             }, 1500);
           } catch (err) {
             console.error('Failed to copy:', err);
@@ -196,5 +207,19 @@ All components use the same simple syntax with the `data-component` attribute:
     border-radius: 3px;
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
+    display: inline-block;
+    position: relative;
+  }
+  
+  .copy-icon {
+    margin-left: 6px;
+    font-size: 0.85em;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+  }
+  
+  .copyable:hover .copy-icon {
+    opacity: 1;
+    transform: scale(1.1);
   }
 </style>
