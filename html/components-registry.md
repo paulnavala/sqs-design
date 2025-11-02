@@ -1,7 +1,7 @@
 # Components Registry
 
 > Auto-generated component registry  
-> Last updated: 02/11/2025, 20:56:50
+> Last updated: 02/11/2025, 21:16:57
 
 This registry contains all available HTML components that can be used in Squarespace Code Blocks.
 
@@ -9,7 +9,7 @@ This registry contains all available HTML components that can be used in Squares
 
 ### Fortune Peach
 
-**Description:** Compact, raised layout with interactive fortune reveal.
+**Description:** Interactive fortune reveal widget with cracking animation and particle effects.
 
 **File:** `fortune-peach-loader.html`
 

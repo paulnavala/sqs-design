@@ -1,10 +1,10 @@
 {
-  "generated": "2025-11-02T19:56:50.658Z",
+  "generated": "2025-11-02T20:16:57.908Z",
   "baseUrl": "https://assets.peachless.design",
   "components": [
     {
       "name": "Fortune Peach",
-      "description": "Compact, raised layout with interactive fortune reveal.",
+      "description": "Interactive fortune reveal widget with cracking animation and particle effects.",
       "url": "https://assets.peachless.design/html/fortune-peach-loader.html",
       "filename": "fortune-peach-loader.html"
     },
