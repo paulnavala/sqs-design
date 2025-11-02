@@ -1,6 +1,6 @@
 # Components Registry
 
-Generated: 02/11/2025, 23:31:26
+Generated: 02/11/2025, 23:35:40
 
 This registry lists all available components in the Squarespace Design Components library.
 
