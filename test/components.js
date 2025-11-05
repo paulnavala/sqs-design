@@ -3,15 +3,15 @@
  * Dynamically loads and displays all components from the registry
  */
 
-(function() {
+(function () {
   'use strict';
-  
+
   // Load component registry
   fetch('../html/components-registry.json')
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       const container = document.querySelector('.test-container');
-      
+
       // Create sections for each component
       data.components.forEach((component, index) => {
         const section = document.createElement('div');
@@ -24,29 +24,28 @@
           </div>
           <div class="component-content" id="component-${index}"></div>
         `;
-        
+
         container.appendChild(section);
-        
+
         // Load component HTML
         fetch(`../html/${component.filename}`)
-          .then(response => response.text())
-          .then(html => {
+          .then((response) => response.text())
+          .then((html) => {
             // Remove HTML comments and extract just the component
             const cleanHtml = html
               .replace(/<!--[\s\S]*?-->/g, '') // Remove comments
               .trim();
-            
+
             document.getElementById(`component-${index}`).innerHTML = cleanHtml;
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(`Failed to load ${component.filename}:`, err);
-            document.getElementById(`component-${index}`).innerHTML = 
+            document.getElementById(`component-${index}`).innerHTML =
               `<p style="color: red;">Error loading component</p>`;
           });
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error('Failed to load component registry:', err);
     });
 })();
-

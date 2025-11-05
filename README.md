@@ -1,225 +1,89 @@
-# Squarespace Design Components
+# SQS Design Components
 
-A modern, scalable component library for Squarespace websites with automated build tools and comprehensive documentation.
+Modern, Squarespace-ready components built with TypeScript, Vite, and Tailwind CSS. Outputs single-file IIFE bundles and standalone CSS for drop-in use via Code Injection and global loaders.
 
-## 📁 Project Structure
-
-```
-sqs-design/
-├── components/              # Individual UI components
-│   ├── fortune-peach/      # Fortune Peach interactive widget
-│   ├── portfolio-uiux/     # Portfolio showcase with filtering
-│   └── twin-gallery/       # Twin gallery component
-│
-├── core/                   # Core utilities and shared functionality
-│   ├── component-loader.js # Dynamic component loader
-│   ├── utilities.js       # Shared utilities
-│   ├── *.css              # Core stylesheets
-│   └── *.js               # Core JavaScript modules
-│
-├── data/                   # Data files (JSON, etc.)
-│   └── portfolio-projects.json  # Portfolio project data
-│
-├── loaders/                # Auto-generated loader files
-│   ├── global-css-loader.html    # CSS loader for Squarespace
-│   ├── global-js-loader.html     # JS loader for Squarespace
-│   ├── components-registry.json   # Component metadata
-│   └── *.md, *.txt              # Component syntax references
-│
-├── scripts/                # Build and utility scripts
-│   ├── generate-loaders.js        # Generate loader files
-│   ├── build-portfolio-data.js    # Build portfolio HTML from JSON
-│   ├── add-portfolio-project.js   # Interactive project adder
-│   └── generate-portfolio-entry.js # Legacy entry generator
-│
-├── docs/                   # Documentation
-│   ├── components/        # Component-specific docs
-│   ├── guides/            # Usage guides
-│   └── *.md               # Overview documentation
-│
-├── test/                   # Local testing files
-│   ├── index.html         # Manual test page
-│   ├── index-auto.html    # Auto-loading test page
-│   └── components.js       # Test utilities
-│
-└── package.json           # Project configuration
-```
-
-## 🚀 Quick Start
-
-### Setup
+## Quick Start
 
 ```bash
-# Install dependencies (if any)
 npm install
-
-# Generate loader files (auto-discovers all components)
-npm run generate-loaders
-```
-
-> 💡 **Auto-Update System:** All loaders, documentation, and paths are automatically generated and kept in sync. Just run `npm run generate-loaders` after adding/removing components. See `AUTO-UPDATE-SYSTEM.md` for details.
-
-### Adding a New Component
-
-1. Create a folder in `components/` with your component name
-2. Add `.css`, `.js`, and `-loader.html` files
-3. Run `npm run generate-loaders` to update loaders
-
-### Building Portfolio
-
-```bash
-# Add a new portfolio project (interactive)
-npm run portfolio-add
-
-# Build portfolio HTML from JSON
-npm run portfolio-build
-
-# Validate portfolio data
-npm run portfolio-validate
-```
-
-### Testing Locally
-
-```bash
+# Build all components to their existing paths
+npm run build:vue
+# Start local test server
 npm run serve
-# Opens http://localhost:8080/test/index-auto.html
+# → http://localhost:8080/test/index-auto.html
 ```
 
-## 📦 Components
+## How it Works
 
-**Quick Reference:** See [`loaders/COMPONENT-SYNTAX.md`](loaders/COMPONENT-SYNTAX.md) for component syntax and usage.
+- components/[name]
+  - [name].entry.ts: Component logic (bundled to IIFE JS at the same path)
+  - [name].css: Component styles (loaded by loader HTML)
+  - [name]-loader.html: Squarespace-ready HTML you paste into the page or load via the global loader
+- loaders/
+  - global-css-loader.html: Include in Squarespace Header Injection
+  - global-js-loader.html: Include in Squarespace Footer Injection
+  - components-registry.json: Metadata for automated loader generation
+- core/component-loader.js: Optional utility that can load component loader HTML by name at runtime
 
-### Fortune Peach
-Interactive fortune cookie widget with animations.
+## Build and Test
 
-**Files:**
-- `components/fortune-peach/fortune-peach.css`
-- `components/fortune-peach/fortune-peach.js`
-- `components/fortune-peach/fortune-peach-loader.html`
+- Build JS/CSS bundles (per component entries):
+  - `npm run build:vue`
+- Local test pages:
+  - `npm run serve`
+  - Open `test/index-auto.html` to verify components with global loaders
+- Lint/format/tests:
+  - `npm run lint`
+  - `npm run format`
+  - `npm run test` / `npm run test:watch` (Vitest)
 
-**Usage:** See `docs/components/` for details.
+## Squarespace Integration
 
-### Portfolio UI/UX
-Modern portfolio showcase with filtering, Figma embeds, and modal views.
+1. Paste the contents of:
 
-**Files:**
-- `components/portfolio-uiux/portfolio-uiux.css`
-- `components/portfolio-uiux/portfolio.js`
-- `components/portfolio-uiux/portfolio-uiux-loader.html`
+- `loaders/global-css-loader.html` → Settings → Advanced → Code Injection → Header
+- `loaders/global-js-loader.html` → Settings → Advanced → Code Injection → Footer
 
-**Data:** `data/portfolio-projects.json`
+2. Add components to a page via HTML blocks:
 
-**Documentation:** `docs/components/portfolio/`
+- Use `<div data-component="fortune-peach"></div>` (auto-loaded by the global JS loader), or
+- Paste the corresponding `components/[name]/[name]-loader.html` contents directly into a block
 
-### Twin Gallery
-Side-by-side gallery component.
+3. Host the built JS/CSS on your CDN (or use GitHub Pages) if not inlining.
 
-**Files:**
-- `components/twin-gallery/twin-gallery.css`
-- `components/twin-gallery/twin-gallery.js`
-- `components/twin-gallery/twin-gallery-loader.html`
+## Conventions
 
-## 🛠️ NPM Scripts
+- Keep component folders self-contained (CSS, entry TS, loader HTML).
+- Target the DOM by IDs/classes scoped to the component loader HTML.
+- Respect accessibility (ARIA, focus management, reduced motion).
+- Keep globals stable for loader parity (e.g., `window.initFortunePeach`).
 
-| Command | Description |
-|---------|-------------|
-| `npm run generate-loaders` | Generate global CSS/JS loaders and component registry |
-| `npm run portfolio-add` | Interactively add a new portfolio project |
-| `npm run portfolio-build` | Build portfolio HTML from JSON data |
-| `npm run portfolio-validate` | Validate portfolio data without building |
-| `npm run build` | Full build (portfolio + loaders) |
-| `npm run serve` | Start local development server |
-| `npm test` | Open test page instructions |
+## Repository Scripts
 
-## 📚 Documentation
+- `build:vue`: Builds all `*.entry.ts` to IIFE JS and copies CSS alongside
+- `generate-loaders`: Recreates global loader files and registry when components change
+- `serve`: Static server for `test/` pages (no SSR)
+- `lint` / `format`: ESLint (flat config) and Prettier
+- `test` / `test:watch`: Unit tests with Vitest; `tests/e2e` for smoke via Playwright
 
-- **Component Overview**: `docs/components-overview.md`
-- **Squarespace Setup**: `docs/guides/squarespace-setup.md`
-- **Component Loader**: `docs/guides/component-loader-usage.md`
-- **Portfolio Guide**: `docs/components/portfolio/workflow.md`
+## Adding a Component
 
-## 🏗️ Architecture
+1. Create `components/my-widget/` with:
 
-### Component Structure
+- `my-widget.entry.ts`
+- `my-widget.css`
+- `my-widget-loader.html`
 
-Each component follows this structure:
+2. Build and test:
 
+```bash
+npm run build:vue && npm run serve
 ```
-components/
-  └── component-name/
-      ├── component-name.css          # Component styles
-      ├── component-name.js           # Component logic
-      └── component-name-loader.html  # Squarespace-ready HTML
-```
 
-### Core Files
+3. Integrate in Squarespace via the global loaders or by pasting the loader HTML.
 
-Core utilities and shared functionality live in `core/`:
-- `utilities.js` - Shared utility functions
-- `component-loader.js` - Dynamic component loader
-- `*.css` - Core stylesheets
-- `*.js` - Core JavaScript modules
+## Notes
 
-### Data Management
-
-Portfolio projects use a JSON-based data system:
-- **Source**: `data/portfolio-projects.json`
-- **Build**: `npm run portfolio-build` generates HTML
-- **Validation**: Automatic validation on build
-
-## 🎯 Best Practices
-
-### Adding Components
-
-1. **Organize by feature**: Each component gets its own folder
-2. **Consistent naming**: Use kebab-case for files and folders
-3. **Include loader**: Create a `-loader.html` file for Squarespace
-4. **Document**: Add usage notes in component files
-
-### Portfolio Management
-
-1. **Use JSON**: Edit `data/portfolio-projects.json`, not HTML
-2. **Validate first**: Run `npm run portfolio-validate`
-3. **Build after changes**: Always run `npm run portfolio-build`
-
-### Version Control
-
-- ✅ Commit `data/` files (source of truth)
-- ✅ Commit `components/` files
-- ✅ Commit `core/` files
-- ✅ Commit generated `loaders/` (needed for Squarespace)
-- ⚠️ Consider ignoring generated files if preferred
-
-## 🔧 Development Workflow
-
-1. **Edit** component files in `components/` or data in `data/`
-2. **Build** run `npm run generate-loaders` or `npm run portfolio-build`
-3. **Test** use `npm run serve` for local testing
-4. **Deploy** copy loader files to Squarespace Code Injection
-
-## 📖 Squarespace Integration
-
-1. Copy `loaders/global-css-loader.html` → Settings > Advanced > Code Injection > Header
-2. Copy `loaders/global-js-loader.html` → Settings > Advanced > Code Injection > Footer
-3. Use components via `data-component` attribute or paste loader HTML
-
-See `docs/guides/squarespace-setup.md` for detailed instructions.
-
-## 🤝 Contributing
-
-When adding new components:
-
-1. Create component folder in `components/`
-2. Add CSS, JS, and loader HTML files
-3. Update component metadata in loader HTML comments
-4. Run `npm run generate-loaders`
-5. Test locally with `npm run serve`
-
-## 📝 License
-
-ISC
-
----
-
-For detailed component documentation, see the `docs/` directory.
-
+- Output format is IIFE to avoid polluting the global scope and to work within Squarespace’s environment.
+- Tailwind uses the `tw-` prefix and `preflight: false` to prevent style collisions.
+- The codebase favors simple, framework-agnostic DOM utilities (see `components/_shared/dom.ts`).

@@ -1,3 +1,13 @@
+node_modules/
+dist-vue/
+.vite/
+.cache/
+coverage/
+playwright-report/
+test-results/
+.DS_Store
+*.log
+
 # Dependencies
 node_modules/
 package-lock.json

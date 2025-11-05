@@ -41,7 +41,9 @@
   z-index: 9999; /* Above most content */
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
 }
 
 /**
@@ -160,7 +162,9 @@
   font-size: 1.1rem;
   font-weight: 500;
   border-radius: 8px;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 /**

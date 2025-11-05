@@ -1,9 +1,9 @@
 /**
  * Tagline Component
- * 
+ *
  * Cinematic typewriter effect that displays text character-by-character
  * with a glowing animation. Features a blinking caret and smooth fade-out.
- * 
+ *
  * Features:
  * - Character-by-character typewriter animation
  * - Glowing effect on each new character
@@ -11,18 +11,18 @@
  * - Two-line text sequence
  * - Automatic looping
  * - Configurable timing
- * 
+ *
  * HTML Structure Required:
  * <div class="tagline">
  *   <div class="text"></div>
  *   <span class="caret"></span>
  * </div>
- * 
+ *
  * CSS Dependencies:
  * - .tagline, .tagline .text, .tagline .caret classes
  * - @keyframes glow, blink animations
  * - .tagline.fade class for fade-out
- * 
+ *
  * @module tagline
  */
 
@@ -37,12 +37,12 @@
    * Animation timing constants (in milliseconds)
    */
   const TIMING = {
-    typeSpeed: 65,              // Base typing speed per character
-    typeVariance: 25,            // Random variance for natural feel
-    waitBetweenLines: 2000,      // Pause between line 1 and line 2
-    holdAfterLine2: 5000,        // Hold tagline visible after completion
-    fadeDuration: 2500,          // Fade-out duration
-    waitBeforeRestart: 20000      // Pause before restarting loop
+    typeSpeed: 65, // Base typing speed per character
+    typeVariance: 25, // Random variance for natural feel
+    waitBetweenLines: 2000, // Pause between line 1 and line 2
+    holdAfterLine2: 5000, // Hold tagline visible after completion
+    fadeDuration: 2500, // Fade-out duration
+    waitBeforeRestart: 20000, // Pause before restarting loop
   };
 
   /**
@@ -50,7 +50,7 @@
    */
   const TEXT = {
     line1: 'Every pixel tells a story.',
-    line2: ' Let the world know yours.'
+    line2: ' Let the world know yours.',
   };
 
   // ============================================================================
@@ -59,7 +59,7 @@
 
   /**
    * Async sleep/delay function
-   * 
+   *
    * @param {number} ms - Milliseconds to wait
    * @returns {Promise<void>} Promise that resolves after delay
    */
@@ -71,7 +71,7 @@
 
   /**
    * Create a character span with glow animation
-   * 
+   *
    * @param {string} ch - Character to display (or space)
    * @returns {HTMLSpanElement} Span element with character and animation
    */
@@ -85,10 +85,10 @@
 
   /**
    * Clear glow animation from previous character
-   * 
+   *
    * Removes the glow effect from the last character to maintain
    * visual clarity (only new characters glow).
-   * 
+   *
    * @param {HTMLElement} textEl - Text container element
    */
   function clearPreviousGlow(textEl) {
@@ -101,7 +101,7 @@
 
   /**
    * Type text character-by-character with glow effect
-   * 
+   *
    * @param {string} text - Text to type
    * @param {number} baseSpeed - Base typing speed (ms per character)
    * @param {HTMLElement} textEl - Text container element
@@ -111,25 +111,25 @@
     for (let i = 0; i < text.length; i++) {
       // Clear previous character's glow
       clearPreviousGlow(textEl);
-      
+
       // Add new character with glow
       const span = makeCharSpan(text[i]);
       textEl.appendChild(span);
-      
+
       // Random variance for natural typing feel
-      const variance = Math.random() * TIMING.typeVariance - (TIMING.typeVariance / 2);
+      const variance = Math.random() * TIMING.typeVariance - TIMING.typeVariance / 2;
       const delay = Math.max(20, baseSpeed + variance);
-      
+
       await sleep(delay);
     }
-    
+
     // Clear glow from last character
     clearPreviousGlow(textEl);
   }
 
   /**
    * Reset tagline to initial state
-   * 
+   *
    * @param {HTMLElement} tag - Tagline container element
    * @param {HTMLElement} textEl - Text container element
    * @param {HTMLElement} caretEl - Caret element
@@ -138,7 +138,7 @@
     // Reset container state
     tag.classList.remove('fade');
     textEl.innerHTML = '';
-    
+
     // Reset caret to visible, blinking state
     caretEl.classList.remove('exit', 'fade-in');
     caretEl.style.display = 'inline-block';
@@ -149,7 +149,7 @@
 
   /**
    * Hide caret instantly (no fade)
-   * 
+   *
    * @param {HTMLElement} caretEl - Caret element
    */
   function hideCaret(caretEl) {
@@ -160,7 +160,7 @@
 
   /**
    * Run the complete tagline animation sequence
-   * 
+   *
    * Loops infinitely with the following sequence:
    * 1. Reset to initial state
    * 2. Type first line
@@ -170,7 +170,7 @@
    * 6. Hold visible
    * 7. Fade out
    * 8. Wait before restart
-   * 
+   *
    * @param {HTMLElement} tag - Tagline container element
    * @param {HTMLElement} textEl - Text container element
    * @param {HTMLElement} caretEl - Caret element
@@ -210,10 +210,10 @@
 
   /**
    * Initialize tagline component
-   * 
+   *
    * Finds tagline element and starts the animation sequence.
    * Exits gracefully if required elements are not found.
-   * 
+   *
    * @function initTagline
    * @returns {void}
    */
@@ -237,7 +237,7 @@
 
   /**
    * Initialize when DOM is ready
-   * 
+   *
    * Supports both standard DOMContentLoaded and cases where script
    * loads after DOM is already ready (e.g., Squarespace AJAX navigation)
    */

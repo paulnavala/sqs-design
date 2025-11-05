@@ -36,18 +36,18 @@
  */
 #portfolio-uiux {
   /* Base Brand Colors */
-  --white: #FFFFFF;
-  --linen: #EFE1D4;  /* Background color */
-  --clay: #D29A84;   /* Accent/brand color */
-  --cacao: #58433B;  /* Text color */
-  --black: #000000;  /* Strong text */
+  --white: #ffffff;
+  --linen: #efe1d4; /* Background color */
+  --clay: #d29a84; /* Accent/brand color */
+  --cacao: #58433b; /* Text color */
+  --black: #000000; /* Strong text */
 
   /* Semantic Color Variables */
-  --bg: var(--linen);        /* Background */
-  --surface: #fff;           /* Card/surface background */
-  --ink: var(--cacao);       /* Body text */
+  --bg: var(--linen); /* Background */
+  --surface: #fff; /* Card/surface background */
+  --ink: var(--cacao); /* Body text */
   --ink-strong: var(--black); /* Heading text */
-  
+
   /* Color Mixes (for softer variations) */
   --muted: color-mix(in oklab, var(--ink) 70%, var(--linen));
   --cap: color-mix(in oklab, var(--ink) 55%, var(--linen));
@@ -55,27 +55,27 @@
   --border-strong: color-mix(in oklab, var(--ink) 28%, #fff);
 
   /* Spacing & Layout */
-  --radius-xl: 24px;      /* Large border radius */
-  --radius-md: 12px;      /* Medium border radius */
+  --radius-xl: 24px; /* Large border radius */
+  --radius-md: 12px; /* Medium border radius */
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 18px 46px rgba(0, 0, 0, 0.12);
-  --focus: var(--clay);    /* Focus ring color */
-  --padX: 24px;            /* Horizontal padding */
-  --sectionY: 110px;       /* Vertical section padding */
+  --focus: var(--clay); /* Focus ring color */
+  --padX: 24px; /* Horizontal padding */
+  --sectionY: 110px; /* Vertical section padding */
 
   /* Fluid Typography Scale */
   /* Responsive font sizes that scale with viewport */
   --step--1: clamp(0.88rem, 0.36vw + 0.8rem, 0.98rem);
-  --step-0: clamp(1.00rem, 0.45vw + 0.9rem, 1.06rem);
-  --step-1: clamp(1.10rem, 0.65vw + 0.95rem, 1.20rem);
-  --step-2: clamp(1.25rem, 1.0vw + 1.0rem, 1.45rem);
+  --step-0: clamp(1rem, 0.45vw + 0.9rem, 1.06rem);
+  --step-1: clamp(1.1rem, 0.65vw + 0.95rem, 1.2rem);
+  --step-2: clamp(1.25rem, 1vw + 1rem, 1.45rem);
   --step-3: clamp(1.45rem, 1.4vw + 1.05rem, 1.75rem);
-  --max-ch: 68ch;          /* Optimal reading width */
+  --max-ch: 68ch; /* Optimal reading width */
 
   /* Badge & Accent Positioning */
   --badge-size: 30px;
   --badge-top-offset: -12px; /* Float above card */
-  --accent-gap: 26px;        /* Space below accent (prevents overlap) */
+  --accent-gap: 26px; /* Space below accent (prevents overlap) */
 }
 
 /* ============================================================================
@@ -93,7 +93,7 @@
     /* Radial highlight at top */
     radial-gradient(1200px 600px at 20% -10%, #ffffff80, transparent 60%),
     /* Subtle vertical gradient */
-    linear-gradient(180deg, color-mix(in oklab, var(--linen) 96%, #fff), var(--linen));
+      linear-gradient(180deg, color-mix(in oklab, var(--linen) 96%, #fff), var(--linen));
 }
 
 /* ============================================================================
@@ -209,12 +209,13 @@
     /* Radial highlight */
     radial-gradient(110% 140% at 80% -20%, rgba(255, 255, 255, 0.9), transparent 60%),
     /* Vertical gradient */
-    linear-gradient(180deg, #fff, color-mix(in oklab, #fff 80%, var(--linen)));
+      linear-gradient(180deg, #fff, color-mix(in oklab, #fff 80%, var(--linen)));
   border: 1px solid transparent;
   /* Gradient border effect */
   background-image:
     linear-gradient(var(--surface), var(--surface)),
-    linear-gradient(180deg,
+    linear-gradient(
+      180deg,
       color-mix(in oklab, var(--border) 90%, #fff),
       color-mix(in oklab, var(--border-strong) 70%, #fff)
     );
@@ -247,7 +248,9 @@
   height: 10px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 6px #fff, 0 0 0 1px var(--border-strong);
+  box-shadow:
+    0 0 0 6px #fff,
+    0 0 0 1px var(--border-strong);
 }
 
 /**
@@ -259,7 +262,10 @@
   color: var(--ink-strong);
   font-weight: 760;
   letter-spacing: 0.004em;
-  font-feature-settings: "liga" on, "ss01" on, "cv01" on; /* Typography features */
+  font-feature-settings:
+    'liga' on,
+    'ss01' on,
+    'cv01' on; /* Typography features */
   font-size: clamp(1.5rem, 1.8vw + 0.9rem, 2.2rem);
 }
 
@@ -295,7 +301,7 @@
  * Custom bullet (colored dot)
  */
 #portfolio-uiux .intro-card__highlights li::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 0.6em;
@@ -303,7 +309,9 @@
   height: 8px;
   border-radius: 50%;
   background: color-mix(in oklab, var(--accent) 85%, #fff);
-  box-shadow: 0 0 0 4px #fff, 0 0 0 1px var(--border);
+  box-shadow:
+    0 0 0 4px #fff,
+    0 0 0 1px var(--border);
 }
 
 /**
@@ -349,7 +357,7 @@
  * Horizontal line
  */
 #portfolio-uiux .intro-card__ornament::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   right: 0;
@@ -363,7 +371,7 @@
  * Center dot
  */
 #portfolio-uiux .intro-card__ornament::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   top: 50%;
@@ -372,7 +380,10 @@
   height: 10px;
   border-radius: 50%;
   background: var(--clay);
-  box-shadow: 0 0 0 6px #fff, 0 0 0 1px var(--border-strong), 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 0 0 6px #fff,
+    0 0 0 1px var(--border-strong),
+    0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 /* ============================================================================
@@ -397,7 +408,13 @@
   margin-inline: calc(var(--padX) * -1);
   padding-block: 8px;
   /* Fade edges on mobile */
-  mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent 100%
+  );
 }
 
 /**
@@ -424,7 +441,11 @@
   cursor: pointer;
   font-weight: 600;
   line-height: 1;
-  transition: transform 0.18s, background 0.18s, border-color 0.18s, color 0.18s;
+  transition:
+    transform 0.18s,
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s;
   scroll-snap-align: start;
   white-space: nowrap;
   flex: 0 0 auto;
@@ -482,7 +503,11 @@
   border: 1px solid transparent;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    transform 0.2s,
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
   min-height: 44px; /* Touch-friendly */
 }
 
@@ -510,7 +535,7 @@
  * Arrow icon after primary button
  */
 #portfolio-uiux .btn--primary::after {
-  content: "↗";
+  content: '↗';
   font-size: 1rem;
   transform: translateY(-1px);
 }
@@ -554,7 +579,8 @@
   height: 3px;
   border-radius: 999px;
   margin-bottom: var(--accent-gap);
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     color-mix(in oklab, var(--accent) 92%, #fff),
     color-mix(in oklab, var(--accent) 60%, #fff)
   );
@@ -575,7 +601,8 @@
   /* Gradient border effect */
   background-image:
     linear-gradient(var(--surface), var(--surface)),
-    linear-gradient(180deg,
+    linear-gradient(
+      180deg,
       color-mix(in oklab, var(--border) 90%, #fff),
       color-mix(in oklab, var(--border-strong) 70%, #fff)
     );
@@ -583,7 +610,9 @@
   background-clip: padding-box, border-box;
   box-shadow: var(--shadow);
   padding: clamp(18px, 2.1vw, 28px);
-  transition: box-shadow 0.28s, transform 0.28s;
+  transition:
+    box-shadow 0.28s,
+    transform 0.28s;
 }
 
 /**
@@ -628,7 +657,9 @@
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 999px;
-  box-shadow: 0 0 0 4px #fff, 0 10px 20px rgba(0, 0, 0, 0.10);
+  box-shadow:
+    0 0 0 4px #fff,
+    0 10px 20px rgba(0, 0, 0, 0.1);
   z-index: 2; /* Above card */
 }
 
@@ -654,7 +685,9 @@
 #portfolio-uiux .project__text {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 0.5s, transform 0.5s;
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
   max-width: 65ch; /* Optimal reading width */
 }
 
@@ -667,7 +700,10 @@
   font-weight: 750;
   color: var(--ink-strong);
   letter-spacing: 0.01em;
-  font-feature-settings: "liga" on, "ss01" on, "cv01" on;
+  font-feature-settings:
+    'liga' on,
+    'ss01' on,
+    'cv01' on;
   font-size: clamp(1.35rem, 1.6vw + 0.8rem, 2.05rem);
 }
 
@@ -709,7 +745,7 @@
  * Badge dot (accent indicator)
  */
 #portfolio-uiux .badge::before {
-  content: "";
+  content: '';
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -736,7 +772,10 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s, box-shadow 0.4s ease;
+  transition:
+    opacity 0.8s ease 0.1s,
+    transform 0.8s ease 0.1s,
+    box-shadow 0.4s ease;
   align-self: start;
   justify-self: stretch;
   min-width: 0;
@@ -748,7 +787,7 @@
  * Inner frame border effect
  */
 #portfolio-uiux .project__frame::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: 22px;
@@ -776,11 +815,15 @@
   backdrop-filter: saturate(130%) blur(2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  transition: opacity 0.22s, transform 0.22s, background 0.22s, border-color 0.22s;
+  transition:
+    opacity 0.22s,
+    transform 0.22s,
+    background 0.22s,
+    border-color 0.22s;
 }
 
 #portfolio-uiux .proto-chip:hover {
-  background: rgba(0, 0, 0, 0.60);
+  background: rgba(0, 0, 0, 0.6);
 }
 
 #portfolio-uiux .proto-chip:focus-visible {
@@ -879,7 +922,7 @@
 }
 
 #portfolio-uiux .project__divider::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   right: 0;
@@ -890,7 +933,7 @@
 }
 
 #portfolio-uiux .project__divider::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   top: 50%;
@@ -899,7 +942,10 @@
   height: 10px;
   border-radius: 50%;
   background: var(--clay);
-  box-shadow: 0 0 0 6px #fff, 0 0 0 1px var(--border-strong), 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 0 0 6px #fff,
+    0 0 0 1px var(--border-strong),
+    0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 /* ============================================================================
@@ -952,7 +998,9 @@
   height: 10px;
   border-radius: 50%;
   background: var(--clay);
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 0 0 6px rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
 #portfolio-uiux .cta-card__title {
@@ -1013,7 +1061,7 @@
 }
 
 #portfolio-uiux .cta-card__ornament::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   right: 0;
@@ -1024,7 +1072,7 @@
 }
 
 #portfolio-uiux .cta-card__ornament::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   top: 50%;
@@ -1033,7 +1081,9 @@
   height: 10px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 0 0 6px rgba(255, 255, 255, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.45);
 }
 
 /* ============================================================================
@@ -1080,7 +1130,7 @@
   color: var(--ink-strong);
   border-radius: 18px;
   border: 1px solid var(--border);
-  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.20);
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1159,10 +1209,11 @@
  * Shown while iframe loads
  */
 #portfolio-uiux .portfolio-modal__frame::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     rgba(0, 0, 0, 0.05) 0%,
     rgba(0, 0, 0, 0.08) 35%,
     rgba(0, 0, 0, 0.05) 65%,
@@ -1209,7 +1260,7 @@
  * Spinner circle
  */
 #portfolio-uiux .portfolio-modal__spinner::after {
-  content: "";
+  content: '';
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -1314,7 +1365,9 @@ html.no-scroll {
 
   /* Adjusted badge shadow */
   #portfolio-uiux .project__card::after {
-    box-shadow: 0 0 0 3px #fff, 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow:
+      0 0 0 3px #fff,
+      0 8px 16px rgba(0, 0, 0, 0.1);
   }
 }
 

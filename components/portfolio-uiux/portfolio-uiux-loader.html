@@ -18,7 +18,6 @@
 -->
 
 <section id="portfolio-uiux" class="portfolio" data-ux-portfolio aria-label="UI/UX Projects">
-
   <!-- Skip link (a11y) -->
   <a class="portfolio__skip" href="#projects-list">Skip to projects</a>
 
@@ -26,7 +25,7 @@
   <header class="portfolio__header" role="region" aria-labelledby="portfolio-title">
     <div class="portfolio__header-inner">
       <h2 id="portfolio-title" class="portfolio__title">Selected UI/UX Projects</h2>
-      <span class="portfolio__count" data-count aria-live="polite">0</span>
+      <span class="portfolio__count" data-count role="status" aria-live="polite">0</span>
     </div>
   </header>
 
@@ -60,9 +59,20 @@
 
   <!-- Filters (centered; JS reads .pill[data-filter]) -->
   <nav class="portfolio__filters" aria-label="Project filters">
-    <button class="pill is-active" data-filter="all" aria-pressed="true">All</button>
-    <button class="pill" data-filter="prototype" aria-pressed="false">Prototypes</button>
-    <button class="pill" data-filter="cern" aria-pressed="false">CERN</button>
+    <button
+      class="pill is-active"
+      data-filter="all"
+      aria-pressed="true"
+      aria-controls="projects-list"
+    >
+      All
+    </button>
+    <button class="pill" data-filter="prototype" aria-pressed="false" aria-controls="projects-list">
+      Prototypes
+    </button>
+    <button class="pill" data-filter="cern" aria-pressed="false" aria-controls="projects-list">
+      CERN
+    </button>
   </nav>
 
   <!-- Projects mount (JS will render cards here) -->
@@ -78,8 +88,8 @@
 
       <h3 class="cta-card__title">Have a complex interface to simplify?</h3>
       <p class="cta-card__sub">
-        I partner with teams to design flows, systems, and prototypes that ship with confidence.
-        If the work above resonates, let's start a conversation.
+        I partner with teams to design flows, systems, and prototypes that ship with confidence. If
+        the work above resonates, let's start a conversation.
       </p>
 
       <div class="cta-card__actions">
@@ -91,25 +101,49 @@
   </section>
 
   <!-- Shared fullscreen modal (JS controls visibility/content) -->
-  <div class="portfolio-modal" id="portfolio-modal" role="dialog" aria-modal="true" aria-labelledby="portfolio-modal-title" hidden>
+  <div
+    class="portfolio-modal"
+    id="portfolio-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="portfolio-modal-title"
+    hidden
+  >
     <div class="portfolio-modal__backdrop" data-close></div>
     <div class="portfolio-modal__dialog" role="document">
       <header class="portfolio-modal__header">
         <h3 id="portfolio-modal-title" class="portfolio-modal__title"></h3>
         <div class="portfolio-modal__actions">
-          <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in new tab</a>
-          <button class="portfolio-modal__close" type="button" aria-label="Close fullscreen" data-close>✕</button>
+          <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener"
+            >Open in new tab</a
+          >
+          <button
+            class="portfolio-modal__close"
+            type="button"
+            aria-label="Close fullscreen"
+            data-close
+          >
+            ✕
+          </button>
         </div>
       </header>
       <div class="portfolio-modal__body">
         <div class="portfolio-modal__frame">
           <div class="portfolio-modal__spinner" aria-hidden="true"></div>
-          <iframe class="portfolio-modal__iframe" title="Project (fullscreen)" loading="lazy" allow="fullscreen; clipboard-write" allowfullscreen></iframe>
+          <iframe
+            class="portfolio-modal__iframe"
+            title="Project (fullscreen)"
+            loading="lazy"
+            allow="fullscreen; clipboard-write"
+            allowfullscreen
+          ></iframe>
         </div>
       </div>
       <p class="portfolio-modal__fallback" hidden>
         Couldn't load the embedded prototype.
-        <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in a new tab</a>.
+        <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener"
+          >Open in a new tab</a
+        >.
       </p>
     </div>
   </div>
@@ -117,13 +151,11 @@
   <!-- Template for each project card (JS clones & fills) -->
   <template id="project-card-template">
     <section class="project" aria-label="">
-
       <!-- Accent -->
       <div class="project__accent" aria-hidden="true"></div>
 
       <div class="project__card">
         <div class="project__grid">
-
           <!-- Text -->
           <div class="project__text">
             <h3 class="project__title"></h3>
@@ -132,10 +164,12 @@
               <span class="badge" data-badges></span>
             </div>
             <div class="project__actions">
-              <button class="btn btn--primary"
-                      data-action="open-modal"
-                      aria-haspopup="dialog"
-                      aria-controls="portfolio-modal">
+              <button
+                class="btn btn--primary"
+                data-action="open-modal"
+                aria-haspopup="dialog"
+                aria-controls="portfolio-modal"
+              >
                 Open fullscreen prototype
               </button>
               <a class="btn btn--ghost" data-internal-link target="_self">View case study</a>
@@ -144,16 +178,20 @@
 
           <!-- Media -->
           <div class="project__frame">
-            <iframe class="project__iframe"
-                    title=""
-                    loading="lazy"
-                    allow="fullscreen; clipboard-write"
-                    allowfullscreen></iframe>
+            <iframe
+              class="project__iframe"
+              title=""
+              loading="lazy"
+              allow="fullscreen; clipboard-write"
+              allowfullscreen
+            ></iframe>
 
-            <button class="proto-chip"
-                    type="button"
-                    data-action="open-modal"
-                    aria-label="Open prototype in fullscreen">
+            <button
+              class="proto-chip"
+              type="button"
+              data-action="open-modal"
+              aria-label="Open prototype in fullscreen"
+            >
               <span class="proto-chip__icon" aria-hidden="true">▶︎</span>
               <span class="proto-chip__label">Try the prototype</span>
             </button>
@@ -242,6 +280,4 @@
       data-accent="#58433B"
     ></li>
   </ul>
-
 </section>
-

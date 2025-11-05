@@ -14,14 +14,14 @@
 
 /* Absolutely center the logo pseudo-element */
 .header .header-inner::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%); /* perfectly center */
   width: 100px; /* adjust as needed */
   height: 40px; /* adjust as needed */
-  background-image: url("https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f500918457c367c8204f24/1760886929259/Untitled-1.png");
+  background-image: url('https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f500918457c367c8204f24/1760886929259/Untitled-1.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -52,4 +52,3 @@
     height: 50px;
   }
 }
-

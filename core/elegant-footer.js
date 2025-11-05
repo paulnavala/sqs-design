@@ -1,18 +1,18 @@
 /**
  * Elegant Footer Component
- * 
+ *
  * Handles scroll reveal animation for the elegant footer using
  * IntersectionObserver API for efficient viewport detection.
- * 
+ *
  * Features:
  * - Smooth reveal animation when footer enters viewport
  * - Fallback for browsers without IntersectionObserver
  * - One-time trigger (unobserves after activation)
- * 
+ *
  * CSS Dependency:
  * - Requires .elegant-footer and .is-inview classes
  * - Animation handled via CSS transitions
- * 
+ *
  * @module elegant-footer
  */
 
@@ -21,10 +21,10 @@
 
   /**
    * Initialize footer reveal animation
-   * 
+   *
    * Sets up IntersectionObserver to detect when footer enters viewport
    * and adds 'is-inview' class to trigger CSS animations.
-   * 
+   *
    * @function initFooter
    * @returns {void}
    */
@@ -52,15 +52,15 @@
           if (entry.isIntersecting) {
             // Footer is visible, trigger reveal animation
             el.classList.add('is-inview');
-            
+
             // Unobserve after triggering (one-time animation)
             io.unobserve(el);
           }
         });
       },
       {
-        root: null,           // Use viewport as root
-        threshold: 0.12       // Trigger when 12% of footer is visible
+        root: null, // Use viewport as root
+        threshold: 0.12, // Trigger when 12% of footer is visible
       }
     );
 
@@ -70,7 +70,7 @@
 
   /**
    * Initialize when DOM is ready
-   * 
+   *
    * Supports both standard DOMContentLoaded and cases where script
    * loads after DOM is already ready (e.g., Squarespace AJAX navigation)
    */
