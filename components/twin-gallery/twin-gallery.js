@@ -1,298 +1,105 @@
-/**
- * Twin Gallery Component
- * 
- * Side-by-side image gallery with hover effects and touch interactions.
- * Highlights the hovered/tapped panel while dimming the other.
- * 
- * Features:
- * - Hover highlight effects on desktop
- * - Touch feedback on mobile devices
- * - Pointer-based direction detection
- * - Guidelines panel touch support
- * - Passive event listeners for performance
- * 
- * HTML Structure Required:
- * <div class="twin-gallery">
- *   <div class="panel left">...</div>
- *   <div class="panel right">...</div>
- * </div>
- * 
- * Optional:
- * <div class="guidelines-wrapper">
- *   <div class="guidelines-panel">...</div>
- * </div>
- * 
- * CSS Dependencies:
- * - .twin-gallery, .panel, .hover-left, .hover-right classes
- * - .touch-mode, .tap-focus classes for touch devices
- * - Hover and touch animations defined in CSS
- * 
- * @module twin-gallery
- */
-
 (function () {
   'use strict';
-
-  // ============================================================================
-  // Configuration
-  // ============================================================================
-
-  /**
-   * Touch feedback duration (in milliseconds)
-   * 
-   * How long the tap-focus highlight remains visible after touch.
-   * 
-   * @constant {number}
-   */
-  const TAP_FOCUS_DURATION = 900;
-
-  // ============================================================================
-  // Utility Functions
-  // ============================================================================
-
-  /**
-   * Detect if device supports touch
-   * 
-   * Checks both CSS media query and JavaScript API for touch support.
-   * 
-   * @returns {boolean} True if device supports touch
-   */
-  function isTouchDevice() {
-    return window.matchMedia('(hover: none)').matches || 'ontouchstart' in window;
+  var s = document.createElement('style');
+  ((s.textContent = `.twin-gallery{display:grid;grid-template-columns:1fr 1fr;gap:24px;position:relative;overflow:hidden}.twin-gallery .panel{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:12px;background:#0000000d;cursor:pointer;text-decoration:none;color:inherit;min-height:44px}.twin-gallery .panel:before{content:"";display:block;padding-top:70.7%}.twin-gallery .panel img{position:absolute;top:0;left:0;width:100%;height:100%;-o-object-fit:contain;object-fit:contain;-o-object-position:center;object-position:center;transform:scale(1.02);opacity:.9;filter:brightness(.95) contrast(1);transition:transform .6s ease,filter .4s ease,opacity .4s ease,box-shadow .4s ease;animation:drift 18s ease-in-out infinite alternate}.twin-gallery:hover .panel img{opacity:.4;filter:brightness(.75) contrast(.9);transform:scale(1)}.twin-gallery .panel:hover img,.twin-gallery .panel:focus img,.twin-gallery .panel:focus-visible img{opacity:1;filter:brightness(1.1) contrast(1.25);transform:scale(1.09) translateY(-3px);box-shadow:0 12px 40px #00000040;z-index:2}.twin-gallery .panel:focus-visible{outline:3px solid #58433b;outline-offset:3px}.twin-gallery:after{content:"";position:absolute;top:0;bottom:0;left:0;width:60%;pointer-events:none;background:linear-gradient(90deg,#fff0,#ffffff4d,#fff0);transform:translate(0);opacity:0;transition:transform .8s ease,opacity .8s ease}.twin-gallery:hover:after{opacity:1}.twin-gallery.hover-left:after{transform:translate(-10%)}.twin-gallery.hover-right:after{transform:translate(100%)}@keyframes drift{0%{transform:scale(1.02) translateZ(0)}to{transform:scale(1.06) translate3d(0,-1.5%,0)}}.guidelines-wrapper{position:relative;overflow:hidden;margin-top:20px}.guidelines-panel{position:relative;display:block;overflow:hidden;border-radius:18px;background:#0000000d;cursor:pointer;text-decoration:none;color:inherit}.guidelines-panel img{width:100%;height:70px;-o-object-fit:cover;object-fit:cover;display:block;border-radius:18px;transform:scale(1.02);opacity:.9;filter:brightness(.95) contrast(1);transition:transform .6s ease,filter .4s ease,opacity .4s ease,box-shadow .4s ease;animation:drift 18s ease-in-out infinite alternate}.guidelines-panel:hover img,.guidelines-panel:focus img{opacity:1;filter:brightness(1.1) contrast(1.25);transform:scale(1.09) translateY(-3px);box-shadow:0 12px 40px #00000040;z-index:2}.guidelines-panel:active img{transform:scale(1.05);box-shadow:0 8px 20px #00000040}.twin-gallery.touch-mode .panel img{transition:filter .3s ease}.twin-gallery.touch-mode .panel.tap-focus img{filter:brightness(1.1) contrast(1.25)}.guidelines-wrapper.touch-mode .guidelines-panel img{transition:filter .3s ease}.guidelines-wrapper.touch-mode .guidelines-panel.tap-focus img{filter:brightness(1.1) contrast(1.25)}.twin-gallery .panel:active img{transform:scale(1.05);box-shadow:0 8px 20px #00000040}@media (max-width: 768px){.twin-gallery{grid-template-columns:1fr}.twin-gallery .panel:before{padding-top:70.7%}}@media (prefers-reduced-motion: reduce){.twin-gallery .panel img{animation:none;transition:none;transform:none}.twin-gallery:after{display:none}.guidelines-panel img{animation:none;transition:none;transform:none}}
+/*$vite$:1*/`),
+    document.head.appendChild(s));
+  function f(t) {
+    let e = !1,
+      i = [];
+    return (...a) => {
+      ((i = a),
+        !e &&
+          ((e = !0),
+          requestAnimationFrame(() => {
+            ((e = !1), t(...i));
+          })));
+    };
   }
-
-  // ============================================================================
-  // Desktop Hover Interactions
-  // ============================================================================
-
-  /**
-   * Initialize hover interactions for desktop
-   * 
-   * Adds mouseenter/mouseleave handlers to highlight panels on hover.
-   * Works with multiple galleries on the same page.
-   * 
-   * @function initTwinGallery
-   * @returns {void}
-   */
-  function initTwinGallery() {
-    const galleries = document.querySelectorAll('.twin-gallery');
-    
-    if (galleries.length === 0) {
-      return; // No galleries found, exit gracefully
-    }
-
-    galleries.forEach(function (gallery) {
-      const left = gallery.querySelector('.panel.left');
-      const right = gallery.querySelector('.panel.right');
-
-      // Validate required elements
-      if (!left || !right) {
-        return; // Skip this gallery if panels missing
+  function l() {
+    return (
+      (typeof window < 'u' && 'ontouchstart' in window) ||
+      window.matchMedia('(hover: none)').matches
+    );
+  }
+  const c = 900;
+  function p() {
+    const t = document.querySelectorAll('.twin-gallery');
+    t.length !== 0 &&
+      t.forEach((e) => {
+        const i = e.querySelector('.panel.left'),
+          n = e.querySelector('.panel.right');
+        !i ||
+          !n ||
+          (i.addEventListener('mouseenter', () => {
+            (e.classList.add('hover-left'), e.classList.remove('hover-right'));
+          }),
+          n.addEventListener('mouseenter', () => {
+            (e.classList.add('hover-right'), e.classList.remove('hover-left'));
+          }),
+          e.addEventListener('mouseleave', () => {
+            e.classList.remove('hover-left', 'hover-right');
+          }));
+      });
+  }
+  function u() {
+    const t = document.querySelector('.twin-gallery');
+    if (!t) return;
+    const e = Array.from(t.querySelectorAll('.panel'));
+    if (!l()) return;
+    (t.classList.add('touch-mode'),
+      e.forEach((r) => {
+        r.addEventListener(
+          'touchstart',
+          () => {
+            (r.classList.add('tap-focus'),
+              clearTimeout(r._tapTimer),
+              (r._tapTimer = setTimeout(() => {
+                r.classList.remove('tap-focus');
+              }, c)));
+          },
+          { passive: !0 }
+        );
+      }));
+    let i = null,
+      n = 0;
+    const a = f((r) => {
+      if (((n = r.clientX), i === null)) {
+        i = n;
+        return;
       }
-
-      /**
-       * Highlight left panel on hover
-       * 
-       * Adds hover-left class and removes hover-right to ensure
-       * only one panel is highlighted at a time.
-       */
-      left.addEventListener('mouseenter', () => {
-        gallery.classList.add('hover-left');
-        gallery.classList.remove('hover-right');
-      });
-
-      /**
-       * Highlight right panel on hover
-       */
-      right.addEventListener('mouseenter', () => {
-        gallery.classList.add('hover-right');
-        gallery.classList.remove('hover-left');
-      });
-
-      /**
-       * Remove highlight when mouse leaves gallery
-       * 
-       * Returns both panels to default state.
-       */
-      gallery.addEventListener('mouseleave', () => {
-        gallery.classList.remove('hover-left', 'hover-right');
-      });
+      const d = n > i ? 'hover-right' : 'hover-left';
+      (t.classList.toggle('hover-right', d === 'hover-right'),
+        t.classList.toggle('hover-left', d === 'hover-left'),
+        (i = n));
     });
+    t.addEventListener('pointermove', a, { passive: !0 });
   }
-
-  // ============================================================================
-  // Mobile Touch Interactions
-  // ============================================================================
-
-  /**
-   * Initialize touch behavior for mobile devices
-   * 
-   * Provides visual feedback on touch and enables pointer-based
-   * direction detection for swipe-like interactions.
-   * 
-   * @function initMobileTouchBehavior
-   * @returns {void}
-   */
-  function initMobileTouchBehavior() {
-    const gallery = document.querySelector('.twin-gallery');
-    if (!gallery) {
-      return; // Gallery not present, exit gracefully
-    }
-
-    const panels = Array.from(gallery.querySelectorAll('.panel'));
-
-    // Only apply touch behavior on touch devices
-    if (!isTouchDevice()) {
-      return;
-    }
-
-    // Add touch-mode class to disable hover effects
-    gallery.classList.add('touch-mode');
-
-    /**
-     * Provide tap highlight feedback
-     * 
-     * Adds visual feedback when user taps a panel on touch devices.
-     * Uses passive listeners for better scroll performance.
-     */
-    panels.forEach((panel) => {
-      panel.addEventListener(
+  function g() {
+    const t = document.querySelector('.guidelines-wrapper');
+    if (!t) return;
+    const e = t.querySelector('.guidelines-panel');
+    e &&
+      l() &&
+      (t.classList.add('touch-mode'),
+      e.addEventListener(
         'touchstart',
         () => {
-          // Add tap-focus class for visual feedback
-          panel.classList.add('tap-focus');
-          
-          // Clear any existing timer
-          clearTimeout(panel._tapTimer);
-          
-          // Remove highlight after duration
-          panel._tapTimer = setTimeout(() => {
-            panel.classList.remove('tap-focus');
-          }, TAP_FOCUS_DURATION);
+          (e.classList.add('tap-focus'),
+            clearTimeout(e._tapTimer),
+            (e._tapTimer = setTimeout(() => {
+              e.classList.remove('tap-focus');
+            }, c)));
         },
-        { passive: true } // Passive for better scroll performance
-      );
-    });
-
-    /**
-     * Pointer-based direction detection
-     * 
-     * Detects left/right movement of pointer/finger and highlights
-     * the corresponding panel. Creates a swipe-like interaction.
-     */
-    let lastX = null;
-    gallery.addEventListener(
-      'pointermove',
-      (ev) => {
-        // Initialize lastX on first move
-        if (lastX === null) {
-          lastX = ev.clientX;
-          return;
-        }
-
-        // Determine direction based on pointer movement
-        const dir = ev.clientX > lastX ? 'hover-right' : 'hover-left';
-        
-        // Update gallery classes based on direction
-        gallery.classList.toggle('hover-right', dir === 'hover-right');
-        gallery.classList.toggle('hover-left', dir === 'hover-left');
-        
-        // Update lastX for next comparison
-        lastX = ev.clientX;
-      },
-      { passive: true } // Passive for better scroll performance
-    );
+        { passive: !0 }
+      ));
   }
-
-  // ============================================================================
-  // Guidelines Panel (Optional)
-  // ============================================================================
-
-  /**
-   * Initialize touch behavior for guidelines panel
-   * 
-   * Adds touch feedback to the guidelines panel if present.
-   * Separate function for modularity and optional feature support.
-   * 
-   * @function initGuidelinesPanel
-   * @returns {void}
-   */
-  function initGuidelinesPanel() {
-    const guidelinesWrapper = document.querySelector('.guidelines-wrapper');
-    if (!guidelinesWrapper) {
-      return; // Guidelines panel not present, exit gracefully
-    }
-
-    const guidelinesPanel = guidelinesWrapper.querySelector('.guidelines-panel');
-    if (!guidelinesPanel) {
-      return;
-    }
-
-    // Only apply touch behavior on touch devices
-    if (!isTouchDevice()) {
-      return;
-    }
-
-    // Add touch-mode class
-    guidelinesWrapper.classList.add('touch-mode');
-
-    /**
-     * Provide tap highlight feedback for guidelines panel
-     */
-    guidelinesPanel.addEventListener(
-      'touchstart',
-      () => {
-        guidelinesPanel.classList.add('tap-focus');
-        
-        // Clear any existing timer
-        clearTimeout(guidelinesPanel._tapTimer);
-        
-        // Remove highlight after duration
-        guidelinesPanel._tapTimer = setTimeout(() => {
-          guidelinesPanel.classList.remove('tap-focus');
-        }, TAP_FOCUS_DURATION);
-      },
-      { passive: true } // Passive for better scroll performance
-    );
+  function o() {
+    (p(), u(), g());
   }
-
-  // ============================================================================
-  // Initialization
-  // ============================================================================
-
-  /**
-   * Initialize all gallery features
-   * 
-   * Initializes hover interactions, touch behavior, and guidelines panel
-   * support. All features are independent and can work separately.
-   */
-  function initializeAll() {
-    initTwinGallery();
-    initMobileTouchBehavior();
-    initGuidelinesPanel();
-  }
-
-  /**
-   * Initialize when DOM is ready
-   * 
-   * Supports both standard DOMContentLoaded and cases where script
-   * loads after DOM is already ready (e.g., Squarespace AJAX navigation)
-   */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeAll);
-  } else {
-    // DOM already ready, initialize immediately
-    initializeAll();
-  }
-
-  // ============================================================================
-  // Public API
-  // ============================================================================
-
-  /**
-   * Expose initialization function globally
-   * 
-   * Allows manual re-initialization if galleries are added dynamically.
-   */
-  window.initTwinGallery = initializeAll;
+  (['mercury:load', 'sqs:pageLoaded', 'DOMContentLoaded'].forEach((t) =>
+    document.addEventListener(t, o)
+  ),
+    window.addEventListener('load', o),
+    (window.initTwinGallery = o));
 })();

@@ -38,11 +38,11 @@
  */
 .fortune-logo-widget {
   /* Color variables for consistent theming */
-  --c1: #F4A79D; /* Light peach */
-  --c2: #E8B4A8; /* Medium peach */
-  --c3: #D4827A; /* Dark peach */
-  --c4: #C17068; /* Darker peach */
-  --ink: #8B5A54; /* Text color */
+  --c1: #f4a79d; /* Light peach */
+  --c2: #e8b4a8; /* Medium peach */
+  --c3: #d4827a; /* Dark peach */
+  --c4: #c17068; /* Darker peach */
+  --ink: #8b5a54; /* Text color */
   --card: #ffffffee; /* Card background (white with slight transparency) */
 
   position: relative;
@@ -61,10 +61,17 @@
  * Large, responsive heading in brand color
  */
 .flw-title h1 {
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    'Helvetica Neue',
+    Arial;
   font-size: clamp(28px, 4vw, 48px);
   margin: 0 0 40px;
-  color: #D29A84; /* Brand clay color */
+  color: #d29a84; /* Brand clay color */
 }
 
 /**
@@ -110,6 +117,13 @@
   transform: scale(0.97);
 }
 
+/* Accessibility: clear focus ring */
+.flw-logoBtn:focus-visible,
+.flw-btn:focus-visible {
+  outline: 3px solid #58433b;
+  outline-offset: 3px;
+}
+
 /**
  * Drop shadow below logo
  * Oval shape for realistic shadow effect
@@ -141,13 +155,13 @@
  * Pulsing glow effect behind logo
  */
 .flw-logo::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: 9999px;
   filter: blur(28px); /* Soft blur for glow */
   opacity: 0.45;
-  background: #FEF0E5; /* Warm glow color */
+  background: #fef0e5; /* Warm glow color */
   animation: flwGlow 2s ease-in-out infinite;
   z-index: -1; /* Behind logo */
 }
@@ -160,6 +174,20 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* SVG color classes for inline logo (moved from template <style>) */
+.fortune-logo-widget .cls-1 {
+  fill: #f0cfbe;
+}
+.fortune-logo-widget .cls-2 {
+  fill: #010101;
+}
+.fortune-logo-widget .cls-3 {
+  fill: #fef0e5;
+}
+.fortune-logo-widget .cls-4 {
+  fill: #e3aa95;
 }
 
 /* ============================================================================
@@ -264,7 +292,7 @@
   margin: 0 auto 16px;
   border-radius: 24px;
   background: var(--card);
-  border: 2px solid #F4D4CC;
+  border: 2px solid #f4d4cc;
   box-shadow: 0 20px 50px rgba(212, 130, 122, 0.25);
   overflow: hidden;
 }
@@ -276,8 +304,9 @@
 .flw-card-glow {
   position: absolute;
   inset: -40% -10%; /* Extends beyond card */
-  background: radial-gradient(60% 60% at 50% 30%, rgba(244, 167, 157, 0.35), transparent 70%),
-              radial-gradient(40% 40% at 70% 70%, rgba(232, 180, 168, 0.35), transparent 70%);
+  background:
+    radial-gradient(60% 60% at 50% 30%, rgba(244, 167, 157, 0.35), transparent 70%),
+    radial-gradient(40% 40% at 70% 70%, rgba(232, 180, 168, 0.35), transparent 70%);
   filter: blur(30px);
   animation: flwGlow 3s ease-in-out infinite;
 }
@@ -410,9 +439,12 @@
   border-radius: 9999px;
   color: #fff;
   font-weight: 600;
-  background: #D29A84; /* Brand clay color */
+  background: #d29a84; /* Brand clay color */
   box-shadow: 0 10px 20px rgba(212, 130, 122, 0.25);
-  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    filter 0.2s;
 }
 
 .flw-btn:hover {
@@ -434,7 +466,8 @@
  * Subtle vertical movement for unopened logo
  */
 @keyframes flwFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -447,7 +480,8 @@
  * Backdrop glow intensity changes
  */
 @keyframes flwGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
@@ -462,7 +496,8 @@
  * Used for status text and other elements
  */
 @keyframes flwPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
   }
   50% {
@@ -573,6 +608,23 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .flw-logo,
+  .flw-logo::before,
+  .flw-left,
+  .flw-right,
+  .flw-p.animate,
+  .flw-star,
+  .flw-card h2,
+  .flw-divider,
+  .flw-ball,
+  .flw-status {
+    animation: none !important;
+    transition: none !important;
   }
 }
 

@@ -1,0 +1,9 @@
+node_modules/
+dist-vue/
+coverage/
+playwright-report/
+**/*.min.js
+components/**/**/*.js
+loaders/*.js
+
+

@@ -1,17 +1,17 @@
 /**
  * Prototype Showcase Component
- * 
+ *
  * Handles Figma prototype embeds with reveal animations and fallback
  * handling for failed loads. Includes automatic year updates and
  * analytics tracking for user interactions.
- * 
+ *
  * Features:
  * - Scroll reveal animation using IntersectionObserver
  * - Automatic year update in captions
  * - Fallback UI if iframe fails to load
  * - Analytics tracking for CTA clicks
  * - Graceful degradation for older browsers
- * 
+ *
  * HTML Structure Required:
  * <section class="proto-showcase split">
  *   <iframe class="figma-prototype" ...></iframe>
@@ -19,11 +19,11 @@
  *   <span id="year-proto"></span>
  *   <button class="proto-btn">...</button>
  * </section>
- * 
+ *
  * CSS Dependencies:
  * - .proto-showcase, .proto-showcase.is-inview classes
  * - Reveal animation handled via CSS transitions
- * 
+ *
  * @module prototype-showcase
  */
 
@@ -32,10 +32,10 @@
 
   /**
    * Initialize prototype showcase component
-   * 
+   *
    * Sets up scroll reveal, year display, iframe fallback,
    * and analytics tracking.
-   * 
+   *
    * @function initPrototypeShowcase
    * @returns {void}
    */
@@ -54,10 +54,10 @@
     // ========================================================================
     // Year Display Update
     // ========================================================================
-    
+
     /**
      * Update year in caption to current year
-     * 
+     *
      * Automatically displays the current year in the prototype caption.
      * No need to manually update each year.
      */
@@ -68,10 +68,10 @@
     // ========================================================================
     // Scroll Reveal Animation
     // ========================================================================
-    
+
     /**
      * Reveal animation when section enters viewport
-     * 
+     *
      * Uses IntersectionObserver for efficient scroll detection.
      * Adds 'is-inview' class to trigger CSS animations.
      */
@@ -98,10 +98,10 @@
     // ========================================================================
     // Iframe Fallback Handling
     // ========================================================================
-    
+
     /**
      * Show fallback UI if iframe fails to load
-     * 
+     *
      * Sets a timeout to show fallback message if iframe doesn't
      * load within 4 seconds. Clears timeout if iframe loads successfully.
      */
@@ -110,7 +110,7 @@
         // Iframe didn't load in time, show fallback
         fallback.hidden = false;
       }, 4000); // 4 second timeout
-      
+
       // Clear timeout if iframe loads successfully
       iframe.addEventListener('load', () => {
         clearTimeout(timer);
@@ -120,10 +120,10 @@
     // ========================================================================
     // Analytics Tracking
     // ========================================================================
-    
+
     /**
      * Track CTA button clicks for analytics
-     * 
+     *
      * Supports Plausible Analytics (plausible.io) by default.
      * Can be extended for other analytics platforms.
      */
@@ -133,12 +133,12 @@
         if (typeof window.plausible === 'function') {
           window.plausible('Prototype – View Fullscreen');
         }
-        
+
         // Google Analytics 4 example (commented out)
         // if (typeof gtag === 'function') {
         //   gtag('event', 'prototype_fullscreen', { label: 'CERN' });
         // }
-        
+
         // Universal Analytics example (commented out)
         // if (typeof ga === 'function') {
         //   ga('send', 'event', 'Prototype', 'View Fullscreen', 'CERN');
@@ -153,7 +153,7 @@
 
   /**
    * Initialize when DOM is ready
-   * 
+   *
    * Supports both standard DOMContentLoaded and cases where script
    * loads after DOM is already ready (e.g., Squarespace AJAX navigation)
    */

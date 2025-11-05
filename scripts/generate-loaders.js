@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Generate Loader Files Script
- * 
+ *
  * Automatically scans the codebase and generates:
  * - global-css-loader.html/js  - CSS file loader for Squarespace
  * - global-js-loader.html/js    - JavaScript file loader for Squarespace
@@ -9,20 +9,20 @@
  * - components-registry.md       - Human-readable component list
  * - COMPONENT-SYNTAX.md/txt     - Quick syntax reference
  * - Test file updates            - Auto-updates test HTML files
- * 
+ *
  * File Discovery:
  * - CSS files: Scans core/ and components/ directories
  * - JS files: Scans core/ and components/ directories (prioritizes utilities.js)
  * - HTML components: Scans components/ directories for *-loader.html files
- * 
+ *
  * Usage:
  *   node scripts/generate-loaders.js
  *   npm run generate-loaders
- * 
+ *
  * Output:
  *   All files written to loaders/ directory
  *   Test files in test/ directory are updated
- * 
+ *
  * @module generate-loaders
  */
 
@@ -49,78 +49,77 @@ const TEST_DIR = path.join(__dirname, '..', 'test');
 
 /**
  * Get all CSS files from core/ and components/ directories
- * 
+ *
  * Scans:
  * - core/*.css - Core stylesheets
  * - components/[name]/*.css - Component-specific styles
- * 
+ *
  * @returns {Array<{path: string, file: string}>} Array of CSS file info
  */
 function getAllCSSFiles() {
   const files = [];
-  
+
   // Scan core directory for CSS files
   if (fs.existsSync(CSS_DIR)) {
     fs.readdirSync(CSS_DIR)
-      .filter(file => file.endsWith('.css'))
-      .forEach(file => {
-        files.push({ 
-          path: `/core/${file}`, 
-          file 
+      .filter((file) => file.endsWith('.css'))
+      .forEach((file) => {
+        files.push({
+          path: `/core/${file}`,
+          file,
         });
       });
   }
-  
+
   // Scan component directories for component-specific CSS
   const componentsDir = path.join(__dirname, '..', 'components');
   if (fs.existsSync(componentsDir)) {
-    fs.readdirSync(componentsDir).forEach(componentName => {
+    fs.readdirSync(componentsDir).forEach((componentName) => {
       const componentDir = path.join(componentsDir, componentName);
-      
+
       // Only process directories (skip files)
       if (fs.statSync(componentDir).isDirectory()) {
         fs.readdirSync(componentDir)
-          .filter(file => file.endsWith('.css'))
-          .forEach(file => {
-            files.push({ 
-              path: `/components/${componentName}/${file}`, 
-              file: `${componentName}/${file}` 
+          .filter((file) => file.endsWith('.css'))
+          .forEach((file) => {
+            files.push({
+              path: `/components/${componentName}/${file}`,
+              file: `${componentName}/${file}`,
             });
           });
       }
     });
   }
-  
+
   // Sort alphabetically for consistent output
   return files.sort((a, b) => a.path.localeCompare(b.path));
 }
 
 /**
  * Get all JavaScript files from core/ and components/ directories
- * 
+ *
  * Prioritizes loading order:
  * 1. utilities.js (must load first)
  * 2. component-loader.js (loads second)
  * 3. All other files (alphabetical)
- * 
+ *
  * @returns {Array<{path: string, file: string}>} Array of JS file info
  */
 function getAllJSFiles() {
   const files = [];
-  
+
   // Scan core directory for JS files
   if (fs.existsSync(JS_DIR)) {
-    const coreFiles = fs.readdirSync(JS_DIR)
-      .filter(file => file.endsWith('.js'))
-      .map(file => ({ 
-        path: `/core/${file}`, 
-        file, 
+    const coreFiles = fs
+      .readdirSync(JS_DIR)
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => ({
+        path: `/core/${file}`,
+        file,
         // Set priority for load order
-        priority: file === 'utilities.js' ? 0 : 
-                  file === 'component-loader.js' ? 1 : 
-                  2 
+        priority: file === 'utilities.js' ? 0 : file === 'component-loader.js' ? 1 : 2,
       }));
-    
+
     // Sort by priority, then alphabetically
     coreFiles.sort((a, b) => {
       if (a.priority !== b.priority) {
@@ -128,33 +127,33 @@ function getAllJSFiles() {
       }
       return a.file.localeCompare(b.file);
     });
-    
+
     // Add to files array (without priority property)
     coreFiles.forEach(({ path: filePath, file }) => {
       files.push({ path: filePath, file });
     });
   }
-  
+
   // Scan component directories for component-specific JS
   const componentsDir = path.join(__dirname, '..', 'components');
   if (fs.existsSync(componentsDir)) {
-    fs.readdirSync(componentsDir).forEach(componentName => {
+    fs.readdirSync(componentsDir).forEach((componentName) => {
       const componentDir = path.join(componentsDir, componentName);
-      
+
       // Only process directories
       if (fs.statSync(componentDir).isDirectory()) {
         fs.readdirSync(componentDir)
-          .filter(file => file.endsWith('.js'))
-          .forEach(file => {
-            files.push({ 
-              path: `/components/${componentName}/${file}`, 
-              file: `${componentName}/${file}` 
+          .filter((file) => file.endsWith('.js'))
+          .forEach((file) => {
+            files.push({
+              path: `/components/${componentName}/${file}`,
+              file: `${componentName}/${file}`,
             });
           });
       }
     });
   }
-  
+
   return files;
 }
 
@@ -164,50 +163,50 @@ function getAllJSFiles() {
 
 /**
  * Get all HTML component files from components/ directories
- * 
+ *
  * Looks for files matching pattern: *-loader.html
  * Extracts metadata from HTML comments.
- * 
+ *
  * @returns {Array<{filename: string, name: string, description: string, url: string, localPath: string}>}
  */
 function getAllHTMLComponents() {
   const components = [];
   const componentsDir = path.join(__dirname, '..', 'components');
-  
+
   if (!fs.existsSync(componentsDir)) {
     return components;
   }
-  
+
   // Scan each component directory
-  fs.readdirSync(componentsDir).forEach(componentName => {
+  fs.readdirSync(componentsDir).forEach((componentName) => {
     const componentDir = path.join(componentsDir, componentName);
-    
+
     if (!fs.statSync(componentDir).isDirectory()) {
       return; // Skip files, only process directories
     }
-    
+
     // Look for loader HTML files
     fs.readdirSync(componentDir)
-      .filter(file => file.endsWith('-loader.html') || file.endsWith('.html'))
-      .forEach(file => {
+      .filter((file) => file.endsWith('-loader.html') || file.endsWith('.html'))
+      .forEach((file) => {
         const filePath = path.join(componentDir, file);
         const content = fs.readFileSync(filePath, 'utf8');
-        
+
         // Generate component name from filename
         const baseName = file.replace('-loader.html', '').replace('.html', '');
         const name = baseName
           .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ');
-        
+
         // Extract description from HTML comments
         let description = '';
         const commentRegex = /<!--\s*([\s\S]*?)\s*-->/;
         const commentMatch = content.match(commentRegex);
-        
+
         if (commentMatch) {
           const commentText = commentMatch[1];
-          
+
           // Try to find explicit "Description:" line
           const descMatch = commentText.match(/Description:\s*(.+?)(?:\n|$)/ims);
           if (descMatch && descMatch[1]) {
@@ -216,36 +215,39 @@ function getAllHTMLComponents() {
             // Extract first meaningful line as description
             const lines = commentText
               .split('\n')
-              .map(l => l.trim())
-              .filter(l => 
-                l && 
-                !l.startsWith('Prerequisites:') && 
-                !l.startsWith('Usage:') && 
-                !l.startsWith('Note:') &&
-                !l.startsWith('Description:') &&
-                !l.match(/^\d+\./) && // Skip numbered lists
-                !l.startsWith('- Add') &&
-                !l.startsWith('- Paste') &&
-                !l.toLowerCase().includes('global-css-loader') &&
-                !l.toLowerCase().includes('global-js-loader') &&
-                !l.toLowerCase().includes('code injection') &&
-                !l.toLowerCase().includes('code block') &&
-                l.length > 10 // Skip very short lines
+              .map((l) => l.trim())
+              .filter(
+                (l) =>
+                  l &&
+                  !l.startsWith('Prerequisites:') &&
+                  !l.startsWith('Usage:') &&
+                  !l.startsWith('Note:') &&
+                  !l.startsWith('Description:') &&
+                  !l.match(/^\d+\./) && // Skip numbered lists
+                  !l.startsWith('- Add') &&
+                  !l.startsWith('- Paste') &&
+                  !l.toLowerCase().includes('global-css-loader') &&
+                  !l.toLowerCase().includes('global-js-loader') &&
+                  !l.toLowerCase().includes('code injection') &&
+                  !l.toLowerCase().includes('code block') &&
+                  l.length > 10 // Skip very short lines
               );
-            
+
             if (lines.length > 0) {
               // Find first descriptive line
-              const descLine = lines.find(l => 
-                l.length > 15 && 
-                !l.toLowerCase().includes('component html') &&
-                !l.toLowerCase().includes('prerequisites') &&
-                !l.toLowerCase().includes('usage')
-              ) || lines[0];
-              
+              const descLine =
+                lines.find(
+                  (l) =>
+                    l.length > 15 &&
+                    !l.toLowerCase().includes('component html') &&
+                    !l.toLowerCase().includes('prerequisites') &&
+                    !l.toLowerCase().includes('usage')
+                ) || lines[0];
+
               description = descLine;
             }
           }
-          
+
           // Clean up description
           if (description) {
             description = description
@@ -253,7 +255,7 @@ function getAllHTMLComponents() {
               .replace(/for Squarespace/i, '')
               .replace(/\s+/g, ' ')
               .trim();
-            
+
             // Truncate if too long
             if (description.length > 100) {
               const sentence = description.split('.')[0];
@@ -261,25 +263,25 @@ function getAllHTMLComponents() {
             }
           }
         }
-        
+
         // Default description if none found
         if (!description) {
           description = `${name} component for Squarespace`;
         }
-        
+
         const url = `${BASE_URL}/components/${componentName}/${file}`;
-        
+
         components.push({
           filename: file,
           name: name,
           description: description,
           url: url,
           localPath: `/components/${componentName}/${file}`,
-          syntax: baseName // For component loader syntax
+          syntax: baseName, // For component loader syntax
         });
       });
   });
-  
+
   // Sort alphabetically by name
   return components.sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -290,18 +292,16 @@ function getAllHTMLComponents() {
 
 /**
  * Generate CSS loader HTML file
- * 
+ *
  * Creates an HTML snippet that loads all CSS files from GitHub Pages.
  * Designed to be pasted into Squarespace Code Injection > Header.
- * 
+ *
  * @param {Array<string>} cssFiles - Array of CSS file paths
  * @returns {string} HTML content with embedded script
  */
 function generateCSSLoader(cssFiles) {
-  const filesList = cssFiles
-    .map(file => `    '${file}'`)
-    .join(',\n');
-  
+  const filesList = cssFiles.map((file) => `    '${file}'`).join(',\n');
+
   return `<!-- 
   Global CSS Loader for Squarespace
   Load all CSS files from GitHub Pages
@@ -348,24 +348,25 @@ ${filesList}
 
 /**
  * Generate JavaScript loader HTML file
- * 
+ *
  * Creates an HTML snippet that loads all JS files from GitHub Pages.
  * Loads files sequentially to respect dependencies (utilities.js first).
  * Designed to be pasted into Squarespace Code Injection > Footer.
- * 
+ *
  * @param {Array<string>} jsFiles - Array of JS file paths
  * @returns {string} HTML content with embedded script
  */
 function generateJSLoader(jsFiles) {
   const filesList = jsFiles
     .map((file, index) => {
-      const prefix = index === 0 && file.includes('utilities.js')
-        ? '    // utilities.js loads first as other scripts may depend on it\n'
-        : '';
+      const prefix =
+        index === 0 && file.includes('utilities.js')
+          ? '    // utilities.js loads first as other scripts may depend on it\n'
+          : '';
       return prefix + `    '${file}'`;
     })
     .join(',\n');
-  
+
   return `<!-- 
   Global JavaScript Loader for Squarespace
   Load all JavaScript files from GitHub Pages
@@ -435,15 +436,13 @@ ${filesList}
 
 /**
  * Generate standalone CSS loader JavaScript file
- * 
+ *
  * @param {Array<string>} cssFiles - Array of CSS file paths
  * @returns {string} JavaScript code
  */
 function generateCSSLoaderJS(cssFiles) {
-  const filesList = cssFiles
-    .map(file => `    '${file}'`)
-    .join(',\n');
-  
+  const filesList = cssFiles.map((file) => `    '${file}'`).join(',\n');
+
   return `/**
  * Global CSS Loader for Squarespace
  * Load all CSS files from GitHub Pages
@@ -483,20 +482,21 @@ ${filesList}
 
 /**
  * Generate standalone JavaScript loader file
- * 
+ *
  * @param {Array<string>} jsFiles - Array of JS file paths
  * @returns {string} JavaScript code
  */
 function generateJSLoaderJS(jsFiles) {
   const filesList = jsFiles
     .map((file, index) => {
-      const prefix = index === 0 && file.includes('utilities.js')
-        ? '    // utilities.js loads first as other scripts may depend on it\n'
-        : '';
+      const prefix =
+        index === 0 && file.includes('utilities.js')
+          ? '    // utilities.js loads first as other scripts may depend on it\n'
+          : '';
       return prefix + `    '${file}'`;
     })
     .join(',\n');
-  
+
   return `/**
  * Global JavaScript Loader for Squarespace
  * Load all JavaScript files from GitHub Pages
@@ -563,20 +563,20 @@ ${filesList}
 
 /**
  * Generate component registry JSON file
- * 
+ *
  * Creates a JSON file with all component metadata for programmatic access.
  * Deduplicates components (prefers -loader versions).
- * 
+ *
  * @param {Array} components - Array of component objects
  * @returns {string} JSON string
  */
 function generateComponentRegistry(components) {
   // Deduplicate: prefer -loader versions when both exist
   const componentMap = new Map();
-  
-  components.forEach(comp => {
+
+  components.forEach((comp) => {
     const baseName = comp.filename.replace('-loader.html', '').replace('.html', '');
-    
+
     if (!componentMap.has(baseName)) {
       componentMap.set(baseName, comp);
     } else {
@@ -586,30 +586,35 @@ function generateComponentRegistry(components) {
       }
     }
   });
-  
+
   // Convert to array and sort
-  const uniqueComponents = Array.from(componentMap.values())
-    .sort((a, b) => a.name.localeCompare(b.name));
-  
-  return JSON.stringify({
-    components: uniqueComponents,
-    generated: new Date().toISOString(),
-    total: uniqueComponents.length
-  }, null, 2);
+  const uniqueComponents = Array.from(componentMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
+  return JSON.stringify(
+    {
+      components: uniqueComponents,
+      generated: new Date().toISOString(),
+      total: uniqueComponents.length,
+    },
+    null,
+    2
+  );
 }
 
 /**
  * Generate component registry Markdown file
- * 
+ *
  * Creates a human-readable markdown file listing all components.
- * 
+ *
  * @param {Array} components - Array of component objects
  * @returns {string} Markdown content
  */
 function generateComponentRegistryMarkdown(components) {
   // Deduplicate (same logic as JSON)
   const componentMap = new Map();
-  components.forEach(comp => {
+  components.forEach((comp) => {
     const baseName = comp.filename.replace('-loader.html', '').replace('.html', '');
     if (!componentMap.has(baseName)) {
       componentMap.set(baseName, comp);
@@ -619,10 +624,11 @@ function generateComponentRegistryMarkdown(components) {
       }
     }
   });
-  
-  const uniqueComponents = Array.from(componentMap.values())
-    .sort((a, b) => a.name.localeCompare(b.name));
-  
+
+  const uniqueComponents = Array.from(componentMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
   let md = `# Components Registry
 
 Generated: ${new Date().toLocaleString()}
@@ -632,15 +638,15 @@ This registry lists all available components in the Squarespace Design Component
 ## Components
 
 `;
-  
+
   if (uniqueComponents.length === 0) {
     md += '_No components found._\n';
     return md;
   }
-  
-  uniqueComponents.forEach(comp => {
+
+  uniqueComponents.forEach((comp) => {
     const syntax = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
-    
+
     md += `### ${comp.name}\n\n`;
     md += `**Description:** ${comp.description}\n\n`;
     md += `**File:** \`${comp.filename}\`\n\n`;
@@ -649,26 +655,26 @@ This registry lists all available components in the Squarespace Design Component
     md += `**Usage:** Use the Component Loader syntax above, or copy the content from the file and paste it into a Squarespace Code Block.\n\n`;
     md += `---\n\n`;
   });
-  
+
   md += `\n## Notes\n\n`;
   md += `- All components require the global CSS and JS loaders to be set up in Squarespace Code Injection\n`;
   md += `- See \`docs/guides/squarespace-setup.md\` for setup instructions\n`;
   md += `- This registry is auto-generated. Run \`npm run generate-loaders\` to regenerate.\n`;
-  
+
   return md;
 }
 
 /**
  * Generate component syntax reference files
- * 
+ *
  * Creates quick-reference files for component syntax.
- * 
+ *
  * @param {Array} components - Array of component objects
  */
 function generateComponentSyntaxReference(components) {
   // Deduplicate components
   const componentMap = new Map();
-  components.forEach(comp => {
+  components.forEach((comp) => {
     const baseName = comp.filename.replace('-loader.html', '').replace('.html', '');
     if (!componentMap.has(baseName)) {
       componentMap.set(baseName, comp);
@@ -678,10 +684,11 @@ function generateComponentSyntaxReference(components) {
       }
     }
   });
-  
-  const uniqueComponents = Array.from(componentMap.values())
-    .sort((a, b) => a.name.localeCompare(b.name));
-  
+
+  const uniqueComponents = Array.from(componentMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
   // Generate Markdown
   let md = `# Component Syntax Reference
 
@@ -696,8 +703,9 @@ Quick reference for using components in Squarespace Code Blocks.
 `;
 
   // Add table rows
-  uniqueComponents.forEach(comp => {
-    const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
+  uniqueComponents.forEach((comp) => {
+    const componentKey =
+      comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
     md += `| ${comp.name} | \`${componentKey}\` | \`<div data-component="${componentKey}"></div>\` |\n`;
   });
 
@@ -717,77 +725,80 @@ All components use the same simple syntax with the \`data-component\` attribute:
 ## Available Components
 
 `;
-  
+
   uniqueComponents.forEach((comp, index) => {
-    const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
-    
+    const componentKey =
+      comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
+
     md += `### ${comp.name}\n\n`;
     md += `**Description:** ${comp.description}\n\n`;
     md += `**Syntax:**\n\n`;
     md += `\`\`\`html\n<div data-component="${componentKey}"></div>\n\`\`\`\n\n`;
     md += `---\n\n`;
   });
-  
+
   md += `## Quick Copy-Paste List\n\n`;
   md += `### All Components at Once:\n\n\`\`\`html\n`;
-  
-  uniqueComponents.forEach(comp => {
-    const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
+
+  uniqueComponents.forEach((comp) => {
+    const componentKey =
+      comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
     md += `<div data-component="${componentKey}"></div>\n`;
   });
-  
+
   md += `\`\`\`\n\n`;
-  
+
   md += `## Usage Notes\n\n`;
   md += `- Make sure the **Component Loader** is set up (it's included in the Global JS Loader)\n`;
   md += `- Just paste the \`<div data-component="..."></div>\` syntax in any Code Block\n`;
   md += `- Components automatically load from GitHub Pages\n`;
   md += `- Updates are automatic - change component on GitHub, Squarespace updates instantly\n\n`;
-  
+
   md += `---\n\n`;
   md += `> **Note:** This file is auto-generated. Run \`npm run generate-loaders\` to regenerate.\n`;
-  
+
   // Write Markdown file
   const mdPath = path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.md');
   fs.writeFileSync(mdPath, md, 'utf8');
-  
+
   // Generate plain text version for quick copy-paste
   let txt = `Component Syntax Reference\n`;
   txt += `Generated: ${new Date().toLocaleString()}\n\n`;
   txt += `Quick Copy-Paste List:\n\n`;
-  
-  uniqueComponents.forEach(comp => {
-    const componentKey = comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
+
+  uniqueComponents.forEach((comp) => {
+    const componentKey =
+      comp.syntax || comp.filename.replace('-loader.html', '').replace('.html', '');
     txt += `<div data-component="${componentKey}"></div>\n`;
   });
-  
+
   txt += `\n---\n`;
   txt += `\nFor full documentation, see COMPONENT-SYNTAX.md\n`;
-  
+
   const txtPath = path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.txt');
   fs.writeFileSync(txtPath, txt, 'utf8');
 }
 
 /**
  * Generate Squarespace Paths Documentation
- * 
+ *
  * Creates comprehensive documentation about file paths, URLs, and linking
  * in Squarespace. Auto-generated from current file structure.
- * 
+ *
  * @param {Array<{path: string}>} cssFiles - Array of CSS file paths
  * @param {Array<{path: string}>} jsFiles - Array of JS file paths
  * @param {Array<Object>} components - Array of component objects
  */
 function generatePathsDocumentation(cssFiles, jsFiles, components) {
-  const cssPaths = cssFiles.map(f => f.path).sort();
-  const jsPaths = jsFiles.map(f => f.path).sort();
-  
+  const cssPaths = cssFiles.map((f) => f.path).sort();
+  const jsPaths = jsFiles.map((f) => f.path).sort();
+
   // Separate core and component files
-  const coreCSS = cssPaths.filter(p => p.startsWith('/core/'));
-  const componentCSS = cssPaths.filter(p => p.startsWith('/components/'));
-  const coreJS = jsPaths.filter(p => p.startsWith('/core/'));
-  const componentJS = jsPaths.filter(p => p.startsWith('/components/'));
-  
+  const coreCSS = cssPaths.filter((p) => p.startsWith('/core/'));
+  const componentCSS = cssPaths.filter((p) => p.startsWith('/components/'));
+  const coreJS = jsPaths.filter((p) => p.startsWith('/core/'));
+  const componentJS = jsPaths.filter((p) => p.startsWith('/components/'));
+
   let doc = `# Squarespace File Paths & Linking Guide
 
 **Auto-generated:** ${new Date().toLocaleString()}
@@ -828,16 +839,16 @@ ${coreJS.join('\n')}
 **Current Components (${components.length}):**
 \`\`\`
 `;
-  
+
   // Add component examples
-  components.forEach(comp => {
+  components.forEach((comp) => {
     const baseName = comp.filename.replace('-loader.html', '').replace('.html', '');
     const componentDir = baseName.includes('/') ? baseName.split('/')[0] : baseName;
     doc += `/${componentDir}/${componentDir}.css\n`;
     doc += `/${componentDir}/${comp.filename.replace(/-loader\.html$/, '.js')}\n`;
     doc += `/${componentDir}/${comp.filename}\n\n`;
   });
-  
+
   doc += `\`\`\`
 
 **Complete File List:**
@@ -882,21 +893,21 @@ If you need to link files individually:
 **CSS Files:**
 \`\`\`html
 `;
-  
-  cssPaths.slice(0, 3).forEach(p => {
+
+  cssPaths.slice(0, 3).forEach((p) => {
     doc += `<link rel="stylesheet" href="${BASE_URL}${p}">\n`;
   });
-  
+
   doc += `\`\`\`
 
 **JavaScript Files:**
 \`\`\`html
 `;
-  
-  jsPaths.slice(0, 3).forEach(p => {
+
+  jsPaths.slice(0, 3).forEach((p) => {
     doc += `<script src="${BASE_URL}${p}"></script>\n`;
   });
-  
+
   doc += `\`\`\`
 
 ## Path Construction Logic
@@ -1094,42 +1105,39 @@ To verify a file is accessible:
 
 /**
  * Update test HTML files with current file lists
- * 
+ *
  * Automatically updates the CSS and JS file lists in test/index.html
  * and test/index-auto.html to reflect current component files.
- * 
+ *
  * @param {Array<string>} cssFiles - Array of CSS file paths
  * @param {Array<string>} jsFiles - Array of JS file paths
  */
 function updateTestFiles(cssFiles, jsFiles) {
   // Read test files
-  const testFiles = [
-    path.join(TEST_DIR, 'index.html'),
-    path.join(TEST_DIR, 'index-auto.html')
-  ];
-  
-  testFiles.forEach(testFile => {
+  const testFiles = [path.join(TEST_DIR, 'index.html'), path.join(TEST_DIR, 'index-auto.html')];
+
+  testFiles.forEach((testFile) => {
     if (!fs.existsSync(testFile)) {
       console.warn(`⚠️  Test file not found: ${testFile}`);
       return;
     }
-    
+
     let content = fs.readFileSync(testFile, 'utf8');
-    
+
     // Update CSS files list
-    const cssList = cssFiles.map(f => `    '${f}'`).join(',\n');
+    const cssList = cssFiles.map((f) => `    '${f}'`).join(',\n');
     const cssRegex = /(const CSS_FILES = \[)([\s\S]*?)(\];)/;
     if (cssRegex.test(content)) {
       content = content.replace(cssRegex, `$1\n${cssList}\n$3`);
     }
-    
+
     // Update JS files list
-    const jsList = jsFiles.map(f => `    '${f}'`).join(',\n');
+    const jsList = jsFiles.map((f) => `    '${f}'`).join(',\n');
     const jsRegex = /(const JS_FILES = \[)([\s\S]*?)(\];)/;
     if (jsRegex.test(content)) {
       content = content.replace(jsRegex, `$1\n${jsList}\n$3`);
     }
-    
+
     // Write updated content
     fs.writeFileSync(testFile, content, 'utf8');
   });
@@ -1144,83 +1152,88 @@ function updateTestFiles(cssFiles, jsFiles) {
  */
 function main() {
   console.log('🔍 Scanning directories...\n');
-  
+
   // Ensure loaders directory exists
   if (!fs.existsSync(LOADERS_DIR)) {
     fs.mkdirSync(LOADERS_DIR, { recursive: true });
   }
-  
+
   // Discover all files
   const cssFiles = getAllCSSFiles();
   const jsFiles = getAllJSFiles();
   const htmlComponents = getAllHTMLComponents();
-  
+
   // Log discovery results
   console.log(`📦 Found ${cssFiles.length} CSS files:`);
-  cssFiles.forEach(f => console.log(`   ${f.path}`));
-  
+  cssFiles.forEach((f) => console.log(`   ${f.path}`));
+
   console.log(`\n📦 Found ${jsFiles.length} JavaScript files:`);
-  jsFiles.forEach(f => console.log(`   ${f.path}`));
-  
+  jsFiles.forEach((f) => console.log(`   ${f.path}`));
+
   console.log(`\n📦 Found ${htmlComponents.length} HTML components:`);
-  htmlComponents.forEach(c => console.log(`   ${c.name} (${c.filename})`));
-  
+  htmlComponents.forEach((c) => console.log(`   ${c.name} (${c.filename})`));
+
   console.log('\n📝 Generating loader files...\n');
-  
+
   // Generate CSS loader
-  const cssLoaderHtml = generateCSSLoader(cssFiles.map(f => f.path));
+  const cssLoaderHtml = generateCSSLoader(cssFiles.map((f) => f.path));
   const cssLoaderPath = path.join(LOADERS_DIR, 'global-css-loader.html');
   fs.writeFileSync(cssLoaderPath, cssLoaderHtml, 'utf8');
   console.log(`✅ Generated: ${cssLoaderPath}`);
-  
+
   // Generate JS loader
-  const jsLoaderHtml = generateJSLoader(jsFiles.map(f => f.path));
+  const jsLoaderHtml = generateJSLoader(jsFiles.map((f) => f.path));
   const jsLoaderPath = path.join(LOADERS_DIR, 'global-js-loader.html');
   fs.writeFileSync(jsLoaderPath, jsLoaderHtml, 'utf8');
   console.log(`✅ Generated: ${jsLoaderPath}`);
-  
+
   console.log('\n📦 Generating standalone loader files...\n');
-  
+
   // Generate standalone JS files
-  const cssLoaderJS = generateCSSLoaderJS(cssFiles.map(f => f.path));
+  const cssLoaderJS = generateCSSLoaderJS(cssFiles.map((f) => f.path));
   const cssLoaderJSPath = path.join(LOADERS_DIR, 'global-css-loader.js');
   fs.writeFileSync(cssLoaderJSPath, cssLoaderJS, 'utf8');
   console.log(`✅ Generated: ${cssLoaderJSPath}`);
-  
-  const jsLoaderJS = generateJSLoaderJS(jsFiles.map(f => f.path));
+
+  const jsLoaderJS = generateJSLoaderJS(jsFiles.map((f) => f.path));
   const jsLoaderJSPath = path.join(LOADERS_DIR, 'global-js-loader.js');
   fs.writeFileSync(jsLoaderJSPath, jsLoaderJS, 'utf8');
   console.log(`✅ Generated: ${jsLoaderJSPath}`);
-  
+
   console.log('\n📋 Generating component registry...\n');
-  
+
   // Generate component registry
   const registryJson = generateComponentRegistry(htmlComponents);
   const registryJsonPath = path.join(LOADERS_DIR, 'components-registry.json');
   fs.writeFileSync(registryJsonPath, registryJson, 'utf8');
   console.log(`✅ Generated: ${registryJsonPath}`);
-  
+
   const registryMd = generateComponentRegistryMarkdown(htmlComponents);
   const registryMdPath = path.join(LOADERS_DIR, 'components-registry.md');
   fs.writeFileSync(registryMdPath, registryMd, 'utf8');
   console.log(`✅ Generated: ${registryMdPath}`);
-  
+
   console.log('\n🧪 Updating test files...\n');
-  updateTestFiles(cssFiles.map(f => f.path), jsFiles.map(f => f.path));
+  updateTestFiles(
+    cssFiles.map((f) => f.path),
+    jsFiles.map((f) => f.path)
+  );
   console.log(`✅ Updated: ${path.join(TEST_DIR, 'index-auto.html')}`);
   console.log(`✅ Updated: ${path.join(TEST_DIR, 'index.html')}`);
-  
+
   console.log('\n📚 Generating component syntax reference...\n');
   generateComponentSyntaxReference(htmlComponents);
   console.log(`✅ Generated: ${path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.md')}`);
   console.log(`✅ Generated: ${path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.txt')}`);
-  
+
   console.log('\n📖 Generating paths documentation...\n');
   generatePathsDocumentation(cssFiles, jsFiles, htmlComponents);
   console.log(`✅ Generated: ${path.join(__dirname, '..', 'SQUARESPACE-PATHS.md')}`);
-  
+
   console.log('\n✨ Done! All files have been updated.');
-  console.log('💡 Remember to copy the new loader content to Squarespace Code Injection if needed.\n');
+  console.log(
+    '💡 Remember to copy the new loader content to Squarespace Code Injection if needed.\n'
+  );
 }
 
 // Run main function

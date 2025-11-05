@@ -65,7 +65,9 @@
   border-radius: 20px;
   text-decoration: none;
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.25, 0.85, 0.25, 1), box-shadow 0.3s ease;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 0.85, 0.25, 1),
+    box-shadow 0.3s ease;
   z-index: 1;
 }
 
@@ -87,7 +89,7 @@
  * Reveals on hover with parallax offset
  */
 .project-card::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background-size: cover;
@@ -95,7 +97,9 @@
   opacity: 0;
   /* Initial transform with parallax offset */
   transform: scale(1.05) translateY(6px) translate(var(--bg-x), var(--bg-y));
-  transition: opacity 0.4s ease, transform 0.5s ease;
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s ease;
   z-index: 0; /* Behind content */
 }
 
@@ -117,7 +121,7 @@
  * Ensures text remains readable over background image
  */
 .project-card::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.25); /* Semi-transparent dark overlay */
@@ -202,7 +206,7 @@
  * Set background image for this category
  */
 .project-card.graphic-design::before {
-  background-image: url("https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f54ad89c38816b4062098a/1760905944300/Graphic.png");
+  background-image: url('https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f54ad89c38816b4062098a/1760905944300/Graphic.png');
 }
 
 /**
@@ -210,7 +214,7 @@
  * Set background image for this category
  */
 .project-card.ui-ux::before {
-  background-image: url("https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f54ad86aae337867bf55e5/1760905944294/uiux.png");
+  background-image: url('https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f54ad86aae337867bf55e5/1760905944294/uiux.png');
 }
 
 /* ============================================================================

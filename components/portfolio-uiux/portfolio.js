@@ -1,784 +1,268 @@
-/**
- * Portfolio/Projects Page Component
- * 
- * Complete portfolio showcase system with dynamic project rendering,
- * category filtering, lazy-loaded Figma embeds, and fullscreen modal views.
- * 
- * Features:
- * - Dynamic project card rendering from HTML data
- * - Category-based filtering system
- * - Lazy loading for Figma iframe embeds
- * - Scroll reveal animations
- * - Fullscreen modal for prototypes
- * - Keyboard accessibility (focus trap, Escape to close)
- * - Live project count updates
- * - AJAX navigation support (waits for section to load)
- * 
- * HTML Structure Required:
- * <section id="portfolio-uiux">
- *   <div id="projects-list" data-mount></div>
- *   <template id="project-card-template">...</template>
- *   <ul id="projects-data" hidden>
- *     <li data-id="..." data-title="..." ...></li>
- *   </ul>
- * </section>
- * 
- * Data Format:
- * Projects defined in <ul id="projects-data"> with data attributes:
- * - data-id: Unique identifier
- * - data-title: Project title
- * - data-description: Project description
- * - data-figma: Figma prototype URL
- * - data-case: Case study link
- * - data-badges: Pipe-separated badges
- * - data-categories: Pipe-separated categories (for filtering)
- * - data-year: Year
- * - data-accent: Custom accent color
- * 
- * @module portfolio
- */
-
 (function () {
   'use strict';
-
-  // ============================================================================
-  // Configuration
-  // ============================================================================
-
-  /** ID of the portfolio section container */
-  const SECTION_ID = 'portfolio-uiux';
-
-  /** Timeout for waiting for section to appear (ms) */
-  const SECTION_TIMEOUT = 8000;
-
-  /** Selector for focusable elements in modal */
-  const FOCUSABLE_SELECTOR = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-
-  // ============================================================================
-  // Utility Functions
-  // ============================================================================
-
-  /**
-   * Wait until element is available in DOM
-   * 
-   * Handles Squarespace AJAX navigation where sections load dynamically.
-   * Polls for element existence using requestAnimationFrame.
-   * 
-   * @param {string} selector - CSS selector
-   * @param {number} timeoutMs - Maximum wait time (default: 8000ms)
-   * @returns {Promise<Element>} Promise resolving to found element
-   * @throws {Error} If timeout exceeded
-   */
-  function whenAvailable(selector, timeoutMs = SECTION_TIMEOUT) {
-    return new Promise((resolve, reject) => {
-      const start = performance.now();
-      
-      (function check() {
-        const el = document.querySelector(selector);
-        if (el) {
-          return resolve(el);
-        }
-        
-        // Check timeout
-        if (performance.now() - start > timeoutMs) {
-          return reject(new Error('Timeout waiting for: ' + selector));
-        }
-        
-        // Check again on next frame
-        requestAnimationFrame(check);
+  var k = document.createElement('style');
+  ((k.textContent = `#portfolio-uiux{--white: #ffffff;--linen: #efe1d4;--clay: #d29a84;--cacao: #58433b;--black: #000000;--bg: var(--linen);--surface: #fff;--ink: var(--cacao);--ink-strong: var(--black);--muted: color-mix(in oklab, var(--ink) 70%, var(--linen));--cap: color-mix(in oklab, var(--ink) 55%, var(--linen));--border: color-mix(in oklab, var(--ink) 18%, #fff);--border-strong: color-mix(in oklab, var(--ink) 28%, #fff);--radius-xl: 24px;--radius-md: 12px;--shadow: 0 12px 30px rgba(0, 0, 0, .08);--shadow-hover: 0 18px 46px rgba(0, 0, 0, .12);--focus: var(--clay);--padX: 24px;--sectionY: 110px;--step--1: clamp(.88rem, .36vw + .8rem, .98rem);--step-0: clamp(1rem, .45vw + .9rem, 1.06rem);--step-1: clamp(1.1rem, .65vw + .95rem, 1.2rem);--step-2: clamp(1.25rem, 1vw + 1rem, 1.45rem);--step-3: clamp(1.45rem, 1.4vw + 1.05rem, 1.75rem);--max-ch: 68ch;--badge-size: 30px;--badge-top-offset: -12px;--accent-gap: 26px}#portfolio-uiux.portfolio{color:var(--ink);padding:var(--sectionY) var(--padX);background:radial-gradient(1200px 600px at 20% -10%,#ffffff80,transparent 60%),linear-gradient(180deg,color-mix(in oklab,var(--linen) 96%,#fff),var(--linen))}#portfolio-uiux .portfolio__skip{position:absolute;left:-9999px;top:8px;z-index:10000;background:#fff;color:var(--ink-strong);border:1px solid var(--border);border-radius:999px;padding:8px 12px}#portfolio-uiux .portfolio__skip:focus{left:16px;box-shadow:0 6px 16px #0000001f}#portfolio-uiux .portfolio__header{position:sticky;top:0;z-index:3;-webkit-backdrop-filter:saturate(125%) blur(6px);backdrop-filter:saturate(125%) blur(6px);background:color-mix(in oklab,var(--linen) 82%,#fff);border-bottom:1px solid var(--border);margin:-24px calc(var(--padX) * -1) 18px;padding:14px var(--padX);padding-top:calc(14px + env(safe-area-inset-top,0px))}#portfolio-uiux .portfolio__header-inner{display:flex;align-items:baseline;justify-content:space-between;gap:16px;width:min(1200px,92vw);margin:0 auto}#portfolio-uiux .portfolio__title{margin:0;font-weight:750;letter-spacing:.005em;color:var(--ink-strong);font-size:clamp(1.25rem,1.3vw + 1rem,1.7rem)}#portfolio-uiux .portfolio__count{font-size:.9rem;color:var(--muted);padding:4px 10px;border:1px solid var(--border);border-radius:999px;background:#fff}#portfolio-uiux .intro-card{width:min(1200px,92vw);margin:6px auto 12px;--accent: var(--clay)}#portfolio-uiux .intro-card__inner{position:relative;border-radius:var(--radius-xl);padding:clamp(22px,2.4vw,34px);background:radial-gradient(110% 140% at 80% -20%,rgba(255,255,255,.9),transparent 60%),linear-gradient(180deg,#fff,color-mix(in oklab,#fff 80%,var(--linen)));border:1px solid transparent;background-image:linear-gradient(var(--surface),var(--surface)),linear-gradient(180deg,color-mix(in oklab,var(--border) 90%,#fff),color-mix(in oklab,var(--border-strong) 70%,#fff));background-origin:padding-box,border-box;background-clip:padding-box,border-box;box-shadow:var(--shadow)}#portfolio-uiux .intro-card__meta{display:flex;align-items:center;gap:12px;margin-bottom:8px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.75rem}#portfolio-uiux .intro-card__dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px #fff,0 0 0 1px var(--border-strong)}#portfolio-uiux .intro-card__title{margin:0 0 10px;color:var(--ink-strong);font-weight:760;letter-spacing:.004em;font-feature-settings:"liga" on,"ss01" on,"cv01" on;font-size:clamp(1.5rem,1.8vw + .9rem,2.2rem)}#portfolio-uiux .intro-card__sub{margin:0 0 14px;color:var(--muted);line-height:1.68;max-width:var(--max-ch)}#portfolio-uiux .intro-card__highlights{display:grid;gap:10px;margin:0 0 18px;padding:0;list-style:none}#portfolio-uiux .intro-card__highlights li{position:relative;padding-left:22px;color:var(--ink)}#portfolio-uiux .intro-card__highlights li:before{content:"";position:absolute;left:0;top:.6em;width:8px;height:8px;border-radius:50%;background:color-mix(in oklab,var(--accent) 85%,#fff);box-shadow:0 0 0 4px #fff,0 0 0 1px var(--border)}#portfolio-uiux .intro-card__actions{display:flex;gap:12px;flex-wrap:wrap}#portfolio-uiux .intro-card__actions .btn--primary{background:var(--ink-strong);border-color:color-mix(in oklab,var(--ink-strong) 85%,#fff)}#portfolio-uiux .intro-card__actions .btn--primary:hover{background:var(--clay);border-color:var(--clay)}#portfolio-uiux .intro-card__actions .btn--ghost{background:#fff;color:var(--ink-strong);border:1px solid var(--border)}#portfolio-uiux .intro-card__actions .btn--ghost:hover{background:color-mix(in oklab,#fff 72%,var(--linen))}#portfolio-uiux .intro-card__ornament{position:relative;width:min(1100px,90vw);height:18px;margin:18px auto}#portfolio-uiux .intro-card__ornament:after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;transform:translateY(-50%);background:linear-gradient(90deg,transparent,var(--border-strong),transparent)}#portfolio-uiux .intro-card__ornament:before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--clay);box-shadow:0 0 0 6px #fff,0 0 0 1px var(--border-strong),0 6px 18px #00000014}#portfolio-uiux .portfolio__filters{width:min(1200px,92vw);margin:0 auto 20px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-inline:var(--padX);margin-inline:calc(var(--padX) * -1);padding-block:8px;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%)}@media (min-width: 901px){#portfolio-uiux .portfolio__filters{mask-image:none;-webkit-mask-image:none}}#portfolio-uiux .pill{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:1px solid var(--border);background:#fff;color:var(--ink-strong);padding:12px;border-radius:999px;cursor:pointer;font-weight:600;line-height:1;transition:transform .18s,background .18s,border-color .18s,color .18s;scroll-snap-align:start;white-space:nowrap;flex:0 0 auto;min-height:44px}#portfolio-uiux .pill:hover{transform:translateY(-1px)}#portfolio-uiux .pill.is-active{background:var(--ink-strong);color:#fff;border-color:var(--ink-strong);box-shadow:0 2px 10px #00000014}#portfolio-uiux .portfolio__wrap{display:grid;gap:64px;width:min(1200px,92vw);margin:0 auto}#portfolio-uiux .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:var(--radius-md);font-weight:650;font-size:.95rem;border:1px solid transparent;text-decoration:none;cursor:pointer;transition:transform .2s,background .2s,color .2s,border-color .2s;min-height:44px}#portfolio-uiux .btn:focus-visible{outline:2px solid color-mix(in oklab,var(--clay) 85%,#fff);outline-offset:3px;transform:translateY(-2px)}#portfolio-uiux .btn--primary{background:var(--ink-strong);color:#fff;border-color:color-mix(in oklab,var(--ink-strong) 85%,#fff);letter-spacing:.01em}#portfolio-uiux .btn--primary:after{content:"↗";font-size:1rem;transform:translateY(-1px)}#portfolio-uiux .btn--primary:hover{background:var(--clay);border-color:var(--clay)}#portfolio-uiux .btn--ghost{background:#fff;color:var(--ink-strong);border:1px solid var(--border)}#portfolio-uiux .btn--ghost:hover{background:color-mix(in oklab,#fff 72%,var(--linen))}#portfolio-uiux .project{--accent: var(--clay)}#portfolio-uiux .project__accent{height:3px;border-radius:999px;margin-bottom:var(--accent-gap);background:linear-gradient(90deg,color-mix(in oklab,var(--accent) 92%,#fff),color-mix(in oklab,var(--accent) 60%,#fff));position:relative;z-index:0}#portfolio-uiux .project__card{position:relative;z-index:1;border-radius:var(--radius-xl);background:var(--surface);border:1px solid transparent;background-image:linear-gradient(var(--surface),var(--surface)),linear-gradient(180deg,color-mix(in oklab,var(--border) 90%,#fff),color-mix(in oklab,var(--border-strong) 70%,#fff));background-origin:border-box;background-clip:padding-box,border-box;box-shadow:var(--shadow);padding:clamp(18px,2.1vw,28px);transition:box-shadow .28s,transform .28s}@media (hover: hover){#portfolio-uiux .project__card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}}#portfolio-uiux .portfolio__wrap{counter-reset:proj}#portfolio-uiux .project{counter-increment:proj}#portfolio-uiux .project__card:after{content:counter(proj,decimal-leading-zero);position:absolute;top:var(--badge-top-offset);left:16px;display:grid;place-items:center;width:var(--badge-size);height:var(--badge-size);font-size:.8rem;font-weight:700;letter-spacing:.04em;color:var(--ink-strong);background:#fff;border:1px solid var(--border);border-radius:999px;box-shadow:0 0 0 4px #fff,0 10px 20px #0000001a;z-index:2}#portfolio-uiux .project__grid{display:grid;grid-template-columns:1fr 1.12fr;gap:36px;align-items:start}#portfolio-uiux .project__text{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;max-width:65ch}#portfolio-uiux .project__title{margin:0 0 10px;font-weight:750;color:var(--ink-strong);letter-spacing:.01em;font-feature-settings:"liga" on,"ss01" on,"cv01" on;font-size:clamp(1.35rem,1.6vw + .8rem,2.05rem)}#portfolio-uiux .project__sub{color:var(--muted);line-height:1.65;margin:0 0 16px;max-width:560px}#portfolio-uiux .project__meta{margin-bottom:14px}#portfolio-uiux .badge{display:inline-flex;align-items:center;gap:8px;font-size:.9rem;color:var(--ink-strong);background:#fff;border:1px solid var(--border);border-radius:999px;padding:7px 12px;box-shadow:0 1px #0000000a}#portfolio-uiux .badge:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}#portfolio-uiux .project__frame{position:relative;width:100%;padding-bottom:71.1%;border-radius:22px;overflow:hidden;background:#f7f7f7;border:1px solid #eaeaea;box-shadow:0 20px 60px #00000014;opacity:0;transform:translateY(16px);transition:opacity .8s ease .1s,transform .8s ease .1s,box-shadow .4s ease;align-self:start;justify-self:stretch;min-width:0;margin:0;box-sizing:border-box}#portfolio-uiux .project__frame:before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:22px;box-shadow:inset 0 0 0 10px #0000000a;pointer-events:none}#portfolio-uiux .proto-chip{position:absolute;inset:auto 12px 12px auto;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;font-size:.88rem;line-height:1;color:#fff;background:#00000073;border:1px solid rgba(255,255,255,.25);border-radius:999px;-webkit-backdrop-filter:saturate(130%) blur(2px);backdrop-filter:saturate(130%) blur(2px);box-shadow:0 6px 16px #00000026;cursor:pointer;transition:opacity .22s,transform .22s,background .22s,border-color .22s}#portfolio-uiux .proto-chip:hover{background:#0009}#portfolio-uiux .proto-chip:focus-visible{outline:2px solid color-mix(in oklab,var(--clay) 85%,#fff);outline-offset:2px}#portfolio-uiux .proto-chip__icon{display:inline-block;transform:translateY(1px)}@media (hover: hover){#portfolio-uiux .project__frame:hover .proto-chip{opacity:0;transform:translateY(6px)}}#portfolio-uiux .project__frame:focus-within .proto-chip{opacity:0;transform:translateY(6px)}#portfolio-uiux .project__iframe{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;border:0;display:block;transition:transform .4s ease;will-change:transform;backface-visibility:hidden;transform:scale(1.003)}@media (hover: hover){#portfolio-uiux .project__frame:hover .project__iframe{transform:scale(1.01)}}#portfolio-uiux .project.is-inview .project__text,#portfolio-uiux .project.is-inview .project__frame{opacity:1;transform:none}#portfolio-uiux .project__cap{text-align:center;color:var(--cap);font-size:.92rem;margin:12px auto 0;max-width:80ch}#portfolio-uiux .project__divider{position:relative;width:min(1100px,90vw);height:18px;margin:34px auto 0;border:0;background:none}#portfolio-uiux .project__divider:after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;transform:translateY(-50%);background:linear-gradient(90deg,transparent,var(--border-strong),transparent)}#portfolio-uiux .project__divider:before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--clay);box-shadow:0 0 0 6px #fff,0 0 0 1px var(--border-strong),0 6px 18px #00000014}#portfolio-uiux .cta-card{width:min(1100px,90vw);margin:12px auto 0}#portfolio-uiux .cta-card__inner{position:relative;border-radius:var(--radius-xl);padding:clamp(22px,2.4vw,34px);color:#fff;background:radial-gradient(120% 160% at 10% -20%,rgba(255,255,255,.08),transparent 60%),linear-gradient(180deg,color-mix(in oklab,var(--cacao) 88%,#000),var(--cacao));border:1px solid color-mix(in oklab,#fff 10%,var(--cacao));box-shadow:0 20px 60px #00000040;text-align:center}#portfolio-uiux .cta-card__meta{display:inline-flex;align-items:center;gap:10px;margin-bottom:8px;color:color-mix(in oklab,#fff 80%,var(--linen));font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.75rem}#portfolio-uiux .cta-card__dot{width:10px;height:10px;border-radius:50%;background:var(--clay);box-shadow:0 0 0 6px #ffffff14,0 0 0 1px #ffffff40}#portfolio-uiux .cta-card__title{margin:0 0 8px;color:#fff;font-weight:760;letter-spacing:.004em;font-size:clamp(1.4rem,1.7vw + .9rem,2.1rem)}#portfolio-uiux .cta-card__sub{margin:0 auto 16px;color:color-mix(in oklab,#fff 85%,var(--linen));line-height:1.7;max-width:var(--max-ch)}#portfolio-uiux .cta-card__actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}#portfolio-uiux .btn--invert{background:#fff;color:var(--cacao);border:1px solid rgba(255,255,255,.4)}#portfolio-uiux .btn--invert:hover{background:var(--clay);color:#fff;border-color:var(--clay)}#portfolio-uiux .btn--invert-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)}#portfolio-uiux .btn--invert-ghost:hover{background:#ffffff14}#portfolio-uiux .cta-card__ornament{position:relative;width:min(1100px,90vw);height:18px;margin:18px auto 0}#portfolio-uiux .cta-card__ornament:after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;transform:translateY(-50%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent)}#portfolio-uiux .cta-card__ornament:before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px #ffffff1f,0 0 0 1px #ffffff73}#portfolio-uiux .portfolio-modal[hidden]{display:none}#portfolio-uiux .portfolio-modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;display:grid;place-items:center}#portfolio-uiux .portfolio-modal__backdrop{position:absolute;top:0;right:0;bottom:0;left:0;background:#00000059;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);cursor:pointer}#portfolio-uiux .portfolio-modal__dialog{position:relative;width:min(1100px,92vw);max-height:min(88dvh,820px);background:#fff;color:var(--ink-strong);border-radius:18px;border:1px solid var(--border);box-shadow:0 26px 80px #0003;overflow:hidden;display:flex;flex-direction:column}#portfolio-uiux .portfolio-modal__header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px 12px 16px;border-bottom:1px solid var(--border)}#portfolio-uiux .portfolio-modal__title{font-size:1.05rem;margin:0}#portfolio-uiux .portfolio-modal__actions{display:flex;align-items:center;gap:12px}#portfolio-uiux .portfolio-modal__open{font-size:.95rem;text-decoration:underline;color:var(--ink-strong)}#portfolio-uiux .portfolio-modal__close{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:1px solid var(--border);background:#fff;color:var(--ink-strong);border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:650;min-height:44px}#portfolio-uiux .portfolio-modal__frame{position:relative;width:100%;padding-bottom:71.1%;background:color-mix(in oklab,#fff 70%,var(--linen));overflow:hidden}#portfolio-uiux .portfolio-modal__iframe{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;border:0;display:block}#portfolio-uiux .portfolio-modal__frame:before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(90deg,#0000000d,#00000014 35%,#0000000d 65%,#00000008);background-size:200% 100%;animation:ux-shimmer 1.4s linear infinite;opacity:0;pointer-events:none}#portfolio-uiux .portfolio-modal.is-loading .portfolio-modal__frame:before{opacity:1}@keyframes ux-shimmer{0%{background-position:200% 0}to{background-position:-200% 0}}#portfolio-uiux .portfolio-modal__spinner{position:absolute;top:0;right:0;bottom:0;left:0;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .25s ease}#portfolio-uiux .portfolio-modal.is-loading .portfolio-modal__spinner{opacity:1}#portfolio-uiux .portfolio-modal__spinner:after{content:"";width:28px;height:28px;border-radius:50%;border:3px solid rgba(0,0,0,.15);border-top-color:var(--clay);animation:ux-spin .9s linear infinite}@keyframes ux-spin{to{transform:rotate(360deg)}}#portfolio-uiux .portfolio-modal__fallback{padding:12px 16px;color:var(--muted)}#portfolio-uiux.no-scroll,html.no-scroll{overflow:hidden}@media (min-width: 901px){#portfolio-uiux .project__frame{position:sticky;top:80px}}@media (max-width: 900px){#portfolio-uiux .project__grid{grid-template-columns:1fr;gap:20px}#portfolio-uiux .project__text{text-align:left}#portfolio-uiux .project__actions{gap:10px}#portfolio-uiux .portfolio__wrap{gap:48px}#portfolio-uiux .project__card,#portfolio-uiux .intro-card__inner,#portfolio-uiux .cta-card__inner{border-radius:20px}#portfolio-uiux .btn{width:100%;justify-content:center}}@media (max-width: 600px){#portfolio-uiux{--badge-size: 26px;--badge-top-offset: -10px;--accent-gap: 24px}#portfolio-uiux .intro-card__ornament,#portfolio-uiux .cta-card__ornament,#portfolio-uiux .project__divider{margin-top:18px;height:14px}#portfolio-uiux .project__card:after{box-shadow:0 0 0 3px #fff,0 8px 16px #0000001a}}@media (max-width: 420px){#portfolio-uiux .project__card,#portfolio-uiux .intro-card__inner,#portfolio-uiux .cta-card__inner{border-radius:16px}#portfolio-uiux .portfolio__title,#portfolio-uiux .project__title{font-size:var(--step-3)}#portfolio-uiux .proto-chip{inset:auto 10px 10px auto;font-size:.82rem;padding:7px 10px}}@media (prefers-contrast: more){#portfolio-uiux .portfolio__header{-webkit-backdrop-filter:none;backdrop-filter:none}#portfolio-uiux .intro-card__inner,#portfolio-uiux .project__card,#portfolio-uiux .cta-card__inner{box-shadow:none;border-color:var(--border-strong)}}@media (prefers-reduced-motion: reduce){#portfolio-uiux .project__text,#portfolio-uiux .project__frame,#portfolio-uiux .btn,#portfolio-uiux .project__card,#portfolio-uiux .cta-card__inner,#portfolio-uiux .intro-card__inner{transition:none!important;transform:none!important;opacity:1!important}}@media (pointer: coarse){#portfolio-uiux .btn:active,#portfolio-uiux .pill:active{transform:scale(.98)}#portfolio-uiux .project__card:hover,#portfolio-uiux .project__frame:hover,#portfolio-uiux .btn:hover{transform:none}#portfolio-uiux .project__frame:hover .proto-chip{opacity:1;transform:none}}#projects-list{scroll-margin-top:84px}#portfolio-uiux .project__title,#portfolio-uiux .intro-card__title,#portfolio-uiux .cta-card__title{overflow-wrap:anywhere}#portfolio-uiux .btn,#portfolio-uiux .badge{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+/*$vite$:1*/`),
+    document.head.appendChild(k));
+  const Y = 8e3;
+  function I(r, n = Y) {
+    return new Promise((f, s) => {
+      const p = performance.now();
+      (function e() {
+        const l = document.querySelector(r);
+        if (l) return f(l);
+        if (performance.now() - p > n) return s(new Error('Timeout waiting for: ' + r));
+        requestAnimationFrame(e);
       })();
     });
   }
-
-  /**
-   * Query selector shorthand
-   * 
-   * @param {string} sel - CSS selector
-   * @param {Element} el - Context element (default: document)
-   * @returns {Element|null} Found element or null
-   */
-  const qs = (sel, el = document) => el.querySelector(sel);
-
-  /**
-   * Query selector all (returns array)
-   * 
-   * @param {string} sel - CSS selector
-   * @param {Element} el - Context element (default: document)
-   * @returns {Array<Element>} Array of found elements
-   */
-  const qsa = (sel, el = document) => [...el.querySelectorAll(sel)];
-
-  /**
-   * Convert string to URL-friendly slug
-   * 
-   * Converts: "Design System" → "design-system"
-   * 
-   * @param {string} s - String to slugify
-   * @returns {string} Slugified string
-   */
-  const slug = (s = '') =>
-    String(s)
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-
-  /**
-   * Convert Figma URL to embed URL
-   * 
-   * @param {string} url - Figma prototype URL
-   * @returns {string} Figma embed URL or empty string
-   */
-  const figmaToEmbed = (url) =>
-    url
-      ? `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(url)}`
-      : '';
-
-  /**
-   * Split list string into array
-   * 
-   * Handles pipe (|) or comma (,) separated values.
-   * Example: "prototype|cern" → ["prototype", "cern"]
-   * 
-   * @param {string|Array} v - List string or array
-   * @returns {Array<string>} Array of trimmed, non-empty values
-   */
-  const splitList = (v) =>
-    (Array.isArray(v) ? v : String(v || ''))
-      .split(/[,|]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-  // ============================================================================
-  // Initialization
-  // ============================================================================
-
-  /**
-   * Initialize portfolio component on multiple events
-   * 
-   * Squarespace fires different events depending on page load type.
-   * We listen to all possible events to ensure initialization works
-   * in all scenarios (initial load, AJAX navigation, etc.).
-   */
-  ['mercury:load', 'sqs:pageLoaded', 'DOMContentLoaded'].forEach((evt) =>
-    document.addEventListener(evt, initOnce)
-  );
-  window.addEventListener('load', initOnce);
-
-  /**
-   * Main initialization function
-   * 
-   * Sets up all portfolio functionality:
-   * - Waits for section to be available
-   * - Reads project data
-   * - Renders project cards
-   * - Sets up filtering
-   * - Initializes modal
-   * - Sets up observers for lazy loading
-   * 
-   * @async
-   * @function initOnce
-   * @returns {Promise<void>}
-   */
-  async function initOnce() {
-    // Wait for portfolio section to be available (handles AJAX loads)
-    const root = await whenAvailable('#' + SECTION_ID).catch(() => null);
-    
-    // Exit if section not found or already initialized
-    if (!root || root.dataset.initialized === 'true') {
-      return;
-    }
-    
-    // Mark as initialized to prevent double-initialization
-    root.dataset.initialized = 'true';
-
-    // ========================================================================
-    // DOM Element References
-    // ========================================================================
-    
-    // Get required DOM elements (all may not exist - we guard everything)
-    const list = root.querySelector('#projects-list');        // Projects container
-    const tpl = root.querySelector('#project-card-template'); // Card template
-    const countEl = root.querySelector('[data-count]');       // Live count display
-    const pills = root.querySelector('.portfolio__filters');  // Filter buttons
-
-    // ========================================================================
-    // Modal Setup
-    // ========================================================================
-    
-    /**
-     * Create modal if it doesn't exist in HTML
-     * 
-     * The modal can be defined in HTML or created dynamically here.
-     * This ensures the modal always exists even if HTML is missing it.
-     */
-    let modal = root.querySelector('#portfolio-modal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.className = 'portfolio-modal';
-      modal.id = 'portfolio-modal';
-      modal.setAttribute('role', 'dialog');
-      modal.setAttribute('aria-modal', 'true');
-      modal.setAttribute('aria-labelledby', 'portfolio-modal-title');
-      modal.hidden = true;
-      
-      // Build modal HTML structure
-      modal.innerHTML = `
-        <div class="portfolio-modal__backdrop" data-close></div>
-        <div class="portfolio-modal__dialog" role="document">
-          <header class="portfolio-modal__header">
-            <h3 id="portfolio-modal-title" class="portfolio-modal__title"></h3>
-            <div class="portfolio-modal__actions">
-              <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in new tab</a>
-              <button class="portfolio-modal__close" type="button" aria-label="Close fullscreen" data-close>✕</button>
-            </div>
-          </header>
-          <div class="portfolio-modal__body">
-            <div class="portfolio-modal__frame">
-              <div class="portfolio-modal__spinner" aria-hidden="true"></div>
-              <iframe class="portfolio-modal__iframe" title="Project (fullscreen)" loading="lazy" allow="fullscreen; clipboard-write" allowfullscreen></iframe>
-            </div>
+  const c = (r, n = document) => n.querySelector(r),
+    _ = (r, n = document) => Array.from(n.querySelectorAll(r));
+  function D(r) {
+    const n = window.getComputedStyle(r);
+    return n.visibility !== 'hidden' && n.display !== 'none' && r.offsetParent !== null;
+  }
+  function F(r, n) {
+    const f = (s) => {
+      if (s.key !== 'Tab') return;
+      const p = Array.from(r.querySelectorAll(n)).filter(D);
+      if (!p.length) return;
+      const e = p[0],
+        l = p[p.length - 1];
+      s.shiftKey && document.activeElement === e
+        ? (l.focus(), s.preventDefault())
+        : !s.shiftKey && document.activeElement === l && (e.focus(), s.preventDefault());
+    };
+    return (r.addEventListener('keydown', f), () => r.removeEventListener('keydown', f));
+  }
+  const U = 'portfolio-uiux',
+    N = 8e3,
+    P = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
+    y = (r = '') =>
+      String(r)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, ''),
+    M = (r) =>
+      r ? `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(r)}` : '',
+    j = (r) =>
+      (Array.isArray(r) ? r : String(r || ''))
+        .split(/[,|]/)
+        .map((n) => n.trim())
+        .filter(Boolean);
+  (['mercury:load', 'sqs:pageLoaded', 'DOMContentLoaded'].forEach((r) =>
+    document.addEventListener(r, h)
+  ),
+    window.addEventListener('load', h));
+  async function h() {
+    const r = await I('#' + U, N).catch(() => null);
+    if (!r || r.dataset.initialized === 'true') return;
+    r.dataset.initialized = 'true';
+    const n = r.querySelector('#projects-list'),
+      f = r.querySelector('#project-card-template'),
+      s = r.querySelector('[data-count]'),
+      p = r.querySelector('.portfolio__filters');
+    let e = r.querySelector('#portfolio-modal');
+    e ||
+      ((e = document.createElement('div')),
+      (e.className = 'portfolio-modal'),
+      (e.id = 'portfolio-modal'),
+      e.setAttribute('role', 'dialog'),
+      e.setAttribute('aria-modal', 'true'),
+      e.setAttribute('aria-labelledby', 'portfolio-modal-title'),
+      (e.hidden = !0),
+      (e.innerHTML = `
+      <div class="portfolio-modal__backdrop" data-close></div>
+      <div class="portfolio-modal__dialog" role="document">
+        <header class="portfolio-modal__header">
+          <h3 id="portfolio-modal-title" class="portfolio-modal__title"></h3>
+          <div class="portfolio-modal__actions">
+            <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in new tab</a>
+            <button class="portfolio-modal__close" type="button" aria-label="Close fullscreen" data-close>✕</button>
           </div>
-          <p class="portfolio-modal__fallback" hidden>
-            Couldn't load the embedded prototype.
-            <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in a new tab</a>.
-          </p>
-        </div>`;
-      
-      root.appendChild(modal);
+        </header>
+        <div class="portfolio-modal__body">
+          <div class="portfolio-modal__frame">
+            <div class="portfolio-modal__spinner" aria-hidden="true"></div>
+            <iframe class="portfolio-modal__iframe" title="Project (fullscreen)" loading="lazy" allow="fullscreen; clipboard-write" allowfullscreen></iframe>
+          </div>
+        </div>
+        <p class="portfolio-modal__fallback" hidden>
+          Couldn't load the embedded prototype.
+          <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in a new tab</a>.
+        </p>
+      </div>`),
+      r.appendChild(e));
+    const l = e.querySelector('.portfolio-modal__iframe'),
+      E = e.querySelector('.portfolio-modal__title'),
+      z = e.querySelector('.portfolio-modal__open'),
+      v = e.querySelector('.portfolio-modal__backdrop'),
+      X = e.querySelectorAll('[data-close]');
+    function H() {
+      const t = r.querySelector('#projects-data');
+      return t
+        ? Array.from(t.querySelectorAll('li')).map((o) => ({
+            id: o.dataset.id || '',
+            title: o.dataset.title || 'Untitled Project',
+            description: o.dataset.description || '',
+            figmaUrl: o.dataset.figma || '',
+            caseStudyHref: o.dataset.case || '#',
+            badges: j(o.dataset.badges),
+            categories: j(o.dataset.categories),
+            year: Number(o.dataset.year) || new Date().getFullYear(),
+            accent: o.dataset.accent || null,
+          }))
+        : [];
     }
-    
-    // Get modal child elements
-    const iframe = modal.querySelector('.portfolio-modal__iframe');
-    const titleEl = modal.querySelector('.portfolio-modal__title');
-    const openLink = modal.querySelector('.portfolio-modal__open');
-    const backdrop = modal.querySelector('.portfolio-modal__backdrop');
-    const closeBtns = modal.querySelectorAll('[data-close]');
-
-    // ========================================================================
-    // Data Reading
-    // ========================================================================
-    
-    /**
-     * Read project data from HTML data attributes
-     * 
-     * Scans <ul id="projects-data"> for <li> elements with data attributes
-     * and converts them to JavaScript objects.
-     * 
-     * @function readDataItems
-     * @returns {Array<Object>} Array of project objects
-     */
-    function readDataItems() {
-      const bag = root.querySelector('#projects-data');
-      if (!bag) {
-        return []; // No data found, return empty array
-      }
-      
-      return [...bag.querySelectorAll('li')].map((li) => ({
-        id: li.dataset.id || '',
-        title: li.dataset.title || 'Untitled Project',
-        description: li.dataset.description || '',
-        figmaUrl: li.dataset.figma || '',
-        caseStudyHref: li.dataset.case || '#',
-        badges: splitList(li.dataset.badges),
-        categories: splitList(li.dataset.categories),
-        year: Number(li.dataset.year) || new Date().getFullYear(),
-        accent: li.dataset.accent || null,
-      }));
-    }
-
-    // ========================================================================
-    // Intersection Observers
-    // ========================================================================
-    
-    /**
-     * Lazy load Figma iframes when they enter viewport
-     * 
-     * Uses IntersectionObserver to detect when iframe is near viewport
-     * and loads the src from data-src attribute. Improves page load performance.
-     */
-    const iframeObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (!e.isIntersecting) {
-            return; // Not visible yet, skip
-          }
-          
-          const frame = e.target;
-          const dataSrc = frame.getAttribute('data-src');
-          
-          // Load iframe if not already loaded
-          if (dataSrc && !frame.src) {
-            frame.src = dataSrc;
-          }
-          
-          // Unobserve after loading (one-time load)
-          iframeObserver.unobserve(frame);
-        });
-      },
-      {
-        rootMargin: '200px 0px',  // Start loading 200px before entering viewport
-        threshold: 0.1             // Trigger when 10% visible
-      }
-    );
-
-    /**
-     * Reveal animation observer
-     * 
-     * Adds 'is-inview' class when project cards enter viewport
-     * to trigger CSS reveal animations.
-     */
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          // Toggle is-inview class based on visibility
-          e.target.classList.toggle('is-inview', e.isIntersecting);
-          
-          // Unobserve after triggering (one-time animation)
-          if (e.isIntersecting) {
-            revealObserver.unobserve(e.target);
-          }
-        });
-      },
-      {
-        rootMargin: '100px 0px',  // Trigger slightly before entering viewport
-        threshold: 0.2             // Trigger when 20% visible
-      }
-    );
-
-    // ========================================================================
-    // Rendering Functions
-    // ========================================================================
-    
-    /**
-     * Render project cards from data
-     * 
-     * Clones the template for each project, populates it with data,
-     * and appends to the projects list. Sets up lazy loading and
-     * reveal animations.
-     * 
-     * @param {Array<Object>} projects - Array of project data objects
-     * @returns {void}
-     */
-    function render(projects) {
-      // Validate required elements
-      if (!tpl || !list) {
-        return; // Can't render without template or container
-      }
-      
-      // Clear existing projects
-      list.innerHTML = '';
-      
-      // Use document fragment for better performance
-      const frag = document.createDocumentFragment();
-
-      projects.forEach((p) => {
-        // Clone template
-        const node = tpl.content.cloneNode(true);
-        
-        // Get elements from cloned template
-        const section = qs('.project', node);
-        const title = qs('.project__title', node);
-        const sub = qs('.project__sub', node);
-        const badgeEl = qs('.badge', node);
-        const capName = qs('.project__cap-name', node);
-        const yearEl = qs('.project__year', node);
-        const caseA = qs('[data-internal-link]', node);
-        const frame = qs('.project__iframe', node);
-
-        // Populate content
-        title.textContent = p.title;
-        sub.textContent = p.description || '';
-        badgeEl.textContent = (p.badges || []).join(' • ');
-        capName.textContent = p.title;
-        yearEl.textContent = p.year;
-        
-        // Set case study link
-        if (caseA && p.caseStudyHref) {
-          caseA.href = p.caseStudyHref;
-        }
-
-        // Set custom accent color if provided
-        if (p.accent) {
-          section.style.setProperty('--accent', p.accent);
-        }
-        
-        // Set categories for filtering (slugified)
-        section.dataset.categories = (p.categories || [])
-          .map(slug)
-          .join(' ');
-
-        // Set iframe source (lazy-loaded via data-src)
-        frame.setAttribute('data-src', figmaToEmbed(p.figmaUrl));
-        frame.title = `${p.title} (interactive Figma)`;
-
-        // Set up observers
-        iframeObserver.observe(frame);      // Lazy load iframe
-        revealObserver.observe(section);    // Reveal animation
-        
-        // Accessibility
-        section.setAttribute('aria-label', p.title);
-
-        // Add to fragment
-        frag.appendChild(node);
-      });
-
-      // Append all projects at once (better performance)
-      list.appendChild(frag);
-      
-      // Update live count
-      updateCount();
-    }
-
-    /**
-     * Update live project count display
-     * 
-     * Counts visible (non-hidden) projects and updates the count element.
-     * 
-     * @function updateCount
-     * @returns {void}
-     */
-    function updateCount() {
-      if (!countEl) {
-        return; // Count element not present
-      }
-      
-      // Count only visible projects
-      const total = qsa('.project', list).filter(
-        (el) => el.style.display !== 'none'
-      ).length;
-      
-      countEl.textContent = String(total);
-    }
-
-    // ========================================================================
-    // Filtering System
-    // ========================================================================
-    
-    /**
-     * Update active filter pill state
-     * 
-     * Updates visual state and ARIA attributes for filter buttons
-     * to indicate which filter is currently active.
-     * 
-     * @param {string} v - Filter value (category slug or 'all')
-     * @returns {void}
-     */
-    function setActivePill(v) {
-      if (!pills) {
-        return; // Filter buttons not present
-      }
-      
-      qsa('.pill', pills).forEach((btn) => {
-        const isActive =
-          btn.dataset.filter === v ||
-          (v === 'all' && btn.dataset.filter === 'all');
-        
-        // Update visual state
-        btn.classList.toggle('is-active', isActive);
-        
-        // Update ARIA for accessibility
-        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-      });
-    }
-
-    /**
-     * Apply filter to project cards
-     * 
-     * Shows/hides projects based on category filter.
-     * Updates active pill state and live count.
-     * 
-     * @param {string} v - Filter value (category slug or 'all')
-     * @returns {void}
-     */
-    function applyFilter(v) {
-      const val = slug(v || 'all'); // Normalize to slug format
-      
-      qsa('.project', list).forEach((card) => {
-        if (val === 'all') {
-          // Show all projects
-          card.style.display = '';
-          return;
-        }
-        
-        // Get card categories
-        const cats = (card.dataset.categories || '').split(' ');
-        
-        // Show if category matches, hide otherwise
-        card.style.display = cats.includes(val) ? '' : 'none';
-      });
-      
-      // Update UI state
-      setActivePill(val);
-      updateCount();
-    }
-
-    /**
-     * Set up filter button click handlers
-     */
-    if (pills) {
-      pills.addEventListener('click', (e) => {
-        const btn = e.target.closest('.pill');
-        if (!btn) {
-          return; // Click wasn't on a filter button
-        }
-        
-        // Get filter value and apply
-        applyFilter(btn.dataset.filter || 'all');
-      });
-    }
-
-    // ========================================================================
-    // Modal Functions
-    // ========================================================================
-    
-    /** Track last element that triggered modal (for focus return) */
-    let lastTrigger = null;
-
-    /**
-     * Check if element is visible
-     * 
-     * Used for focus trap to only include visible focusable elements.
-     * 
-     * @param {Element} el - Element to check
-     * @returns {boolean} True if element is visible
-     */
-    function isVisible(el) {
-      const s = window.getComputedStyle(el);
-      return (
-        s.visibility !== 'hidden' &&
-        s.display !== 'none' &&
-        el.offsetParent !== null
+    const L = new IntersectionObserver(
+        (t) => {
+          t.forEach((o) => {
+            if (!o.isIntersecting) return;
+            const i = o.target,
+              a = i.getAttribute('data-src');
+            (a && !i.src && (i.src = a), L.unobserve(i));
+          });
+        },
+        { rootMargin: '300px 0px', threshold: 0.1 }
+      ),
+      S = new IntersectionObserver(
+        (t) => {
+          t.forEach((o) => {
+            (o.target.classList.toggle('is-inview', o.isIntersecting),
+              o.isIntersecting && S.unobserve(o.target));
+          });
+        },
+        { rootMargin: '100px 0px', threshold: 0.2 }
       );
+    function C(t) {
+      if (!f || !n) return;
+      n.innerHTML = '';
+      const o = document.createDocumentFragment();
+      (t.forEach((i) => {
+        const a = f.content.cloneNode(!0),
+          d = c('.project', a),
+          u = c('.project__title', a),
+          g = c('.project__sub', a),
+          K = c('.badge', a),
+          V = c('.project__cap-name', a),
+          G = c('.project__year', a),
+          O = c('[data-internal-link]', a),
+          b = c('.project__iframe', a);
+        ((u.textContent = i.title),
+          (g.textContent = i.description || ''),
+          (K.textContent = (i.badges || []).join(' • ')),
+          (V.textContent = i.title),
+          (G.textContent = String(i.year)),
+          O && i.caseStudyHref && (O.href = i.caseStudyHref),
+          i.accent && d.style.setProperty('--accent', i.accent),
+          (d.dataset.categories = (i.categories || []).map(y).join(' ')),
+          b &&
+            (b.setAttribute('data-src', M(i.figmaUrl)),
+            (b.title = `${i.title} (interactive Figma)`),
+            L.observe(b)),
+          S.observe(d),
+          d.setAttribute('aria-label', i.title),
+          o.appendChild(a));
+      }),
+        n.appendChild(o),
+        A());
     }
-
-    /**
-     * Trap focus within modal
-     * 
-     * Prevents focus from escaping modal when using Tab key.
-     * Cycles focus between first and last focusable elements.
-     * 
-     * @param {Element} container - Modal container element
-     * @returns {void}
-     */
-    function trapFocus(container) {
-      function loop(e) {
-        // Only handle Tab key
-        if (e.key !== 'Tab') {
-          return;
-        }
-        
-        // Get all focusable, visible elements
-        const items = [...container.querySelectorAll(FOCUSABLE_SELECTOR)]
-          .filter(isVisible);
-        
-        if (!items.length) {
-          return; // No focusable elements
-        }
-        
-        const first = items[0];
-        const last = items[items.length - 1];
-        
-        // Shift+Tab on first element: go to last
-        if (e.shiftKey && document.activeElement === first) {
-          last.focus();
-          e.preventDefault();
-        }
-        // Tab on last element: go to first
-        else if (!e.shiftKey && document.activeElement === last) {
-          first.focus();
-          e.preventDefault();
-        }
-      }
-      
-      container.addEventListener('keydown', loop);
-      
-      // Store reference for cleanup
-      container._focusLoop = loop;
+    function A() {
+      if (!s) return;
+      const t = _('.project', n).filter((o) => o.style.display !== 'none').length;
+      s.textContent = String(t);
     }
-
-    /**
-     * Release focus trap
-     * 
-     * Removes focus trap event listener when modal closes.
-     * 
-     * @function releaseFocus
-     * @returns {void}
-     */
-    function releaseFocus() {
-      if (modal._focusLoop) {
-        modal.removeEventListener('keydown', modal._focusLoop);
-        modal._focusLoop = null;
-      }
+    function R(t) {
+      p &&
+        _('.pill', p).forEach((o) => {
+          const i = o.dataset.filter === t || (t === 'all' && o.dataset.filter === 'all');
+          (o.classList.toggle('is-active', i),
+            o.setAttribute('aria-pressed', i ? 'true' : 'false'));
+        });
     }
-
-    /**
-     * Extract project data from trigger element
-     * 
-     * Finds the project card containing the trigger element and
-     * extracts title and Figma URL.
-     * 
-     * @param {Element} el - Trigger element (button/link)
-     * @returns {Object} Object with title and src properties
-     */
-    function getCardDataFromTrigger(el) {
-      const card = el.closest('.project');
-      if (!card) {
-        return {}; // Not in a project card
-      }
-      
-      // Get title from card
-      const title =
-        card.querySelector('.project__title')?.textContent?.trim() ||
-        'Prototype';
-      
-      // Get Figma URL from iframe
-      const f = card.querySelector('.project__iframe');
-      const src = f?.getAttribute('data-src') || f?.getAttribute('src') || '';
-      
-      return { title, src };
+    function q(t) {
+      const o = y(t || 'all');
+      (_('.project', n).forEach((i) => {
+        if (o === 'all') i.style.display = '';
+        else {
+          const a = (i.dataset.categories || '').split(' ');
+          i.style.display = a.includes(o) ? '' : 'none';
+        }
+      }),
+        R(o),
+        A());
     }
-
-    /**
-     * Open modal and load prototype
-     * 
-     * Shows modal, loads Figma iframe, sets up focus trap,
-     * and prevents body scroll.
-     * 
-     * @param {Element} trigger - Element that triggered modal
-     * @returns {void}
-     */
-    function openModalFrom(trigger) {
-      // Validate required elements
-      const refs = { titleEl, openLink, iframe };
-      if (!refs.titleEl || !refs.openLink || !refs.iframe) {
-        return; // Required elements missing
-      }
-      
-      // Get project data
-      const { title, src } = getCardDataFromTrigger(trigger);
-      if (!src) {
-        return; // No source URL
-      }
-      
-      // Update modal content
-      titleEl.textContent = title;
-      openLink.href = src;
-      
-      // Show loading state
-      modal.classList.add('is-loading');
-      modal.hidden = false;
-      
-      // Prevent body scroll
-      document.documentElement.classList.add('no-scroll');
-      root.classList.add('no-scroll');
-      
-      // Load iframe
-      iframe.src = src;
-      
-      // Remove loading state when iframe loads
-      const onLoad = () => {
-        modal.classList.remove('is-loading');
-        iframe.removeEventListener('load', onLoad);
+    p &&
+      p.addEventListener('click', (t) => {
+        const o = t.target.closest('.pill');
+        o && q(o.dataset.filter || 'all');
+      });
+    let x = null,
+      m = null;
+    function $(t) {
+      var u, g;
+      const o = t.closest('.project');
+      if (!o) return {};
+      const i =
+          ((g = (u = o.querySelector('.project__title')) == null ? void 0 : u.textContent) == null
+            ? void 0
+            : g.trim()) || 'Prototype',
+        a = o.querySelector('.project__iframe'),
+        d =
+          (a == null ? void 0 : a.getAttribute('data-src')) ||
+          (a == null ? void 0 : a.getAttribute('src')) ||
+          '';
+      return { title: i, src: d };
+    }
+    function B(t) {
+      var u;
+      const o = { titleEl: E, openLink: z, iframe: l };
+      if (!o.titleEl || !o.openLink || !o.iframe) return;
+      const { title: i, src: a } = $(t);
+      if (!a) return;
+      ((E.textContent = i),
+        (z.href = a),
+        e.classList.add('is-loading'),
+        (e.hidden = !1),
+        document.documentElement.classList.add('no-scroll'),
+        r.classList.add('no-scroll'),
+        (l.src = a));
+      const d = () => {
+        (e.classList.remove('is-loading'), l.removeEventListener('load', d));
       };
-      iframe.addEventListener('load', onLoad);
-      
-      // Safety timeout: remove loading state after 6 seconds
-      setTimeout(() => {
-        modal.classList.remove('is-loading');
-      }, 6000);
-      
-      // Store trigger for focus return
-      lastTrigger = trigger;
-      
-      // Set up focus trap
-      trapFocus(modal);
-      
-      // Focus close button (first focusable element)
-      modal.querySelector('.portfolio-modal__close')?.focus();
+      (l.addEventListener('load', d),
+        setTimeout(() => e.classList.remove('is-loading'), 6e3),
+        (x = t),
+        (m = F(e, P)),
+        (u = e.querySelector('.portfolio-modal__close')) == null || u.focus());
     }
-
-    /**
-     * Close modal
-     * 
-     * Hides modal, clears iframe, restores body scroll,
-     * releases focus trap, and returns focus to trigger.
-     * 
-     * @function closeModal
-     * @returns {void}
-     */
-    function closeModal() {
-      // Hide modal
-      modal.hidden = true;
-      modal.classList.remove('is-loading');
-      
-      // Clear iframe (privacy/performance)
-      if (iframe) {
-        iframe.src = 'about:blank';
-      }
-      
-      // Restore body scroll
-      document.documentElement.classList.remove('no-scroll');
-      root.classList.remove('no-scroll');
-      
-      // Release focus trap
-      releaseFocus();
-      
-      // Return focus to trigger element
-      if (lastTrigger && document.body.contains(lastTrigger)) {
-        lastTrigger.focus();
-      }
-      lastTrigger = null;
+    function w() {
+      ((e.hidden = !0),
+        e.classList.remove('is-loading'),
+        l && (l.src = 'about:blank'),
+        document.documentElement.classList.remove('no-scroll'),
+        r.classList.remove('no-scroll'),
+        m && (m(), (m = null)),
+        x && document.body.contains(x) && x.focus(),
+        (x = null));
     }
-
-    /**
-     * Set up modal event listeners
-     */
-    
-    // Open modal on click
-    root.addEventListener('click', (e) => {
-      const op = e.target.closest('[data-action="open-modal"]');
-      if (op) {
-        e.preventDefault();
-        openModalFrom(op);
-      }
-    });
-    
-    // Close on backdrop click
-    backdrop?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeModal();
-    });
-    
-    // Close on close button click
-    closeBtns.forEach((b) => b.addEventListener('click', closeModal));
-    
-    // Close on Escape key
-    document.addEventListener('keydown', (e) => {
-      if (!modal.hidden && e.key === 'Escape') {
-        e.preventDefault();
-        closeModal();
-      }
-    });
-
-    // ========================================================================
-    // Initial Render
-    // ========================================================================
-    
-    /**
-     * Load and render projects
-     * 
-     * Reads project data and renders cards. Falls back to seed data
-     * if no projects-data found (for development/testing).
-     */
-    const projects = readDataItems();
-    
-    if (!projects.length) {
-      // Fallback: render seed data if no projects found
-      console.warn(
-        '[portfolio-uiux] No #projects-data found — rendering seed items.'
-      );
-      
-      const seed = [
+    (r.addEventListener('click', (t) => {
+      const o = t.target.closest('[data-action="open-modal"]');
+      o && (t.preventDefault(), B(o));
+    }),
+      v == null ||
+        v.addEventListener('click', (t) => {
+          (t.preventDefault(), w());
+        }),
+      X.forEach((t) => t.addEventListener('click', w)),
+      document.addEventListener('keydown', (t) => {
+        !e.hidden && t.key === 'Escape' && (t.preventDefault(), w());
+      }));
+    const T = H();
+    if (T.length) C(T);
+    else {
+      console.warn('[portfolio-uiux] No #projects-data found — rendering seed items.');
+      const t = [
         {
           id: 'cern-01',
           title: 'CERN Prototype',
@@ -793,13 +277,9 @@
           accent: null,
         },
       ];
-      
-      render(seed);
-    } else {
-      render(projects);
+      C(t);
     }
-    
-    // Apply default filter (show all)
-    applyFilter('all');
+    q('all');
   }
+  window.initPortfolioUIUX = h;
 })();

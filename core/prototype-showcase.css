@@ -64,7 +64,9 @@
 .proto-text {
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
 }
 
 /**
@@ -114,7 +116,10 @@
   font-size: 0.95rem;
   letter-spacing: 0.02em;
   transform-origin: center;
-  transition: background 0.3s ease, transform 0.35s cubic-bezier(0.25, 0.85, 0.25, 1), color 0.2s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.35s cubic-bezier(0.25, 0.85, 0.25, 1),
+    color 0.2s ease;
 }
 
 /**
@@ -122,7 +127,7 @@
  * Reveals on hover for visual interest
  */
 .proto-btn::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background-image: var(--uiux-bg);
@@ -131,7 +136,9 @@
   background-repeat: no-repeat;
   transform: scale(1.06); /* Slightly larger for smooth reveal */
   opacity: 0;
-  transition: opacity 0.35s ease, transform 0.45s ease;
+  transition:
+    opacity 0.35s ease,
+    transform 0.45s ease;
   z-index: -2;
 }
 
@@ -140,7 +147,7 @@
  * Ensures text remains readable over background image
  */
 .proto-btn::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.18);
@@ -210,7 +217,10 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s, box-shadow 0.4s ease;
+  transition:
+    opacity 0.8s ease 0.1s,
+    transform 0.8s ease 0.1s,
+    box-shadow 0.4s ease;
   will-change: transform; /* Performance hint */
 }
 
@@ -219,7 +229,7 @@
  * Creates subtle inset shadow for depth
  */
 .figma-embed-wrapper::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: 22px;
@@ -232,7 +242,7 @@
  * Shown in bottom-right corner, fades on hover
  */
 .figma-embed-wrapper::after {
-  content: "Try the prototype";
+  content: 'Try the prototype';
   position: absolute;
   right: 14px;
   bottom: 14px;
@@ -242,7 +252,9 @@
   border-radius: 10px;
   font-size: 0.85rem;
   opacity: 0.9;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
   transform: translateY(0);
   pointer-events: none; /* Not clickable */
 }

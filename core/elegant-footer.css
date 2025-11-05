@@ -26,7 +26,7 @@
   position: relative;
   overflow: hidden;
   text-align: center;
-  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 /* ============================================================================
@@ -38,7 +38,7 @@
  * Creates a dynamic accent line at the top of the footer
  */
 #elegant-footer::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -83,10 +83,10 @@
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr;
   grid-template-areas:
-    "brand nav social"
-    "brand newsletter newsletter"
-    "line line line"
-    "legal legal legal";
+    'brand nav social'
+    'brand newsletter newsletter'
+    'line line line'
+    'legal legal legal';
   gap: 36px;
   align-items: start;
 }
@@ -128,7 +128,9 @@
   color: #111;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 #elegant-footer .footer-nav li a:hover {
@@ -150,7 +152,9 @@
 #elegant-footer .footer-social a {
   color: #111;
   font-size: 1.3rem;
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
 }
 
 #elegant-footer .footer-social a:hover {
@@ -195,7 +199,9 @@
   padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
 }
 
 #elegant-footer .footer-newsletter button:hover {
@@ -291,7 +297,9 @@
 #elegant-footer {
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity 700ms ease, transform 700ms ease;
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
 }
 
 /**
@@ -310,7 +318,9 @@
 #elegant-footer .footer-inner > * {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 600ms ease, transform 600ms ease;
+  transition:
+    opacity 600ms ease,
+    transform 600ms ease;
 }
 
 #elegant-footer.is-inview .footer-inner > * {
@@ -372,12 +382,12 @@
   #elegant-footer .footer-inner {
     grid-template-columns: 1fr;
     grid-template-areas:
-      "brand"
-      "nav"
-      "social"
-      "newsletter"
-      "line"
-      "legal";
+      'brand'
+      'nav'
+      'social'
+      'newsletter'
+      'line'
+      'legal';
     text-align: center;
     gap: 24px;
   }

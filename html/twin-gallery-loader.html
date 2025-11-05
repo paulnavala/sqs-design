@@ -1,0 +1,58 @@
+<!-- Copied for local test from components/twin-gallery/twin-gallery-loader.html -->
+<!-- 
+  Twin Gallery Component HTML for Squarespace
+  
+  Description: Clickable image gallery with two panels and optional guidelines section. 
+  Features hover effects with contrast pop animations, Ken Burns motion, and touch-friendly interactions.
+  
+  Features:
+  - Two-column side-by-side gallery
+  - Hover contrast effect (highlighted panel, dimmed other)
+  - Ken Burns gentle motion on images
+  - Touch feedback for mobile devices
+  - Pointer-based direction detection
+  - Optional guidelines panel
+  
+  Prerequisites:
+  - Add global-css-loader.html to Settings > Advanced > Code Injection > Header
+  - Add global-js-loader.html to Settings > Advanced > Code Injection > Footer
+  
+  Usage in Squarespace:
+  1. Add a Code Block in Squarespace
+  2. Paste this ENTIRE file content into the code block
+  3. Update the image URLs, alt text, and links as needed
+  4. Optionally add/remove the guidelines panel section
+  
+  Customization:
+  - Replace image URLs with your own images
+  - Update href attributes with your project links
+  - Modify alt text for accessibility
+  - Remove guidelines panel if not needed
+  
+  Note: CSS and JS are loaded globally via the header/footer injection,
+  so this file only contains the HTML structure.
+-->
+
+<div class="twin-gallery">
+  <a href="/projects/graphic-design" class="panel left">
+    <img
+      src="https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f512cc5216c20e648fac2b/1760891596909/asdfghj.png"
+      alt="Graphic Design"
+    />
+  </a>
+  <a href="/projects/ui-ux" class="panel right">
+    <img
+      src="https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/68f512ccc2089520b3fc0741/1760891596865/about+%281%29.png"
+      alt="UI/UX"
+    />
+  </a>
+</div>
+
+<div class="guidelines-wrapper">
+  <a href="/projects/guidelines" class="guidelines-panel">
+    <img
+      src="https://static1.squarespace.com/static/68f4fc7704c32251ed5a9cb4/t/6907986146cca3245b5d9ec8/1762105444570/Group+3+%282%29.png"
+      alt="Guidelines"
+    />
+  </a>
+</div>
