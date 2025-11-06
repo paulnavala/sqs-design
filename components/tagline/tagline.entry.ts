@@ -8,6 +8,7 @@ function resolveProps(el: HTMLElement) {
   return {
     line1: t1 ?? (cfg?.getAttribute('data-line1') || undefined),
     line2: t2 ?? (cfg?.getAttribute('data-line2') || undefined),
+    fixedCenter: /^(1|true|yes)$/i.test(String(el.getAttribute('data-fixed-center') || '')),
   };
 }
 

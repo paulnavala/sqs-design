@@ -11,6 +11,7 @@ export default defineComponent({
     holdAfterLine2: { type: Number, default: 15000 },
     fadeDuration: { type: Number, default: 2500 },
     waitBeforeRestart: { type: Number, default: 5000 },
+    fixedCenter: { type: Boolean, default: false },
   },
   setup(props) {
     const root = ref<HTMLElement | null>(null);
@@ -44,6 +45,34 @@ export default defineComponent({
         lineEl.appendChild(ph);
       }
       return ph;
+    }
+
+    function measureLineWidth(text: string): number {
+      // Create a hidden measurement container that mimics the line styling
+      const measureRoot = document.createElement('div');
+      measureRoot.className = 'tagline typewriter';
+      measureRoot.style.position = 'absolute';
+      measureRoot.style.visibility = 'hidden';
+      measureRoot.style.whiteSpace = 'nowrap';
+      measureRoot.style.left = '-99999px';
+      measureRoot.style.top = '0';
+
+      const line = document.createElement('div');
+      line.className = 'text line';
+      // Add full text as a span to get exact width with same font
+      const span = document.createElement('span');
+      span.textContent = text;
+      line.appendChild(span);
+      // Add placeholder to include caret width in measurement
+      const ph = document.createElement('span');
+      ph.className = 'caret-placeholder';
+      line.appendChild(ph);
+
+      measureRoot.appendChild(line);
+      document.body.appendChild(measureRoot);
+      const w = Math.ceil(line.getBoundingClientRect().width);
+      document.body.removeChild(measureRoot);
+      return w;
     }
 
     async function typeText(text: string, baseSpeed: number, textEl: HTMLElement, activeCaret: HTMLElement | null) {
@@ -98,6 +127,17 @@ export default defineComponent({
       while (true) {
         const l1 = line1El;
         const l2 = line2Ref.value as HTMLElement | null;
+        // Optionally fix line widths to final size to prevent lateral motion
+        if (props.fixedCenter) {
+          const w1 = measureLineWidth(String(props.line1));
+          const w2 = measureLineWidth(String(props.line2));
+          l1.style.width = w1 + 'px';
+          if (l2) l2.style.width = w2 + 'px';
+        } else {
+          l1.style.removeProperty('width');
+          if (l2) l2.style.removeProperty('width');
+        }
+
         resetTagline(tag, l1);
         await typeText(String(props.line1), props.typeSpeed, l1, caret1Ref.value || null);
         await sleep(props.waitBetweenLines);
