@@ -86,11 +86,31 @@ export default defineComponent({
         slot.textContent = text[i] === ' ' ? '\u00A0' : text[i];
         // Reserve width without showing yet
         slot.style.visibility = 'hidden';
+        slot.className = 'slot';
         slots.push(slot);
         lineEl.appendChild(slot);
       }
       ensurePlaceholder(lineEl);
       return slots;
+    }
+
+    function nextFrame(): Promise<void> {
+      return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    }
+
+    function positionCaretAbs(lineEl: HTMLElement, caretEl: HTMLElement, afterSlot: HTMLElement | null) {
+      caretEl.classList.add('caret--abs');
+      const lineRect = lineEl.getBoundingClientRect();
+      if (afterSlot) {
+        const r = afterSlot.getBoundingClientRect();
+        const left = r.right - lineRect.left;
+        const top = r.top - lineRect.top;
+        caretEl.style.left = left + 'px';
+        caretEl.style.top = top + 'px';
+      } else {
+        caretEl.style.left = '0px';
+        caretEl.style.top = '0px';
+      }
     }
 
     async function typeText(text: string, baseSpeed: number, textEl: HTMLElement, activeCaret: HTMLElement | null) {
@@ -166,20 +186,20 @@ export default defineComponent({
         resetTagline(tag, l1);
         if (props.fixedCenter) {
           const slots1 = buildSlots(l1, String(props.line1));
-          // Place caret at start (before placeholder which is after first slot)
+          // Attach absolute caret to the line container
           if (caret1Ref.value) {
-            const ph1 = ensurePlaceholder(l1);
-            l1.insertBefore(caret1Ref.value, ph1);
+            l1.appendChild(caret1Ref.value);
+            caret1Ref.value.style.visibility = 'visible';
+            positionCaretAbs(l1, caret1Ref.value, null);
           }
           for (let i = 0; i < slots1.length; i++) {
             const slot = slots1[i];
             slot.style.visibility = 'visible';
             slot.style.animation = 'glow 0.6s ease';
-            // Move caret after this revealed slot
+            // Move caret after this revealed slot without altering inline flow
             if (caret1Ref.value) {
-              const after = slot.nextSibling;
-              if (after) l1.insertBefore(caret1Ref.value, after);
-              else l1.appendChild(caret1Ref.value);
+              await nextFrame();
+              positionCaretAbs(l1, caret1Ref.value, slot);
             }
             const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
             const delay = Math.max(20, props.typeSpeed + variance);
@@ -193,9 +213,15 @@ export default defineComponent({
           // Switch caret visibility to line 2 and type
           if (caret1Ref.value) caret1Ref.value.style.visibility = 'hidden';
           if (caret2Ref.value) {
-            const ph2 = ensurePlaceholder(l2);
             caret2Ref.value.style.visibility = 'visible';
-            l2.insertBefore(caret2Ref.value, ph2);
+            if (props.fixedCenter) {
+              // Attach absolute caret to line 2 container
+              l2.appendChild(caret2Ref.value);
+              positionCaretAbs(l2, caret2Ref.value, null);
+            } else {
+              const ph2 = ensurePlaceholder(l2);
+              l2.insertBefore(caret2Ref.value, ph2);
+            }
           }
           if (props.fixedCenter) {
             const slots2 = buildSlots(l2, String(props.line2));
@@ -204,9 +230,8 @@ export default defineComponent({
               slot.style.visibility = 'visible';
               slot.style.animation = 'glow 0.6s ease';
               if (caret2Ref.value) {
-                const after2 = slot.nextSibling;
-                if (after2) l2.insertBefore(caret2Ref.value, after2);
-                else l2.appendChild(caret2Ref.value);
+                await nextFrame();
+                positionCaretAbs(l2, caret2Ref.value, slot);
               }
               const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
               const delay = Math.max(20, props.typeSpeed + variance);
@@ -234,7 +259,7 @@ export default defineComponent({
     return () =>
       h('div', { ref: root, class: 'tagline typewriter', style: 'display:flex;flex-direction:column;align-items:center;text-align:center' }, [
         h('div', { ref: line1Ref, class: 'text line line-1' }),
-        h('div', { ref: line2Ref, class: 'text line line-2', style: 'margin-top:0.2em' }),
+        h('div', { ref: line2Ref, class: 'text line line-2' }),
         h('span', { ref: caret1Ref, class: 'caret' }),
         h('span', { ref: caret2Ref, class: 'caret', style: 'visibility:hidden' }),
       ]);
