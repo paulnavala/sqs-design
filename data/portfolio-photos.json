@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Photography gallery data - easy to edit and maintain",
+  "photos": [
+    {
+      "id": "Fox",
+      "title": "Fox",
+      "description": "Fox in the woods",
+      "categories": ["portrait", "studio"],
+      "year": 2024,
+      "afterSrc": "/assets/photography/vulpe-after.jpg",
+      "beforeSrc": "/assets/photography/vulpe-before.jpg",
+      "thumb": "/assets/photography/vulpe-before.jpg",
+      "alt": "Portrait of a fox in the woods",
+      "accent": ""
+    },
+    {
+      "id": "Cave",
+      "title": "Cave Entrance",
+      "description": "Gibraltar cave entrance",
+      "categories": ["landscape", "Nature"],
+      "year": 2024,
+      "afterSrc": "/assets/photography/pestera-after.jpg",
+      "beforeSrc": "/assets/photography/pestera-before.jpg",
+      "thumb": "/assets/photography/pestera-before.jpg",
+      "alt": "Cave entrance in Gibraltar",
+      "accent": "#8EE3FF"
+    }
+  ],
+  "settings": {
+    "defaultYear": null,
+    "defaultAccent": ""
+  }
+}
+
+
