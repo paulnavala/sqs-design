@@ -10,6 +10,7 @@
     "portfolio-build": "node scripts/build-portfolio-data.js",
     "portfolio-validate": "node scripts/build-portfolio-data.js --validate-only",
     "build": "npm run portfolio-build && npm run generate-loaders",
+    "dev": "node scripts/dev-server.js --open",
     "build:vue": "node scripts/build-vue.js",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint . --ext .ts,.js",

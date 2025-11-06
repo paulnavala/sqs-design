@@ -171,6 +171,11 @@
     if (typeof window.initFortuneLogoWidget === 'function') {
       window.initFortuneLogoWidget();
     }
+
+    // Portfolio UI/UX component
+    if (typeof window.initPortfolioUIUX === 'function') {
+      window.initPortfolioUIUX();
+    }
   }
 
   /**

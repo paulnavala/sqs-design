@@ -484,6 +484,11 @@
   margin: 0 auto;
 }
 
+/* Force single-column stacking for project cards */
+#portfolio-uiux #projects-list.portfolio__wrap {
+  grid-template-columns: 1fr;
+}
+
 /* ============================================================================
    Shared Button Styles
    ============================================================================ */
