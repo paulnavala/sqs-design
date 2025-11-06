@@ -77,6 +77,22 @@ export default defineComponent({
       return { width: w, height: h };
     }
 
+    function buildSlots(lineEl: HTMLElement, text: string): HTMLElement[] {
+      // Clear and build invisible slots for each character to pin final layout
+      lineEl.innerHTML = '';
+      const slots: HTMLElement[] = [];
+      for (let i = 0; i < text.length; i++) {
+        const slot = document.createElement('span');
+        slot.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+        // Reserve width without showing yet
+        slot.style.visibility = 'hidden';
+        slots.push(slot);
+        lineEl.appendChild(slot);
+      }
+      ensurePlaceholder(lineEl);
+      return slots;
+    }
+
     async function typeText(text: string, baseSpeed: number, textEl: HTMLElement, activeCaret: HTMLElement | null) {
       const placeholder = ensurePlaceholder(textEl);
       for (let i = 0; i < text.length; i++) {
@@ -148,7 +164,29 @@ export default defineComponent({
         }
 
         resetTagline(tag, l1);
-        await typeText(String(props.line1), props.typeSpeed, l1, caret1Ref.value || null);
+        if (props.fixedCenter) {
+          const slots1 = buildSlots(l1, String(props.line1));
+          // Place caret at start (before placeholder which is after first slot)
+          if (caret1Ref.value) {
+            const ph1 = ensurePlaceholder(l1);
+            l1.insertBefore(caret1Ref.value, ph1);
+          }
+          for (let i = 0; i < slots1.length; i++) {
+            const slot = slots1[i];
+            slot.style.visibility = 'visible';
+            slot.style.animation = 'glow 0.6s ease';
+            // Move caret after this revealed slot
+            if (caret1Ref.value) {
+              const ph1 = ensurePlaceholder(l1);
+              l1.insertBefore(caret1Ref.value, ph1);
+            }
+            const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
+            const delay = Math.max(20, props.typeSpeed + variance);
+            await sleep(delay);
+          }
+        } else {
+          await typeText(String(props.line1), props.typeSpeed, l1, caret1Ref.value || null);
+        }
         await sleep(props.waitBetweenLines);
         if (l2) {
           // Switch caret visibility to line 2 and type
@@ -158,7 +196,23 @@ export default defineComponent({
             caret2Ref.value.style.visibility = 'visible';
             l2.insertBefore(caret2Ref.value, ph2);
           }
-          await typeText(String(props.line2), props.typeSpeed, l2, caret2Ref.value || null);
+          if (props.fixedCenter) {
+            const slots2 = buildSlots(l2, String(props.line2));
+            for (let i = 0; i < slots2.length; i++) {
+              const slot = slots2[i];
+              slot.style.visibility = 'visible';
+              slot.style.animation = 'glow 0.6s ease';
+              if (caret2Ref.value) {
+                const ph2b = ensurePlaceholder(l2);
+                l2.insertBefore(caret2Ref.value, ph2b);
+              }
+              const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
+              const delay = Math.max(20, props.typeSpeed + variance);
+              await sleep(delay);
+            }
+          } else {
+            await typeText(String(props.line2), props.typeSpeed, l2, caret2Ref.value || null);
+          }
         }
         hideCarets();
         await sleep(props.holdAfterLine2);
