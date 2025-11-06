@@ -780,6 +780,44 @@ All components use the same simple syntax with the \`data-component\` attribute:
 }
 
 /**
+ * Generate a minimal copy-friendly markdown with data-component snippets.
+ * Output: loaders/DATA-COMPONENTS.md
+ */
+function generateDataComponentsMarkdown(components) {
+  // Deduplicate (prefer -loader variants)
+  const map = new Map();
+  components.forEach((comp) => {
+    const base = comp.filename.replace('-loader.html', '').replace('.html', '');
+    if (!map.has(base) || comp.filename.includes('-loader')) {
+      map.set(base, comp);
+    }
+  });
+  const unique = Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+  let md = `# Data-Component Snippets\n\n`;
+  md += `Generated: ${new Date().toLocaleString()}\n\n`;
+  md += `## Quick Copy — All Components\n\n`;
+  md += '```html\n';
+  unique.forEach((c) => {
+    const key = c.syntax || c.filename.replace('-loader.html', '').replace('.html', '');
+    md += `<div data-component="${key}"></div>\n`;
+  });
+  md += '```\n\n';
+
+  md += `## Per Component\n\n`;
+  unique.forEach((c) => {
+    const key = c.syntax || c.filename.replace('-loader.html', '').replace('.html', '');
+    md += `### ${c.name}\n\n`;
+    md += '```html\n';
+    md += `<div data-component="${key}"></div>\n`;
+    md += '```\n\n';
+  });
+
+  const out = path.join(LOADERS_DIR, 'DATA-COMPONENTS.md');
+  fs.writeFileSync(out, md, 'utf8');
+}
+
+/**
  * Generate Squarespace Paths Documentation
  *
  * Creates comprehensive documentation about file paths, URLs, and linking
@@ -1225,6 +1263,10 @@ function main() {
   generateComponentSyntaxReference(htmlComponents);
   console.log(`✅ Generated: ${path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.md')}`);
   console.log(`✅ Generated: ${path.join(LOADERS_DIR, 'COMPONENT-SYNTAX.txt')}`);
+
+  console.log('\n🧾 Generating data-component snippets markdown...\n');
+  generateDataComponentsMarkdown(htmlComponents);
+  console.log(`✅ Generated: ${path.join(LOADERS_DIR, 'DATA-COMPONENTS.md')}`);
 
   console.log('\n📖 Generating paths documentation...\n');
   generatePathsDocumentation(cssFiles, jsFiles, htmlComponents);
