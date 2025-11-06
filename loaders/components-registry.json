@@ -17,6 +17,14 @@
       "syntax": "portfolio-uiux"
     },
     {
+      "filename": "project-cards-loader.html",
+      "name": "Project Cards",
+      "description": "Project Cards Component Loader HTML",
+      "url": "https://assets.peachless.design/components/project-cards/project-cards-loader.html",
+      "localPath": "/components/project-cards/project-cards-loader.html",
+      "syntax": "project-cards"
+    },
+    {
       "filename": "twin-gallery-loader.html",
       "name": "Twin Gallery",
       "description": "Clickable image gallery with two panels and optional guidelines section.",
@@ -25,6 +33,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-05T21:47:30.208Z",
-  "total": 3
+  "generated": "2025-11-06T15:07:50.463Z",
+  "total": 4
 }
