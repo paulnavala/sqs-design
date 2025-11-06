@@ -55,7 +55,8 @@ async function buildEntry(entryPath) {
     define: {
       'process.env.NODE_ENV': JSON.stringify('production'),
       'process.env': '{}',
-      process: '({})',
+      process: '{}',
+      global: 'globalThis',
     },
     build: {
       outDir: 'dist-vue',

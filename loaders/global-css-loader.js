@@ -17,11 +17,8 @@
     '/components/twin-gallery/twin-gallery.css',
     '/core/elegant-footer.css',
     '/core/header.css',
-    '/core/mobile-menu.css',
     '/core/portfolio.css',
-    '/core/project-cards.css',
-    '/core/prototype-showcase.css',
-    '/core/tagline.css'
+    '/core/tw.css'
   ];
   
   // Function to load CSS

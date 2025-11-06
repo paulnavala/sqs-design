@@ -17,11 +17,8 @@
     '/components/twin-gallery/twin-gallery.css',
     '/core/elegant-footer.css',
     '/core/header.css',
-    '/core/mobile-menu.css',
     '/core/portfolio.css',
-    '/core/project-cards.css',
-    '/core/prototype-showcase.css',
-    '/core/tagline.css'
+    '/core/tw.css'
 ];
 
         function loadCSS(href) {
@@ -50,12 +47,12 @@
     '/core/utilities.js',
     '/core/component-loader.js',
     '/core/elegant-footer.js',
-    '/core/mobile-menu.js',
-    '/core/project-card.js',
-    '/core/prototype-showcase.js',
-    '/core/tagline.js',
     '/components/fortune-peach/fortune-peach.js',
+    '/components/mobile-menu/mobile-menu.js',
     '/components/portfolio-uiux/portfolio.js',
+    '/components/project-card/project-card.js',
+    '/components/prototype-showcase/prototype-showcase.js',
+    '/components/tagline/tagline.js',
     '/components/twin-gallery/twin-gallery.js'
 ];
 
@@ -148,6 +145,42 @@
     <div class="test-container">
       <h1 style="text-align: center; margin-bottom: 40px">Component Test Page</h1>
       <p class="loading" id="loading">Loading components...</p>
+
+      <div class="component-section">
+        <h2 class="component-title">Mobile Menu (Vue)</h2>
+        <div class="component-info">Mounts overlay and hooks your theme's mobile menu toggle.</div>
+        <div class="component-content">
+          <div data-component="mobile-menu"></div>
+        </div>
+      </div>
+
+      <div class="component-section">
+        <h2 class="component-title">Tagline (Vue)</h2>
+        <div class="component-info">Typewriter effect with caret and glow.</div>
+        <div class="component-content">
+          <div data-component="tagline"></div>
+        </div>
+      </div>
+
+      <div class="component-section">
+        <h2 class="component-title">Prototype Showcase (Vue)</h2>
+        <div class="component-info">Figma embed with reveal, spinner and fallback.</div>
+        <div class="component-content">
+          <div data-component="prototype-showcase" data-title="CERN Prototype" data-figma="https://www.figma.com/proto/OUowEnozqwEO4wIcu5qcxh/CERN?node-id=1-105&page-id=0%3A1&starting-point-node-id=1%3A105&scaling=scale-down-width&show-proto-sidebar=0"></div>
+        </div>
+      </div>
+
+      <div class="component-section">
+        <h2 class="component-title">Project Card (Vue)</h2>
+        <div class="component-info">Parallax hover effect on elements with class <code>.project-card</code>.</div>
+        <div class="component-content">
+          <div data-component="project-card"></div>
+          <div style="display:grid;gap:16px;margin-top:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+            <div class="project-card" style="height:140px;border-radius:12px;background:radial-gradient(circle at calc(50% + var(--bg-x,0px)) calc(50% + var(--bg-y,0px)), #ddd, #bbb);"></div>
+            <div class="project-card" style="height:140px;border-radius:12px;background:radial-gradient(circle at calc(50% + var(--bg-x,0px)) calc(50% + var(--bg-y,0px)), #ddd, #bbb);"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Auto-load all components from registry -->
