@@ -14,6 +14,7 @@
         const CSS_FILES = [
     '/components/fortune-peach/fortune-peach.css',
     '/components/portfolio-uiux/portfolio-uiux.css',
+    '/components/portfolio-photo/portfolio-photo.css',
     '/components/project-cards/project-cards.css',
     '/components/tagline/tagline.css',
     '/components/twin-gallery/twin-gallery.css',
@@ -58,6 +59,7 @@
     '/core/tagline.js',
     '/components/fortune-peach/fortune-peach.js',
     '/components/portfolio-uiux/portfolio.js',
+    '/components/portfolio-photo/portfolio-photo.js',
     '/components/project-cards/project-cards.js',
     '/components/tagline/tagline.js',
     '/components/twin-gallery/twin-gallery.js'
@@ -168,6 +170,14 @@
           <div data-component="tagline" id="demo-tagline"></div>
         </div>
       </div>
+
+      <div class="component-section">
+        <h2 class="component-title">Photography Gallery (Vue, external JSON)</h2>
+        <div class="component-info">Using data-src attribute to load JSON from data/portfolio-photos.json</div>
+        <div class="component-content">
+          <div data-component="portfolio-photo" data-src="../data/portfolio-photos.json" id="demo-portfolio-photo"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Auto-load all components from registry -->
@@ -202,6 +212,7 @@
         ready(function(){
           injectLocal('#demo-project-cards', '../components/project-cards/project-cards-loader.html', 'project-cards');
           injectLocal('#demo-tagline', '../components/tagline/tagline-loader.html', 'tagline');
+          injectLocal('#demo-portfolio-photo', '../components/portfolio-photo/portfolio-photo-loader.html', 'portfolio-photo');
         });
       })();
     </script>

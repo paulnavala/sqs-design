@@ -8,9 +8,9 @@
       "description": "Fox in the woods",
       "categories": ["portrait", "studio"],
       "year": 2024,
-      "afterSrc": "https://assets.peachless-design/assets/photography/vulpe-after.jpg",
-      "beforeSrc": "https://assets.peachless-design/assets/photography/vulpe-before.jpg",
-      "thumb": "https://assets.peachless-design/assets/photography/vulpe-before.jpg",
+      "afterSrc": "/assets/photography/fox_after.jpg",
+      "beforeSrc": "/assets/photography/fox_before.jpg",
+      "thumb": "/assets/photography/fox_after.jpg",
       "alt": "Portrait of a fox in the woods",
       "accent": ""
     },
@@ -20,11 +20,59 @@
       "description": "Gibraltar cave entrance",
       "categories": ["landscape", "Nature"],
       "year": 2024,
-      "afterSrc": "https://assets.peachless-design/assets/photography/pestera-after.jpg",
-      "beforeSrc": "https://assets.peachless-design/assets/photography/pestera-before.jpg",
-      "thumb": "https://assets.peachless-design/assets/photography/pestera-before.jpg",
+      "afterSrc": "/assets/photography/originals/cave_angel_after.jpg",
+      "beforeSrc": "/assets/photography/originals/cave_angel_before.jpg",
+      "thumb": "/assets/photography/originals/cave_angel_after.jpg",
       "alt": "Cave entrance in Gibraltar",
-      "accent": "#8EE3FF"
+      "accent": "#88EE3FF"
+    },
+    {
+      "id": "Moon",
+      "title": "Moon",
+      "description": "Moon Museum",
+      "categories": ["portrait", "studio"],
+      "year": 2024,
+      "afterSrc": "/assets/photography/originals/moon_after.jpg",
+      "beforeSrc": "/assets/photography/originals/moon_before.jpg",
+      "thumb": "/assets/photography/originals/ moon_after.jpg",
+      "alt": "Portrait of a fox in the woods",
+      "accent": ""
+    },
+    {
+      "id": "Cave2",
+      "title": "Cave Entrance",
+      "description": "Gibraltar cave entrance",
+      "categories": ["landscape", "Nature"],
+      "year": 2024,
+      "afterSrc": "/assets/photography/originals/sunset_after.jpg",
+      "beforeSrc": "/assets/photography/originals/sunset_before.jpg",
+      "thumb": "/assets/photography/originals/sunset_after.jpg",
+      "alt": "Cave entrance in Gibraltar",
+      "accent": ""
+    },
+    {
+      "id": "arch",
+      "title": "Cave Entrance",
+      "description": "Gibraltar cave entrance",
+      "categories": ["landscape", "Nature"],
+      "year": 2024,
+      "afterSrc": "/assets/photography/originals/architecture_after.jpg",
+      "beforeSrc": "/assets/photography/originals/architecture_before.jpg",
+      "thumb": "/assets/photography/originals/architecture_after.jpg",
+      "alt": "Cave entrance in Gibraltar",
+      "accent": ""
+    },
+    {
+      "id": "Fish",
+      "title": "Cave Entrance",
+      "description": "Gibraltar cave entrance",
+      "categories": ["landscape", "Nature"],
+      "year": 2024,
+      "afterSrc": "/assets/photography/originals/fish_after.jpg",
+      "beforeSrc": "/assets/photography/originals/fish_before.jpg",
+      "thumb": "/assets/photography/originals/fish_after.jpg",
+      "alt": "Cave entrance in Gibraltar",
+      "accent": ""
     }
   ],
   "settings": {
