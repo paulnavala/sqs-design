@@ -8,9 +8,9 @@
       "description": "Fox in the woods",
       "categories": ["portrait", "studio"],
       "year": 2024,
-      "afterSrc": "/assets/photography/vulpe-after.jpg",
-      "beforeSrc": "/assets/photography/vulpe-before.jpg",
-      "thumb": "/assets/photography/vulpe-before.jpg",
+      "afterSrc": "assets/photography/vulpe-after.jpg",
+      "beforeSrc": "assets/photography/vulpe-before.jpg",
+      "thumb": "assets/photography/vulpe-before.jpg",
       "alt": "Portrait of a fox in the woods",
       "accent": ""
     },
@@ -20,9 +20,9 @@
       "description": "Gibraltar cave entrance",
       "categories": ["landscape", "Nature"],
       "year": 2024,
-      "afterSrc": "/assets/photography/pestera-after.jpg",
-      "beforeSrc": "/assets/photography/pestera-before.jpg",
-      "thumb": "/assets/photography/pestera-before.jpg",
+      "afterSrc": "assets/photography/pestera-after.jpg",
+      "beforeSrc": "assets/photography/pestera-before.jpg",
+      "thumb": "assets/photography/pestera-before.jpg",
       "alt": "Cave entrance in Gibraltar",
       "accent": "#8EE3FF"
     }
