@@ -14,6 +14,7 @@
   const CSS_FILES = [
     '/components/fortune-peach/fortune-peach.css',
     '/components/portfolio-uiux/portfolio-uiux.css',
+    '/components/project-cards/project-cards.css',
     '/components/twin-gallery/twin-gallery.css',
     '/core/elegant-footer.css',
     '/core/header.css',
