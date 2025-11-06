@@ -152,6 +152,22 @@
     <div class="test-container">
       <h1 style="text-align: center; margin-bottom: 40px">Component Test Page</h1>
       <p class="loading" id="loading">Loading components...</p>
+
+      <div class="component-section">
+        <h2 class="component-title">Project Cards (Vue, one-line)</h2>
+        <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
+        <div class="component-content">
+          <div data-component="project-cards" id="demo-project-cards"></div>
+        </div>
+      </div>
+
+      <div class="component-section">
+        <h2 class="component-title">Tagline (Vue, one-line)</h2>
+        <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
+        <div class="component-content">
+          <div data-component="tagline" id="demo-tagline"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Auto-load all components from registry -->
@@ -162,6 +178,32 @@
         const loading = document.getElementById('loading');
         if (loading) loading.style.display = 'none';
       }, 500);
+    </script>
+
+    <!-- Local loader HTML injection for the new Vue components (bypass CDN) -->
+    <script>
+      (function () {
+        'use strict';
+        function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+        function injectLocal(targetSel, localPath, componentBase){
+          var target = document.querySelector(targetSel);
+          if(!target) return;
+          fetch(localPath).then(r=>r.text()).then(html=>{
+            var clean = html.replace(/<!--[\s\S]*?-->/g,'').trim();
+            target.innerHTML = clean;
+            var evt = new CustomEvent('componentLoaded', { detail: { componentName: componentBase + '-loader.html', target: target, url: localPath } });
+            try { target.dispatchEvent(evt); } catch(e) {}
+            try { document.dispatchEvent(evt); } catch(e) {}
+          }).catch(err=>{
+            target.innerHTML = '<div style="color:red">Failed to load loader HTML.</div>';
+            console.error('Local loader load failed:', localPath, err);
+          });
+        }
+        ready(function(){
+          injectLocal('#demo-project-cards', '../components/project-cards/project-cards-loader.html', 'project-cards');
+          injectLocal('#demo-tagline', '../components/tagline/tagline-loader.html', 'tagline');
+        });
+      })();
     </script>
   </body>
 </html>
