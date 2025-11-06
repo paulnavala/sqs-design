@@ -183,208 +183,7 @@
   background: #fff;
 }
 
-/* ============================================================================
-   Intro Card
-   ============================================================================ */
-
-/**
- * Introduction card (above filters)
- * Provides context and highlights features
- */
-#portfolio-uiux .intro-card {
-  width: min(1200px, 92vw);
-  margin: 6px auto 12px;
-  --accent: var(--clay); /* Set accent color */
-}
-
-/**
- * Card inner container
- * Gradient border and background
- */
-#portfolio-uiux .intro-card__inner {
-  position: relative;
-  border-radius: var(--radius-xl);
-  padding: clamp(22px, 2.4vw, 34px);
-  background:
-    /* Radial highlight */
-    radial-gradient(110% 140% at 80% -20%, rgba(255, 255, 255, 0.9), transparent 60%),
-    /* Vertical gradient */
-      linear-gradient(180deg, #fff, color-mix(in oklab, #fff 80%, var(--linen)));
-  border: 1px solid transparent;
-  /* Gradient border effect */
-  background-image:
-    linear-gradient(var(--surface), var(--surface)),
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--border) 90%, #fff),
-      color-mix(in oklab, var(--border-strong) 70%, #fff)
-    );
-  background-origin: padding-box, border-box;
-  background-clip: padding-box, border-box;
-  box-shadow: var(--shadow);
-}
-
-/**
- * Meta information (eyebrow text)
- */
-#portfolio-uiux .intro-card__meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-  color: var(--muted);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-}
-
-/**
- * Decorative dot
- * Accent indicator with layered shadow
- */
-#portfolio-uiux .intro-card__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow:
-    0 0 0 6px #fff,
-    0 0 0 1px var(--border-strong);
-}
-
-/**
- * Intro title
- * Large heading with advanced typography features
- */
-#portfolio-uiux .intro-card__title {
-  margin: 0 0 10px;
-  color: var(--ink-strong);
-  font-weight: 760;
-  letter-spacing: 0.004em;
-  font-feature-settings:
-    'liga' on,
-    'ss01' on,
-    'cv01' on; /* Typography features */
-  font-size: clamp(1.5rem, 1.8vw + 0.9rem, 2.2rem);
-}
-
-/**
- * Intro subtitle
- */
-#portfolio-uiux .intro-card__sub {
-  margin: 0 0 14px;
-  color: var(--muted);
-  line-height: 1.68;
-  max-width: var(--max-ch); /* Optimal reading width */
-}
-
-/**
- * Highlights list
- * Bulleted list with custom bullet styling
- */
-#portfolio-uiux .intro-card__highlights {
-  display: grid;
-  gap: 10px;
-  margin: 0 0 18px;
-  padding: 0;
-  list-style: none;
-}
-
-#portfolio-uiux .intro-card__highlights li {
-  position: relative;
-  padding-left: 22px;
-  color: var(--ink);
-}
-
-/**
- * Custom bullet (colored dot)
- */
-#portfolio-uiux .intro-card__highlights li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.6em;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: color-mix(in oklab, var(--accent) 85%, #fff);
-  box-shadow:
-    0 0 0 4px #fff,
-    0 0 0 1px var(--border);
-}
-
-/**
- * Action buttons
- */
-#portfolio-uiux .intro-card__actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-#portfolio-uiux .intro-card__actions .btn--primary {
-  background: var(--ink-strong);
-  border-color: color-mix(in oklab, var(--ink-strong) 85%, #fff);
-}
-
-#portfolio-uiux .intro-card__actions .btn--primary:hover {
-  background: var(--clay);
-  border-color: var(--clay);
-}
-
-#portfolio-uiux .intro-card__actions .btn--ghost {
-  background: #fff;
-  color: var(--ink-strong);
-  border: 1px solid var(--border);
-}
-
-#portfolio-uiux .intro-card__actions .btn--ghost:hover {
-  background: color-mix(in oklab, #fff 72%, var(--linen));
-}
-
-/**
- * Intro ornament (decorative divider)
- */
-#portfolio-uiux .intro-card__ornament {
-  position: relative;
-  width: min(1100px, 90vw);
-  height: 18px;
-  margin: 18px auto;
-}
-
-/**
- * Horizontal line
- */
-#portfolio-uiux .intro-card__ornament::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
-}
-
-/**
- * Center dot
- */
-#portfolio-uiux .intro-card__ornament::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--clay);
-  box-shadow:
-    0 0 0 6px #fff,
-    0 0 0 1px var(--border-strong),
-    0 6px 18px rgba(0, 0, 0, 0.08);
-}
+/* Intro Card removed */
 
 /* ============================================================================
    Filter Pills
@@ -396,7 +195,7 @@
  */
 #portfolio-uiux .portfolio__filters {
   width: min(1200px, 92vw);
-  margin: 0 auto 20px;
+  margin: 8px auto 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -680,7 +479,7 @@
   display: grid;
   grid-template-columns: 1fr 1.12fr; /* Text slightly narrower */
   gap: 36px;
-  align-items: start;
+  align-items: stretch;
 }
 
 /**
@@ -694,6 +493,8 @@
     opacity 0.5s,
     transform 0.5s;
   max-width: 65ch; /* Optimal reading width */
+  display: flex;
+  flex-direction: column;
 }
 
 /**
@@ -720,6 +521,29 @@
   line-height: 1.65;
   margin: 0 0 16px;
   max-width: 560px;
+}
+
+/**
+ * Project actions (bottom-pinned)
+ * Flex row that stays anchored at the bottom of the text column
+ */
+#portfolio-uiux .project__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: auto; /* Push actions to bottom */
+  position: relative;
+  padding-top: 14px; /* Space for hairline */
+}
+
+#portfolio-uiux .project__actions::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
 }
 
 /**
@@ -953,143 +777,7 @@
     0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-/* ============================================================================
-   Call-to-Action Card
-   ============================================================================ */
-
-/**
- * CTA card (dark variant)
- * Appears after all projects
- */
-#portfolio-uiux .cta-card {
-  width: min(1100px, 90vw);
-  margin: 12px auto 0;
-}
-
-/**
- * CTA card inner
- * Dark background with light text
- */
-#portfolio-uiux .cta-card__inner {
-  position: relative;
-  border-radius: var(--radius-xl);
-  padding: clamp(22px, 2.4vw, 34px);
-  color: #fff;
-  background:
-    radial-gradient(120% 160% at 10% -20%, rgba(255, 255, 255, 0.08), transparent 60%),
-    linear-gradient(180deg, color-mix(in oklab, var(--cacao) 88%, #000), var(--cacao));
-  border: 1px solid color-mix(in oklab, #fff 10%, var(--cacao));
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-  text-align: center;
-}
-
-/**
- * CTA meta (eyebrow)
- */
-#portfolio-uiux .cta-card__meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  color: color-mix(in oklab, #fff 80%, var(--linen));
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-}
-
-#portfolio-uiux .cta-card__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--clay);
-  box-shadow:
-    0 0 0 6px rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.25);
-}
-
-#portfolio-uiux .cta-card__title {
-  margin: 0 0 8px;
-  color: #fff;
-  font-weight: 760;
-  letter-spacing: 0.004em;
-  font-size: clamp(1.4rem, 1.7vw + 0.9rem, 2.1rem);
-}
-
-#portfolio-uiux .cta-card__sub {
-  margin: 0 auto 16px;
-  color: color-mix(in oklab, #fff 85%, var(--linen));
-  line-height: 1.7;
-  max-width: var(--max-ch);
-}
-
-#portfolio-uiux .cta-card__actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/**
- * Inverted button variants (for dark CTA)
- */
-#portfolio-uiux .btn--invert {
-  background: #fff;
-  color: var(--cacao);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-#portfolio-uiux .btn--invert:hover {
-  background: var(--clay);
-  color: #fff;
-  border-color: var(--clay);
-}
-
-#portfolio-uiux .btn--invert-ghost {
-  background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-}
-
-#portfolio-uiux .btn--invert-ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/**
- * CTA ornament
- */
-#portfolio-uiux .cta-card__ornament {
-  position: relative;
-  width: min(1100px, 90vw);
-  height: 18px;
-  margin: 18px auto 0;
-}
-
-#portfolio-uiux .cta-card__ornament::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
-}
-
-#portfolio-uiux .cta-card__ornament::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow:
-    0 0 0 6px rgba(255, 255, 255, 0.12),
-    0 0 0 1px rgba(255, 255, 255, 0.45);
-}
+/* CTA Card removed */
 
 /* ============================================================================
    Fullscreen Modal
@@ -1336,9 +1024,7 @@ html.no-scroll {
   }
 
   /* Smaller border radius on mobile */
-  #portfolio-uiux .project__card,
-  #portfolio-uiux .intro-card__inner,
-  #portfolio-uiux .cta-card__inner {
+  #portfolio-uiux .project__card {
     border-radius: 20px;
   }
 
@@ -1361,8 +1047,6 @@ html.no-scroll {
   }
 
   /* Smaller ornaments */
-  #portfolio-uiux .intro-card__ornament,
-  #portfolio-uiux .cta-card__ornament,
   #portfolio-uiux .project__divider {
     margin-top: 18px;
     height: 14px;
@@ -1381,9 +1065,7 @@ html.no-scroll {
  */
 @media (max-width: 420px) {
   /* Even smaller border radius */
-  #portfolio-uiux .project__card,
-  #portfolio-uiux .intro-card__inner,
-  #portfolio-uiux .cta-card__inner {
+  #portfolio-uiux .project__card {
     border-radius: 16px;
   }
 
@@ -1414,9 +1096,7 @@ html.no-scroll {
     backdrop-filter: none; /* Remove blur */
   }
 
-  #portfolio-uiux .intro-card__inner,
-  #portfolio-uiux .project__card,
-  #portfolio-uiux .cta-card__inner {
+  #portfolio-uiux .project__card {
     box-shadow: none;
     border-color: var(--border-strong); /* Stronger border */
   }
@@ -1430,9 +1110,7 @@ html.no-scroll {
   #portfolio-uiux .project__text,
   #portfolio-uiux .project__frame,
   #portfolio-uiux .btn,
-  #portfolio-uiux .project__card,
-  #portfolio-uiux .cta-card__inner,
-  #portfolio-uiux .intro-card__inner {
+  #portfolio-uiux .project__card {
     transition: none !important;
     transform: none !important;
     opacity: 1 !important; /* Show immediately */
@@ -1484,9 +1162,7 @@ html.no-scroll {
  * Prevent long text from breaking layout
  * Allows text to wrap and truncate gracefully
  */
-#portfolio-uiux .project__title,
-#portfolio-uiux .intro-card__title,
-#portfolio-uiux .cta-card__title {
+#portfolio-uiux .project__title {
   overflow-wrap: anywhere; /* Break long words if needed */
 }
 

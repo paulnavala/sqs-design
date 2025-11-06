@@ -177,8 +177,9 @@ export default defineComponent({
             slot.style.animation = 'glow 0.6s ease';
             // Move caret after this revealed slot
             if (caret1Ref.value) {
-              const ph1 = ensurePlaceholder(l1);
-              l1.insertBefore(caret1Ref.value, ph1);
+              const after = slot.nextSibling;
+              if (after) l1.insertBefore(caret1Ref.value, after);
+              else l1.appendChild(caret1Ref.value);
             }
             const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
             const delay = Math.max(20, props.typeSpeed + variance);
@@ -203,8 +204,9 @@ export default defineComponent({
               slot.style.visibility = 'visible';
               slot.style.animation = 'glow 0.6s ease';
               if (caret2Ref.value) {
-                const ph2b = ensurePlaceholder(l2);
-                l2.insertBefore(caret2Ref.value, ph2b);
+                const after2 = slot.nextSibling;
+                if (after2) l2.insertBefore(caret2Ref.value, after2);
+                else l2.appendChild(caret2Ref.value);
               }
               const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
               const delay = Math.max(20, props.typeSpeed + variance);
