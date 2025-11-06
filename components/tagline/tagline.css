@@ -4,7 +4,9 @@
 .tagline.typewriter { font-family: inherit; font-weight: inherit; font-style: italic; font-size: calc(1.6 * var(--heading-font-size, 2rem)); line-height: 1.2; color: inherit; text-align: center; white-space: nowrap; position: relative; }
 .tagline .line { display: block; text-align: center; }
 .tagline.typewriter .text span { display: inline; white-space: nowrap; }
-.caret { display: inline-block; position: relative; width: 3px; height: 0.9em; top: 0.05em; margin-left: 3px; vertical-align: baseline; background: currentColor; border-radius: 2px; box-shadow: 0 0 6px currentColor; opacity: 1; transform-origin: bottom center; }
+.caret { display: inline-block; position: relative; width: 3px; height: 0.9em; top: 0.05em; margin-left: 3px; vertical-align: baseline; background: currentColor; border-radius: 2px; box-shadow: 0 0 6px currentColor; opacity: 1; transform-origin: bottom center; animation: blink 1s ease-in-out infinite; }
+/* Placeholder to reserve caret width so lines don't shift when the caret moves */
+.caret-placeholder { display: inline-block; width: 3px; height: 0.9em; margin-left: 3px; visibility: hidden; }
 @keyframes blink { 0%, 100% { opacity: 0.3; box-shadow: 0 0 4px currentColor; } 50% { opacity: 1; box-shadow: 0 0 8px currentColor; } }
 .caret.fade-in { animation: caretFadeIn 0.6s ease forwards; }
 @keyframes caretFadeIn { from { opacity: 0.3; } to { opacity: 1; } }

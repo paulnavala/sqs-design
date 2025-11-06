@@ -35,14 +35,25 @@ export default defineComponent({
       }
     }
 
+    function ensurePlaceholder(lineEl: HTMLElement): HTMLElement {
+      let ph = lineEl.querySelector('.caret-placeholder') as HTMLElement | null;
+      if (!ph) {
+        ph = document.createElement('span');
+        ph.className = 'caret-placeholder';
+        lineEl.appendChild(ph);
+      }
+      return ph;
+    }
+
     async function typeText(text: string, baseSpeed: number, textEl: HTMLElement) {
+      const placeholder = ensurePlaceholder(textEl);
       for (let i = 0; i < text.length; i++) {
         clearPreviousGlow(textEl);
         const span = makeCharSpan(text[i]);
-        textEl.appendChild(span);
+        textEl.insertBefore(span, placeholder);
         // Move caret to follow the newest character
         if (caretRef.value) {
-          textEl.appendChild(caretRef.value);
+          textEl.insertBefore(caretRef.value, placeholder);
         }
         const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
         const delay = Math.max(20, baseSpeed + variance);
@@ -61,7 +72,9 @@ export default defineComponent({
       caretEl.style.transform = 'translateX(0)';
       caretEl.style.animation = 'blink 1s ease-in-out infinite';
       // Start caret in line 1
-      line1El.appendChild(caretEl);
+      const ph1 = ensurePlaceholder(line1El);
+      line1El.insertBefore(caretEl, ph1);
+      if (line2Ref.value) ensurePlaceholder(line2Ref.value);
     }
 
     function hideCaret(caretEl: HTMLElement) {
@@ -78,8 +91,9 @@ export default defineComponent({
         await typeText(String(props.line1), props.typeSpeed, l1);
         await sleep(props.waitBetweenLines);
         if (l2) {
-          // Move caret to start of line 2 before typing
-          l2.appendChild(caretEl);
+          // Move caret to start of line 2 before typing (place before its placeholder)
+          const ph2 = ensurePlaceholder(l2);
+          l2.insertBefore(caretEl, ph2);
           await typeText(String(props.line2), props.typeSpeed, l2);
         }
         hideCaret(caretEl);
