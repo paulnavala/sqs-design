@@ -100,16 +100,24 @@ export default defineComponent({
 
     function positionCaretAbs(lineEl: HTMLElement, caretEl: HTMLElement, afterSlot: HTMLElement | null) {
       caretEl.classList.add('caret--abs');
-      const lineRect = lineEl.getBoundingClientRect();
+      const H_GAP = 2; // px gap between last character and caret
+      const V_ADJUST = 1; // px slight baseline adjustment
       if (afterSlot) {
-        const r = afterSlot.getBoundingClientRect();
-        const left = r.right - lineRect.left;
-        const top = r.top - lineRect.top;
+        const left = afterSlot.offsetLeft + afterSlot.offsetWidth + H_GAP;
+        const top = afterSlot.offsetTop + V_ADJUST;
         caretEl.style.left = left + 'px';
         caretEl.style.top = top + 'px';
       } else {
-        caretEl.style.left = '0px';
-        caretEl.style.top = '0px';
+        const first = lineEl.querySelector('.slot') as HTMLElement | null;
+        if (first) {
+          const left = first.offsetLeft;
+          const top = first.offsetTop + V_ADJUST;
+          caretEl.style.left = left + 'px';
+          caretEl.style.top = top + 'px';
+        } else {
+          caretEl.style.left = '0px';
+          caretEl.style.top = '0px';
+        }
       }
     }
 
