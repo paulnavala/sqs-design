@@ -47,7 +47,7 @@ export default defineComponent({
       return ph;
     }
 
-    function measureLineWidth(text: string): number {
+    function measureLineSize(text: string): { width: number; height: number } {
       // Create a hidden measurement container that mimics the line styling
       const measureRoot = document.createElement('div');
       measureRoot.className = 'tagline typewriter';
@@ -70,9 +70,11 @@ export default defineComponent({
 
       measureRoot.appendChild(line);
       document.body.appendChild(measureRoot);
-      const w = Math.ceil(line.getBoundingClientRect().width);
+      const rect = line.getBoundingClientRect();
+      const w = Math.ceil(rect.width);
+      const h = Math.ceil(rect.height);
       document.body.removeChild(measureRoot);
-      return w;
+      return { width: w, height: h };
     }
 
     async function typeText(text: string, baseSpeed: number, textEl: HTMLElement, activeCaret: HTMLElement | null) {
@@ -128,11 +130,18 @@ export default defineComponent({
         const l1 = line1El;
         const l2 = line2Ref.value as HTMLElement | null;
         // Optionally fix line widths to final size to prevent lateral motion
+        // Pre-measure final sizes to reserve space and avoid vertical/horizontal shifts
+        const s1 = measureLineSize(String(props.line1));
+        const s2 = l2 ? measureLineSize(String(props.line2)) : { width: 0, height: 0 };
+
+        // Always reserve vertical space to avoid line jumping
+        l1.style.minHeight = s1.height + 'px';
+        if (l2) l2.style.minHeight = s2.height + 'px';
+
+        // Optionally fix widths (no lateral motion)
         if (props.fixedCenter) {
-          const w1 = measureLineWidth(String(props.line1));
-          const w2 = measureLineWidth(String(props.line2));
-          l1.style.width = w1 + 'px';
-          if (l2) l2.style.width = w2 + 'px';
+          l1.style.width = s1.width + 'px';
+          if (l2) l2.style.width = s2.width + 'px';
         } else {
           l1.style.removeProperty('width');
           if (l2) l2.style.removeProperty('width');
