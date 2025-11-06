@@ -189,6 +189,30 @@
    Filter Pills
    ============================================================================ */
 
+/* About block */
+#portfolio-uiux .portfolio__about {
+  width: min(1200px, 92vw);
+  margin: 6px auto 16px;
+}
+
+#portfolio-uiux .portfolio__about-inner {
+  color: var(--ink);
+  max-width: var(--max-ch);
+}
+
+#portfolio-uiux .about__lead {
+  margin: 0 0 8px;
+  color: var(--ink-strong);
+  font-weight: 760;
+  font-size: clamp(1.15rem, 1.2vw + 0.9rem, 1.6rem);
+}
+
+#portfolio-uiux .portfolio__about-inner p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 /**
  * Filter buttons container
  * Scrollable on mobile, centered on desktop
@@ -533,17 +557,7 @@
   flex-wrap: wrap;
   margin-top: auto; /* Push actions to bottom */
   position: relative;
-  padding-top: 14px; /* Space for hairline */
-}
-
-#portfolio-uiux .project__actions::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  padding-top: 0;
 }
 
 /**
