@@ -23,6 +23,7 @@
     '/core/tagline.js',
     '/components/fortune-peach/fortune-peach.js',
     '/components/portfolio-uiux/portfolio.js',
+    '/components/project-cards/project-cards.js',
     '/components/twin-gallery/twin-gallery.js'
   ];
   
