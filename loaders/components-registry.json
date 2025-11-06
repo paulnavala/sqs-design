@@ -9,44 +9,12 @@
       "syntax": "fortune-peach"
     },
     {
-      "filename": "mobile-menu-loader.html",
-      "name": "Mobile Menu",
-      "description": "Mobile Menu Component Loader HTML",
-      "url": "https://assets.peachless.design/components/mobile-menu/mobile-menu-loader.html",
-      "localPath": "/components/mobile-menu/mobile-menu-loader.html",
-      "syntax": "mobile-menu"
-    },
-    {
       "filename": "portfolio-uiux-loader.html",
       "name": "Portfolio Uiux",
       "description": "Modern portfolio showcase with filtering, Figma embeds, intro/CTA cards, and fullscreen modal views.",
       "url": "https://assets.peachless.design/components/portfolio-uiux/portfolio-uiux-loader.html",
       "localPath": "/components/portfolio-uiux/portfolio-uiux-loader.html",
       "syntax": "portfolio-uiux"
-    },
-    {
-      "filename": "project-card-loader.html",
-      "name": "Project Card",
-      "description": "Project Card Component Loader HTML",
-      "url": "https://assets.peachless.design/components/project-card/project-card-loader.html",
-      "localPath": "/components/project-card/project-card-loader.html",
-      "syntax": "project-card"
-    },
-    {
-      "filename": "prototype-showcase-loader.html",
-      "name": "Prototype Showcase",
-      "description": "Prototype Showcase Component Loader HTML",
-      "url": "https://assets.peachless.design/components/prototype-showcase/prototype-showcase-loader.html",
-      "localPath": "/components/prototype-showcase/prototype-showcase-loader.html",
-      "syntax": "prototype-showcase"
-    },
-    {
-      "filename": "tagline-loader.html",
-      "name": "Tagline",
-      "description": "Loader HTML",
-      "url": "https://assets.peachless.design/components/tagline/tagline-loader.html",
-      "localPath": "/components/tagline/tagline-loader.html",
-      "syntax": "tagline"
     },
     {
       "filename": "twin-gallery-loader.html",
@@ -57,6 +25,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-06T13:32:01.112Z",
-  "total": 7
+  "generated": "2025-11-05T21:47:30.208Z",
+  "total": 3
 }

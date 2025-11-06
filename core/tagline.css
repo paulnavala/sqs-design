@@ -1,0 +1,205 @@
+/**
+ * Tagline Component Styles
+ * 
+ * Cinematic typewriter effect with character-by-character animation,
+ * glowing effects, and smooth caret fade animations.
+ * 
+ * Features:
+ * - Character-by-character typewriter effect
+ * - Glowing animation on each new character
+ * - Blinking caret indicator
+ * - Smooth fade-out animations
+ * - Reduced motion support
+ * 
+ * HTML Structure:
+ * <div class="tagline-hero">
+ *   <div class="tagline typewriter">
+ *     <div class="text"></div>
+ *     <span class="caret"></span>
+ *   </div>
+ * </div>
+ * 
+ * JavaScript Dependency:
+ * - tagline.js handles animation sequence
+ * 
+ * @module tagline
+ */
+
+/* ============================================================================
+   Container
+   ============================================================================ */
+
+/**
+ * Hero container for tagline
+ * Centers content vertically and horizontally
+ */
+.tagline-hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 55vh; /* Viewport height for prominence */
+  text-align: center;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* ============================================================================
+   Tagline Text
+   ============================================================================ */
+
+/**
+ * Main tagline container
+ * Inherits font from parent, styled as italic and larger
+ */
+.tagline.typewriter {
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: italic;
+  font-size: calc(1.6 * var(--heading-font-size, 2rem)); /* 60% larger than heading */
+  line-height: 1.2;
+  color: inherit;
+  text-align: center;
+  white-space: nowrap; /* Prevent wrapping during typing */
+  position: relative;
+}
+
+/**
+ * Individual character spans
+ * Created dynamically by JavaScript
+ */
+.tagline.typewriter .text span {
+  display: inline;
+  white-space: nowrap;
+}
+
+/* ============================================================================
+   Caret (Typing Indicator)
+   ============================================================================ */
+
+/**
+ * Blinking caret indicator
+ * Shows typing position and state
+ */
+.caret {
+  display: inline-block;
+  position: relative;
+  width: 3px;
+  height: 0.9em; /* Relative to font size */
+  top: 0.05em; /* Slight vertical adjustment */
+  margin-left: 3px;
+  vertical-align: baseline;
+  background: currentColor; /* Matches text color */
+  border-radius: 2px;
+  box-shadow: 0 0 6px currentColor; /* Subtle glow */
+  opacity: 1;
+  transform-origin: bottom center; /* For fade-out animation */
+}
+
+/* ============================================================================
+   Caret Animations
+   ============================================================================ */
+
+/**
+ * Blinking animation
+ * Creates classic typing cursor effect
+ */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.3;
+    box-shadow: 0 0 4px currentColor;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px currentColor;
+  }
+}
+
+/**
+ * Fade-in animation for caret at start
+ * Smooth entrance when typing begins
+ */
+.caret.fade-in {
+  animation: caretFadeIn 0.6s ease forwards;
+}
+
+@keyframes caretFadeIn {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/**
+ * Exit animation: smooth fade and slide
+ * Caret fades out with slight horizontal movement
+ */
+.caret.exit {
+  animation: caretExit 2.2s ease forwards;
+}
+
+@keyframes caretExit {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+    box-shadow: 0 0 8px currentColor;
+  }
+  80% {
+    transform: translateX(0.4em);
+    opacity: 0.6;
+    box-shadow: 0 0 4px currentColor;
+  }
+  100% {
+    transform: translateX(0.4em);
+    opacity: 0;
+    box-shadow: none;
+  }
+}
+
+/* ============================================================================
+   Tagline Fade-out
+   ============================================================================ */
+
+/**
+ * Fade-out animation for complete tagline
+ * Stays in place (no upward motion) for elegant exit
+ */
+.tagline.typewriter.fade {
+  animation: fadeout 2.5s ease-in-out forwards;
+}
+
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0); /* No upward motion - stays in place */
+  }
+}
+
+/* ============================================================================
+   Character Glow Effect
+   ============================================================================ */
+
+/**
+ * Glow animation for each newly typed character
+ * Creates brief highlight as each letter appears
+ * Uses currentColor for theme-aware coloring
+ */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 8px currentColor;
+    opacity: 1;
+  }
+  80% {
+    text-shadow: 0 0 3px currentColor;
+  }
+  100% {
+    text-shadow: none;
+    opacity: 1;
+  }
+}

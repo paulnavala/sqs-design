@@ -49,13 +49,6 @@ npm run serve
 - Use `<div data-component="fortune-peach"></div>` (auto-loaded by the global JS loader), or
 - Paste the corresponding `components/[name]/[name]-loader.html` contents directly into a block
 
-### New Vue core components
-
-- Mobile Menu: `<div data-component="mobile-menu"></div>`
-- Tagline (optional lines): `<div data-component="tagline" data-line1="..." data-line2="..."></div>`
-- Prototype Showcase (Figma): `<div data-component="prototype-showcase" data-figma="https://www.figma.com/file/..." data-title="..."></div>`
-- Project Card (behavior): `<div data-component="project-card"></div>` — adds parallax hover to any `.project-card` elements on the page.
-
 3. Host the built JS/CSS on your CDN (or use GitHub Pages) if not inlining.
 
 ## Conventions
@@ -78,7 +71,7 @@ npm run serve
 1. Create `components/my-widget/` with:
 
 - `my-widget.entry.ts`
-- `my-widget.css` (or Tailwind classes + optional scoped styles)
+- `my-widget.css`
 - `my-widget-loader.html`
 
 2. Build and test:
