@@ -14,7 +14,8 @@ export default defineComponent({
   },
   setup(props) {
     const root = ref<HTMLElement | null>(null);
-    const textRef = ref<HTMLElement | null>(null);
+    const line1Ref = ref<HTMLElement | null>(null);
+    const line2Ref = ref<HTMLElement | null>(null);
     const caretRef = ref<HTMLElement | null>(null);
 
     function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
@@ -39,6 +40,10 @@ export default defineComponent({
         clearPreviousGlow(textEl);
         const span = makeCharSpan(text[i]);
         textEl.appendChild(span);
+        // Move caret to follow the newest character
+        if (caretRef.value) {
+          textEl.appendChild(caretRef.value);
+        }
         const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
         const delay = Math.max(20, baseSpeed + variance);
         await sleep(delay);
@@ -46,14 +51,17 @@ export default defineComponent({
       clearPreviousGlow(textEl);
     }
 
-    function resetTagline(tag: HTMLElement, textEl: HTMLElement, caretEl: HTMLElement) {
+    function resetTagline(tag: HTMLElement, line1El: HTMLElement, caretEl: HTMLElement) {
       tag.classList.remove('fade');
-      textEl.innerHTML = '';
+      line1El.innerHTML = '';
+      if (line2Ref.value) line2Ref.value.innerHTML = '';
       caretEl.classList.remove('exit', 'fade-in');
       caretEl.style.display = 'inline-block';
       caretEl.style.opacity = '1';
       caretEl.style.transform = 'translateX(0)';
       caretEl.style.animation = 'blink 1s ease-in-out infinite';
+      // Start caret in line 1
+      line1El.appendChild(caretEl);
     }
 
     function hideCaret(caretEl: HTMLElement) {
@@ -62,12 +70,18 @@ export default defineComponent({
       caretEl.style.display = 'none';
     }
 
-    async function runSequence(tag: HTMLElement, textEl: HTMLElement, caretEl: HTMLElement) {
+    async function runSequence(tag: HTMLElement, line1El: HTMLElement, caretEl: HTMLElement) {
       while (true) {
-        resetTagline(tag, textEl, caretEl);
-        await typeText(String(props.line1), props.typeSpeed, textEl);
+        const l1 = line1El;
+        const l2 = line2Ref.value as HTMLElement | null;
+        resetTagline(tag, l1, caretEl);
+        await typeText(String(props.line1), props.typeSpeed, l1);
         await sleep(props.waitBetweenLines);
-        await typeText(String(props.line2), props.typeSpeed, textEl);
+        if (l2) {
+          // Move caret to start of line 2 before typing
+          l2.appendChild(caretEl);
+          await typeText(String(props.line2), props.typeSpeed, l2);
+        }
         hideCaret(caretEl);
         await sleep(props.holdAfterLine2);
         tag.classList.add('fade');
@@ -78,15 +92,16 @@ export default defineComponent({
 
     onMounted(() => {
       const tag = root.value as HTMLElement | null;
-      const textEl = textRef.value as HTMLElement | null;
+      const l1 = line1Ref.value as HTMLElement | null;
       const caretEl = caretRef.value as HTMLElement | null;
-      if (!tag || !textEl || !caretEl) return;
-      void runSequence(tag, textEl, caretEl);
+      if (!tag || !l1 || !caretEl) return;
+      void runSequence(tag, l1, caretEl);
     });
 
     return () =>
-      h('div', { ref: root, class: 'tagline typewriter' }, [
-        h('div', { ref: textRef, class: 'text' }),
+      h('div', { ref: root, class: 'tagline typewriter', style: 'display:flex;flex-direction:column;align-items:center;text-align:center' }, [
+        h('div', { ref: line1Ref, class: 'text line line-1' }),
+        h('div', { ref: line2Ref, class: 'text line line-2', style: 'margin-top:0.2em' }),
         h('span', { ref: caretRef, class: 'caret' }),
       ]);
   },
