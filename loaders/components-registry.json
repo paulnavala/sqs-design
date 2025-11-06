@@ -25,6 +25,14 @@
       "syntax": "project-cards"
     },
     {
+      "filename": "tagline-loader.html",
+      "name": "Tagline",
+      "description": "Loader HTML",
+      "url": "https://assets.peachless.design/components/tagline/tagline-loader.html",
+      "localPath": "/components/tagline/tagline-loader.html",
+      "syntax": "tagline"
+    },
+    {
       "filename": "twin-gallery-loader.html",
       "name": "Twin Gallery",
       "description": "Clickable image gallery with two panels and optional guidelines section.",
@@ -33,6 +41,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-06T15:15:51.138Z",
-  "total": 4
+  "generated": "2025-11-06T15:22:15.166Z",
+  "total": 5
 }
