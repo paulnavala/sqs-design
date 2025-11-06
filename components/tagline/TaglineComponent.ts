@@ -8,15 +8,16 @@ export default defineComponent({
     typeSpeed: { type: Number, default: 65 },
     typeVariance: { type: Number, default: 25 },
     waitBetweenLines: { type: Number, default: 2000 },
-    holdAfterLine2: { type: Number, default: 5000 },
+    holdAfterLine2: { type: Number, default: 15000 },
     fadeDuration: { type: Number, default: 2500 },
-    waitBeforeRestart: { type: Number, default: 20000 },
+    waitBeforeRestart: { type: Number, default: 5000 },
   },
   setup(props) {
     const root = ref<HTMLElement | null>(null);
     const line1Ref = ref<HTMLElement | null>(null);
     const line2Ref = ref<HTMLElement | null>(null);
-    const caretRef = ref<HTMLElement | null>(null);
+    const caret1Ref = ref<HTMLElement | null>(null);
+    const caret2Ref = ref<HTMLElement | null>(null);
 
     function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
 
@@ -45,15 +46,17 @@ export default defineComponent({
       return ph;
     }
 
-    async function typeText(text: string, baseSpeed: number, textEl: HTMLElement) {
+    async function typeText(text: string, baseSpeed: number, textEl: HTMLElement, activeCaret: HTMLElement | null) {
       const placeholder = ensurePlaceholder(textEl);
       for (let i = 0; i < text.length; i++) {
         clearPreviousGlow(textEl);
         const span = makeCharSpan(text[i]);
+        // Insert the new character just before the placeholder
         textEl.insertBefore(span, placeholder);
-        // Move caret to follow the newest character
-        if (caretRef.value) {
-          textEl.insertBefore(caretRef.value, placeholder);
+        // Place the active caret immediately after the new character (before placeholder)
+        if (activeCaret) {
+          activeCaret.style.visibility = 'visible';
+          textEl.insertBefore(activeCaret, placeholder);
         }
         const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
         const delay = Math.max(20, baseSpeed + variance);
@@ -62,41 +65,53 @@ export default defineComponent({
       clearPreviousGlow(textEl);
     }
 
-    function resetTagline(tag: HTMLElement, line1El: HTMLElement, caretEl: HTMLElement) {
+    function resetTagline(tag: HTMLElement, line1El: HTMLElement) {
       tag.classList.remove('fade');
       line1El.innerHTML = '';
       if (line2Ref.value) line2Ref.value.innerHTML = '';
-      caretEl.classList.remove('exit', 'fade-in');
-      caretEl.style.display = 'inline-block';
-      caretEl.style.opacity = '1';
-      caretEl.style.transform = 'translateX(0)';
-      caretEl.style.animation = 'blink 1s ease-in-out infinite';
-      // Start caret in line 1
+      // Prepare placeholders
       const ph1 = ensurePlaceholder(line1El);
-      line1El.insertBefore(caretEl, ph1);
       if (line2Ref.value) ensurePlaceholder(line2Ref.value);
+      // Initialize dual carets
+      if (caret1Ref.value) {
+        caret1Ref.value.style.visibility = 'visible';
+        caret1Ref.value.style.display = 'inline-block';
+        caret1Ref.value.style.opacity = '1';
+        caret1Ref.value.classList.remove('exit', 'fade-in');
+        line1El.insertBefore(caret1Ref.value, ph1);
+      }
+      if (caret2Ref.value) {
+        caret2Ref.value.style.visibility = 'hidden';
+      }
     }
 
-    function hideCaret(caretEl: HTMLElement) {
-      caretEl.style.animation = 'none';
-      caretEl.style.opacity = '0';
-      caretEl.style.display = 'none';
+    function hideCarets() {
+      if (caret1Ref.value) {
+        caret1Ref.value.style.visibility = 'hidden';
+      }
+      if (caret2Ref.value) {
+        caret2Ref.value.style.visibility = 'hidden';
+      }
     }
 
-    async function runSequence(tag: HTMLElement, line1El: HTMLElement, caretEl: HTMLElement) {
+    async function runSequence(tag: HTMLElement, line1El: HTMLElement) {
       while (true) {
         const l1 = line1El;
         const l2 = line2Ref.value as HTMLElement | null;
-        resetTagline(tag, l1, caretEl);
-        await typeText(String(props.line1), props.typeSpeed, l1);
+        resetTagline(tag, l1);
+        await typeText(String(props.line1), props.typeSpeed, l1, caret1Ref.value || null);
         await sleep(props.waitBetweenLines);
         if (l2) {
-          // Move caret to start of line 2 before typing (place before its placeholder)
-          const ph2 = ensurePlaceholder(l2);
-          l2.insertBefore(caretEl, ph2);
-          await typeText(String(props.line2), props.typeSpeed, l2);
+          // Switch caret visibility to line 2 and type
+          if (caret1Ref.value) caret1Ref.value.style.visibility = 'hidden';
+          if (caret2Ref.value) {
+            const ph2 = ensurePlaceholder(l2);
+            caret2Ref.value.style.visibility = 'visible';
+            l2.insertBefore(caret2Ref.value, ph2);
+          }
+          await typeText(String(props.line2), props.typeSpeed, l2, caret2Ref.value || null);
         }
-        hideCaret(caretEl);
+        hideCarets();
         await sleep(props.holdAfterLine2);
         tag.classList.add('fade');
         await sleep(props.fadeDuration);
@@ -107,16 +122,16 @@ export default defineComponent({
     onMounted(() => {
       const tag = root.value as HTMLElement | null;
       const l1 = line1Ref.value as HTMLElement | null;
-      const caretEl = caretRef.value as HTMLElement | null;
-      if (!tag || !l1 || !caretEl) return;
-      void runSequence(tag, l1, caretEl);
+      if (!tag || !l1) return;
+      void runSequence(tag, l1);
     });
 
     return () =>
       h('div', { ref: root, class: 'tagline typewriter', style: 'display:flex;flex-direction:column;align-items:center;text-align:center' }, [
         h('div', { ref: line1Ref, class: 'text line line-1' }),
         h('div', { ref: line2Ref, class: 'text line line-2', style: 'margin-top:0.2em' }),
-        h('span', { ref: caretRef, class: 'caret' }),
+        h('span', { ref: caret1Ref, class: 'caret' }),
+        h('span', { ref: caret2Ref, class: 'caret', style: 'visibility:hidden' }),
       ]);
   },
 });
