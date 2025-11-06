@@ -100,8 +100,8 @@ export default defineComponent({
 
     function positionCaretAbs(lineEl: HTMLElement, caretEl: HTMLElement, afterSlot: HTMLElement | null) {
       caretEl.classList.add('caret--abs');
-      const H_GAP = 2; // px gap between last character and caret
-      const V_ADJUST = 1; // px slight baseline adjustment
+      const H_GAP = -1; // slight overlap to sit flush with glyph edge
+      const V_ADJUST = 0; // baseline alignment; adjust if needed by font
       if (afterSlot) {
         const left = afterSlot.offsetLeft + afterSlot.offsetWidth + H_GAP;
         const top = afterSlot.offsetTop + V_ADJUST;

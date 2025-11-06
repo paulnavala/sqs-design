@@ -1,0 +1,80 @@
+/* Photography Gallery (pg-*) — standalone, extracted look */
+
+#portfolio-photo {
+  --pg-bg: transparent;
+  --pg-fg: #eaeaea;
+  --pg-accent: #8ee3ff;
+  --pg-muted: #9aa0a6;
+  --pg-radius: 14px;
+  --pg-gap: 20px;
+  --pg-card-bg: rgba(255, 255, 255, 0.02);
+  --pg-shadow: 0 10px 30px rgba(0,0,0,.35);
+  --pg-border: 1px solid rgba(255,255,255,0.08);
+  --pg-preview-max-h: 480px;
+}
+
+/* Base */
+.pg { color: var(--pg-fg); }
+.pg__skip { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.pg__skip:focus { position: static; width: auto; height: auto; padding: 8px 12px; background: #000; border-radius: 6px; }
+
+/* Header */
+.pg__header { position: sticky; top: 0; z-index: 2; backdrop-filter: saturate(120%) blur(8px); background: linear-gradient(to bottom, rgba(0,0,0,.6), rgba(0,0,0,0)); padding: 24px 0 12px; }
+.pg__header-inner { display: flex; align-items: baseline; gap: 12px; padding: 0 8px; }
+.pg__title { font-size: clamp(20px, 3vw, 28px); font-weight: 600; letter-spacing: 0.2px; }
+.pg__count { font-size: 14px; color: var(--pg-muted); }
+
+/* Filters / Pills */
+.pg__filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 8px 16px; }
+.pg-pill { appearance: none; border: var(--pg-border); border-radius: 999px; color: var(--pg-fg); background: rgba(255,255,255,0.02); padding: 8px 14px; font-size: 14px; cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.pg-pill:hover { background: rgba(255,255,255,0.06); }
+.pg-pill.is-active { background: var(--pg-accent); color: #001018; border-color: transparent; }
+
+/* List */
+.pg__list { display: grid; gap: 16px; list-style: none; padding: 0; margin: 0; }
+@media (min-width: 860px) { .pg__list { gap: 20px; } }
+
+/* Card */
+.pg-card { border: var(--pg-border); border-radius: var(--pg-radius); background: var(--pg-card-bg); box-shadow: var(--pg-shadow); overflow: hidden; opacity: 0; transform: translateY(10px); transition: opacity .4s ease, transform .4s ease; }
+.pg-card.is-visible { opacity: 1; transform: translateY(0); }
+.pg-card__content { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 920px) { .pg-card__content { grid-template-columns: minmax(320px, 0.8fr) 1.2fr; } }
+.pg-card__left { display: flex; flex-direction: column; gap: 10px; padding: 18px; }
+.pg-card__title { font-size: 20px; font-weight: 600; margin: 0; }
+.pg-card__desc { color: var(--pg-muted); margin: 0; line-height: 1.45; }
+.pg-card__meta { color: var(--pg-muted); font-size: 13px; }
+.pg-card__btn { align-self: flex-start; margin-top: 8px; border-radius: 10px; border: var(--pg-border); background: rgba(255,255,255,0.03); color: var(--pg-fg); padding: 8px 12px; cursor: pointer; transition: background .2s ease, transform .1s ease; }
+.pg-card__btn:hover { background: rgba(255,255,255,0.08); }
+.pg-card__btn:active { transform: translateY(1px); }
+.pg-card__right { position: relative; }
+/* Media wrapper uses dynamic aspect ratio set from the image's natural dimensions */
+.pg-card__media { position: relative; width: 100%; background: #0b0b0b; aspect-ratio: var(--pg-preview-ratio, 16/10); max-height: var(--pg-preview-max-h, 480px); overflow: hidden; }
+.pg-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #0b0b0b; }
+
+@media (max-width: 600px) {
+  #portfolio-photo { --pg-preview-max-h: 360px; }
+}
+
+/* Modal */
+.pg-modal[hidden] { display: none !important; }
+.pg-modal { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; }
+.pg-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.75); }
+.pg-modal__content { position: relative; z-index: 1; max-width: 92vw; max-height: 92vh; display: grid; grid-template-rows: 1fr auto; gap: 10px; }
+.pg-modal__close { position: absolute; top: -44px; right: 0; font-size: 28px; line-height: 1; background: transparent; color: #fff; border: none; cursor: pointer; }
+.pg-modal__view { position: relative; background: #000; border-radius: 10px; overflow: hidden; }
+.pg-modal__img { display: block; max-width: 92vw; max-height: 80vh; width: auto; height: auto; object-fit: contain; background: #000; }
+.pg-modal__cap { color: #e0e0e0; font-size: 14px; text-align: center; }
+
+/* Before/After Slider */
+.pg-ba { position: relative; width: 100%; height: 100%; max-width: 92vw; max-height: 80vh; background: #000; cursor: ew-resize; user-select: none; touch-action: none; }
+.pg-ba__after, .pg-ba__before { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+/* The before image will be clipped by a mask element width set inline */
+.pg-ba__before { clip-path: inset(0 0 0 0); }
+.pg-ba__mask { position: absolute; inset: 0; pointer-events: none; }
+.pg-ba__handle { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.85); box-shadow: 0 0 0 1px rgba(0,0,0,.5); }
+.pg-ba__handle::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 46px; height: 46px; border-radius: 50%; background: rgba(0,0,0,0.6); border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,.4); }
+
+/* Utilities */
+.is-hidden { display: none !important; }
+
+

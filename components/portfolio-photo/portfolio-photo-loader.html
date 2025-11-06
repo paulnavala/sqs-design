@@ -1,0 +1,68 @@
+<!-- Photography Gallery Component Loader HTML -->
+<!-- Copy/paste into a Squarespace Code Block or load via the global loader. -->
+
+<section id="portfolio-photo" class="pg" aria-label="Photography Gallery">
+  <a class="pg__skip" href="#pg-list">Skip to photos</a>
+
+  <header class="pg__header" role="region" aria-labelledby="pg-title">
+    <div class="pg__header-inner">
+      <h2 id="pg-title" class="pg__title">Selected Photography</h2>
+      <span class="pg__count" data-count role="status" aria-live="polite">0</span>
+    </div>
+  </header>
+
+  <nav class="pg__filters" aria-label="Photo filters">
+    <!-- Pills are auto-built from data; include only an All placeholder for no-JS fallback -->
+    <button class="pg-pill is-active" data-filter="all" aria-pressed="true" aria-controls="pg-list">All</button>
+  </nav>
+
+  <ul id="pg-list" class="pg__list" aria-live="polite"></ul>
+
+  <template id="pg-card-template">
+    <li class="pg-card" role="article">
+      <div class="pg-card__content">
+        <div class="pg-card__left">
+          <h3 class="pg-card__title"></h3>
+          <p class="pg-card__desc"></p>
+          <div class="pg-card__meta"><span class="pg-card__year"></span></div>
+          <button class="pg-card__btn btn--fullscreen" type="button">View fullscreen</button>
+        </div>
+        <div class="pg-card__right">
+          <img class="pg-card__img" alt="" loading="lazy" />
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <!-- Data source (two options: JSON or HTML) -->
+  <script id="photos-json" type="application/json">
+    []
+  </script>
+  <ul id="photos-data" hidden>
+    <!-- Optional fallback entries as <li data-*> -->
+  </ul>
+
+  <!-- Fullscreen modal -->
+  <div class="pg-modal" data-modal hidden aria-hidden="true" role="dialog" aria-label="Photo fullscreen">
+    <div class="pg-modal__backdrop" data-close></div>
+    <div class="pg-modal__content" role="document">
+      <button class="pg-modal__close" type="button" aria-label="Close" data-close>&times;</button>
+
+      <div class="pg-modal__view" data-view>
+        <!-- Before/after slider (only when beforeSrc exists) -->
+        <div class="pg-ba" data-ba hidden>
+          <img class="pg-ba__after" alt="" />
+          <img class="pg-ba__before" alt="" />
+          <div class="pg-ba__mask" data-mask></div>
+          <div class="pg-ba__handle" data-handle aria-hidden="true"></div>
+        </div>
+        <!-- Fallback single image (when no beforeSrc) -->
+        <img class="pg-modal__img" data-single alt="" />
+      </div>
+
+      <figcaption class="pg-modal__cap"></figcaption>
+    </div>
+  </div>
+</section>
+
+

@@ -25,7 +25,8 @@
     '/components/portfolio-uiux/portfolio.js',
     '/components/project-cards/project-cards.js',
     '/components/tagline/tagline.js',
-    '/components/twin-gallery/twin-gallery.js'
+    '/components/twin-gallery/twin-gallery.js',
+    '/components/portfolio-photo/portfolio-photo.js'
   ];
   
   // Function to load JS (sequential loading to respect dependencies)
