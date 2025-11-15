@@ -2,8 +2,8 @@
 /**
  * Optimize photography assets into small/medium/large WebP variants.
  *
- * Input dir: assets/photography/
- * Detects files that include "-after" or "-before" (any extension).
+ * Input dir: assets/photography/originals/
+ * Processes all image files (including -after/-before format and standalone images).
  * Outputs:
  *   <name>-sm.webp  (max width  640)
  *   <name>-md.webp  (max width 1200)
@@ -71,10 +71,9 @@ function isCandidate(file) {
   const ext = path.extname(file).toLowerCase();
   if (!VALID_EXT.has(ext)) return false;
   const base = path.basename(file, ext).toLowerCase();
-  // Only base originals that end in -after or -before (or with underscore)
-  if (!/(?:-|_)(after|before)$/.test(base)) return false;
   // Exclude already sized variants (-sm, -md, -lg)
   if (/(?:-|_)(sm|md|lg)$/.test(base)) return false;
+  // Include all valid image files (both -after/-before format and standalone images)
   return true;
 }
 
