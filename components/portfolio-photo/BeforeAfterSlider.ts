@@ -14,22 +14,29 @@ export default defineComponent({
     const afterImg = ref<HTMLImageElement | null>(null);
     const beforeImg = ref<HTMLImageElement | null>(null);
     const split = ref(Math.min(1, Math.max(0, props.initialSplit)));
+
+    // Pixel-accurate metrics for the visible image area (object-fit: contain)
+    const baLeftPx = ref(0);
+    const baTopPx = ref(0);
+    const baWidthPx = ref(0);
+    const baHeightPx = ref(0);
+    const containerWidthPx = ref(0);
+    const containerHeightPx = ref(0);
+
     let dragging = false;
     let clickMoved = false;
 
     function setSplitFromClientX(clientX: number) {
       const el = root.value;
       if (!el) return;
-      
-      // Get the visible image bounds from CSS variables
-      const baLeft = parseFloat(el.style.getPropertyValue('--ba-left') || '0');
-      const baWidth = parseFloat(el.style.getPropertyValue('--ba-width') || el.getBoundingClientRect().width);
+
+      // Calculate position relative to visible image area using pixel metrics
       const rect = el.getBoundingClientRect();
-      
-      // Calculate position relative to visible image area
-      const x = Math.min(rect.left + baLeft + baWidth, Math.max(rect.left + baLeft, clientX));
-      let ratio = (x - rect.left - baLeft) / baWidth;
-      
+      const leftBound = rect.left + baLeftPx.value;
+      const rightBound = leftBound + baWidthPx.value;
+      const x = Math.min(rightBound, Math.max(leftBound, clientX));
+      let ratio = (x - leftBound) / Math.max(1, baWidthPx.value);
+
       // Snap near edges for precise before/after views
       if (ratio < 0.06) ratio = 0;
       if (ratio > 0.94) ratio = 1;
@@ -41,16 +48,12 @@ export default defineComponent({
       const el = root.value;
       const h = handleEl.value;
       if (!el || !h) return;
-      
-      // Get the visible image bounds from CSS variables
-      const baLeft = parseFloat(el.style.getPropertyValue('--ba-left') || '0');
-      const baWidth = parseFloat(el.style.getPropertyValue('--ba-width') || el.getBoundingClientRect().width);
-      
-      // Position handle relative to visible image area
-      const left = baLeft + (baWidth * split.value);
+
+      // Position handle relative to visible image area using pixel metrics
+      const left = baLeftPx.value + (baWidthPx.value * split.value);
       h.style.left = left + 'px';
       h.style.transform = 'translateX(-1px)';
-      
+
       // Update ARIA value
       el.setAttribute('aria-valuenow', String(Math.round(split.value * 100)));
       // Edge labels fade: hide when at 0% or 100%
@@ -132,23 +135,31 @@ export default defineComponent({
       const el = root.value;
       const img = afterImg.value || beforeImg.value;
       if (!el || !img) return;
-      
+
       const cr = el.getBoundingClientRect();
       const ir = img.getBoundingClientRect();
-      
+
       // With object-fit: contain, calculate the actual visible image bounds
       // The image rect gives us the actual rendered size
       const top = Math.max(0, ir.top - cr.top);
       const height = Math.max(0, Math.min(cr.height, ir.height));
       const left = Math.max(0, ir.left - cr.left);
       const width = Math.max(0, Math.min(cr.width, ir.width));
-      
+
+      // Persist metrics in refs (for JS) and CSS variables (for CSS layout/labels)
+      baTopPx.value = top;
+      baHeightPx.value = height;
+      baLeftPx.value = left;
+      baWidthPx.value = width;
+      containerWidthPx.value = cr.width;
+      containerHeightPx.value = cr.height;
+
       // Store metrics for handle positioning relative to visible image
       el.style.setProperty('--ba-top', `${top}px`);
       el.style.setProperty('--ba-height', `${height}px`);
       el.style.setProperty('--ba-left', `${left}px`);
       el.style.setProperty('--ba-width', `${width}px`);
-      
+
       // Reposition handle after metrics update
       positionHandle();
     }
@@ -203,46 +214,55 @@ export default defineComponent({
     });
 
     return () =>
-      h(
-        'div',
-        {
-          ref: root,
-          class: 'pg-ba',
-          style: 'position:relative',
-          tabindex: 0,
-          role: 'slider',
-          'aria-label': 'Before/After split',
-          'aria-valuemin': '0',
-          'aria-valuemax': '100',
-          'aria-valuenow': String(Math.round(split.value * 100)),
-        },
-        [
-          // Base: BEFORE image visible everywhere
-          h('img', {
-            class: 'pg-ba__before',
-            alt: props.alt,
-            src: props.beforeSrc,
-            ref: beforeImg,
-            draggable: false,
-          }),
-          // Overlay: AFTER image clipped to the left portion (so AFTER on the left)
-          h('img', {
-            class: 'pg-ba__after',
-            alt: props.alt,
-            src: props.afterSrc,
-            ref: afterImg,
-            draggable: false,
-            style: `clip-path: inset(0 ${Math.max(0, Math.min(100, (1 - split.value) * 100))}% 0 0)`
-          }),
-          // Visual rail + handle clipped to image height
-          h('div', { class: 'pg-ba__rail' }, [
-            h('div', { ref: handleEl, class: 'pg-ba__handle' }),
-          ]),
-          // Labels (After on left, Before on right)
-          h('div', { class: 'pg-ba__label pg-ba__label--left' }, 'After'),
-          h('div', { class: 'pg-ba__label pg-ba__label--right' }, 'Before'),
-        ]
-      );
+      {
+        // Compute pixel-aligned clip-path for the AFTER overlay (shown on the right side only)
+        const topPx = baTopPx.value;
+        const rightPx = Math.max(0, containerWidthPx.value - (baLeftPx.value + baWidthPx.value));
+        const bottomPx = Math.max(0, containerHeightPx.value - (baTopPx.value + baHeightPx.value));
+        const splitXPx = Math.max(0, Math.min(containerWidthPx.value, Math.round(baLeftPx.value + baWidthPx.value * split.value)));
+        const afterClip = `inset(${topPx}px ${rightPx}px ${bottomPx}px ${splitXPx}px)`;
+
+        return h(
+          'div',
+          {
+            ref: root,
+            class: 'pg-ba',
+            style: 'position:relative',
+            tabindex: 0,
+            role: 'slider',
+            'aria-label': 'Before/After split',
+            'aria-valuemin': '0',
+            'aria-valuemax': '100',
+            'aria-valuenow': String(Math.round(split.value * 100)),
+          },
+          [
+            // Base: BEFORE image visible everywhere
+            h('img', {
+              class: 'pg-ba__before',
+              alt: props.alt,
+              src: props.beforeSrc,
+              ref: beforeImg,
+              draggable: false,
+            }),
+            // Overlay: AFTER image clipped to start at the split (so AFTER on the right)
+            h('img', {
+              class: 'pg-ba__after',
+              alt: props.alt,
+              src: props.afterSrc,
+              ref: afterImg,
+              draggable: false,
+              style: `clip-path: ${afterClip}`,
+            }),
+            // Visual rail + handle clipped to image height
+            h('div', { class: 'pg-ba__rail' }, [
+              h('div', { ref: handleEl, class: 'pg-ba__handle' }),
+            ]),
+            // Labels (Before on left, After on right)
+            h('div', { class: 'pg-ba__label pg-ba__label--left' }, 'Before'),
+            h('div', { class: 'pg-ba__label pg-ba__label--right' }, 'After'),
+          ]
+        );
+      };
   },
 });
 
