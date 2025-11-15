@@ -31,7 +31,6 @@ export default defineComponent({
   },
   setup(props) {
     const root = ref<HTMLElement | null>(null);
-    const activeFilter = ref<string>('all');
     const modalOpen = ref(false);
     const activeIndex = ref<number>(-1);
     const lastFocusEl = ref<HTMLElement | null>(null);
@@ -47,22 +46,7 @@ export default defineComponent({
       })
     );
 
-    const categories = computed<{ slug: string; label: string }[]>(() => {
-      const map = new Map<string, string>();
-      normalizedItems.value.forEach((i) => {
-        (i.categorySlugs || []).forEach((s, idx) => {
-          if (!map.has(s)) map.set(s, i.categoryLabels[idx] || s);
-        });
-      });
-      return Array.from(map.entries()).map(([slug, label]) => ({ slug, label }));
-    });
-
-    const filteredItems = computed<GalleryItem[]>(() => {
-      if (activeFilter.value === 'all') return normalizedItems.value;
-      return normalizedItems.value.filter((i) => (i.categorySlugs || []).includes(activeFilter.value));
-    });
-
-    const visibleCount = computed<number>(() => filteredItems.value.length);
+    const visibleCount = computed<number>(() => normalizedItems.value.length);
 
     // Masonry incremental loading (infinite scroll)
     const masonryBatchSize = 20;
@@ -80,14 +64,16 @@ export default defineComponent({
       }
     }
 
-    const masonryItems = computed<GalleryItem[]>(() => {
-      const base = filteredItems.value.slice(0, masonryLoadedCount.value);
+    const masonryItems = computed<Array<{ item: GalleryItem; originalIndex: number }>>(() => {
+      const base = normalizedItems.value.slice(0, masonryLoadedCount.value);
       const cols = Math.max(1, colCount.value || 3);
-      if (cols === 1) return base;
-      const reordered: GalleryItem[] = [];
+      if (cols === 1) {
+        return base.map((item, idx) => ({ item, originalIndex: idx }));
+      }
+      const reordered: Array<{ item: GalleryItem; originalIndex: number }> = [];
       for (let c = 0; c < cols; c++) {
         for (let i = c; i < base.length; i += cols) {
-          reordered.push(base[i]);
+          reordered.push({ item: base[i], originalIndex: i });
         }
       }
       return reordered;
@@ -181,7 +167,7 @@ export default defineComponent({
       modalOpen.value = true;
       // Preload both images to compute a common modal ratio based on the smaller resolution
       try {
-        const item = filteredItems.value[index];
+        const item = normalizedItems.value[index];
         if (!item) return;
         const urls = [item.afterSrc, item.beforeSrc || ''].filter(Boolean) as string[];
         if (urls.length === 0) return;
@@ -264,20 +250,6 @@ export default defineComponent({
       window.removeEventListener('resize', computeColCount);
     });
 
-    // Ensure cards re-appear on filter change (immediate reveal)
-    watch(filteredItems, async () => {
-      resetMasonryLoad();
-      await nextTick();
-      const el = root.value;
-      if (!el) return;
-      const cards = Array.from(el.querySelectorAll('.pg-card, .pg-masonry__item')) as HTMLElement[];
-      cards.forEach((c) => c.classList.add('is-visible'));
-      // Reset active index if out of range
-      if (activeIndex.value >= filteredItems.value.length) activeIndex.value = -1;
-      // Scroll top of masonry
-      const mason = el.querySelector('.pg-masonry') as HTMLElement | null;
-      if (mason) mason.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
 
     // Masonry infinite loader
     function attachMasonryInfinite(container: HTMLElement, sentinel: HTMLElement) {
@@ -290,13 +262,13 @@ export default defineComponent({
               // Load next batch
               const now = Date.now();
               if (loading || now - lastLoadTs < 250) return;
-              if (masonryLoadedCount.value < filteredItems.value.length) {
+              if (masonryLoadedCount.value < normalizedItems.value.length) {
                 loading = true;
-                masonryLoadedCount.value = Math.min(masonryLoadedCount.value + masonryBatchSize, filteredItems.value.length);
+                masonryLoadedCount.value = Math.min(masonryLoadedCount.value + masonryBatchSize, normalizedItems.value.length);
                 lastLoadTs = now;
                 // Prefetch next 3 thumbnails
                 const nextStart = masonryLoadedCount.value;
-                const nextItems = filteredItems.value.slice(nextStart, nextStart + 3);
+                const nextItems = normalizedItems.value.slice(nextStart, nextStart + 3);
                 requestIdleCallback?.(() => {
                   nextItems.forEach((n) => {
                     const src = n.thumb || n.afterSrc;
@@ -342,33 +314,6 @@ export default defineComponent({
         ]),
       ]);
 
-      // Filters (pills)
-      const pills = [
-        h(
-          'button',
-          {
-            class: 'pg-pill' + (activeFilter.value === 'all' ? ' is-active' : ''),
-            'data-filter': 'all',
-            'aria-pressed': String(activeFilter.value === 'all'),
-            onClick: () => (activeFilter.value = 'all'),
-          },
-          'All'
-        ),
-        ...categories.value.map((cat) =>
-          h(
-            'button',
-            {
-              class: 'pg-pill' + (activeFilter.value === cat.slug ? ' is-active' : ''),
-              'data-filter': cat.slug,
-              'aria-pressed': String(activeFilter.value === cat.slug),
-              onClick: () => (activeFilter.value = cat.slug),
-            },
-            cat.label
-          )
-        ),
-      ];
-      const filters = h('nav', { class: 'pg__filters', 'aria-label': 'Photo filters' }, pills);
-
       // Masonry
       const masonrySentinel = h('div', {
         class: 'pg-masonry__sentinel',
@@ -388,13 +333,13 @@ export default defineComponent({
 
       const masonry = h('section', { class: 'pg-masonry', role: 'list', 'aria-label': 'Masonry gallery' },
         masonryItems.value.map((it, idx) => {
-          const ratio = (hashToRange(it.id + 'r', 0.85, 1.35)).toFixed(2); // aspect ratio variety
-          return h('article', { key: it.id + '-' + idx, class: 'pg-masonry__item', role: 'listitem', 'aria-label': it.title, style: `--m-ratio:${ratio};` }, [
+          const ratio = (hashToRange(it.item.id + 'r', 0.85, 1.35)).toFixed(2); // aspect ratio variety
+          return h('article', { key: it.item.id + '-' + idx, class: 'pg-masonry__item', role: 'listitem', 'aria-label': it.item.title, style: `--m-ratio:${ratio};` }, [
             h('div', {
               class: 'pg-masonry__media',
               role: 'button',
               tabindex: 0,
-              'aria-label': `Open ${it.title} in fullscreen`,
+              'aria-label': `Open ${it.item.title} in fullscreen`,
               onVnodeMounted: (v: any) => {
                 const el = v.el as HTMLElement;
                 // mark as loading to show skeleton until image load
@@ -403,7 +348,7 @@ export default defineComponent({
               onKeydown: (e: KeyboardEvent) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  openModal(idx);
+                  openModal(it.originalIndex);
                 } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
                   const rootEl = root.value;
                   if (!rootEl) return;
@@ -453,7 +398,7 @@ export default defineComponent({
                 el.dataset.startX = '';
                 el.dataset.startY = '';
                 el.dataset.moved = '';
-                if (!moved) openModal(idx);
+                if (!moved) openModal(it.originalIndex);
               },
               onClick: (ev: MouseEvent) => {
                 // Guard against some browsers firing click after mouseup drag
@@ -467,19 +412,19 @@ export default defineComponent({
               h('div', { class: 'pg-skel' }),
               h('img', {
                 class: 'pg-masonry__img',
-                alt: it.alt || it.title,
+                alt: it.item.alt || it.item.title,
                 loading: 'lazy',
                 decoding: 'async',
                 src: unique([
-                  it.thumb || '',
-                  ...variantFromBasename(fileBaseFromPath(it.afterSrc), ['sm','md','lg','']),
-                  ...pickVariant(it.id, 'after', ['sm','md','lg','']),
-                  ...originalCandidates(it.id, 'after'),
-                  it.afterSrc || '',
+                  it.item.thumb || '',
+                  ...variantFromBasename(fileBaseFromPath(it.item.afterSrc), ['sm','md','lg','']),
+                  ...pickVariant(it.item.id, 'after', ['sm','md','lg','']),
+                  ...originalCandidates(it.item.id, 'after'),
+                  it.item.afterSrc || '',
                 ])[0],
                 srcset: unique([
-                  ...variantFromBasename(fileBaseFromPath(it.afterSrc), ['sm','md','lg']),
-                  ...pickVariant(it.id, 'after', ['sm','md','lg']),
+                  ...variantFromBasename(fileBaseFromPath(it.item.afterSrc), ['sm','md','lg']),
+                  ...pickVariant(it.item.id, 'after', ['sm','md','lg']),
                 ]).map((u) => {
                   if (u.includes('-sm.')) return `${u} 640w`;
                   if (u.includes('-md.')) return `${u} 1200w`;
@@ -489,11 +434,11 @@ export default defineComponent({
                 sizes: '(min-width: 900px) 33vw, (min-width: 600px) 50vw, 92vw',
                 'data-cand': JSON.stringify(
                   unique([
-                    it.thumb || '',
-                    ...variantFromBasename(fileBaseFromPath(it.afterSrc), ['md','lg','']),
-                    ...pickVariant(it.id, 'after', ['md','lg','']),
-                    ...originalCandidates(it.id, 'after'),
-                    it.afterSrc || '',
+                    it.item.thumb || '',
+                    ...variantFromBasename(fileBaseFromPath(it.item.afterSrc), ['md','lg','']),
+                    ...pickVariant(it.item.id, 'after', ['md','lg','']),
+                    ...originalCandidates(it.item.id, 'after'),
+                    it.item.afterSrc || '',
                   ]).slice(1)
                 ),
                 onLoad: (e: Event) => {
@@ -523,14 +468,14 @@ export default defineComponent({
                   img.style.opacity = '0.6';
                 },
               }),
-              h('div', { class: 'pg-masonry__title' }, it.title),
+              h('div', { class: 'pg-masonry__title' }, it.item.title),
               h('button', {
                 class: 'pg-masonry__fs',
                 type: 'button',
-                'aria-label': `Open ${it.title} fullscreen`,
+                'aria-label': `Open ${it.item.title} fullscreen`,
                 onClick: (ev: MouseEvent) => {
                   ev.stopPropagation();
-                  openModal(idx);
+                  openModal(it.originalIndex);
                 },
               }, '⤢'),
             ]),
@@ -539,7 +484,7 @@ export default defineComponent({
       );
 
       // Modal
-      const active = activeIndex.value >= 0 ? filteredItems.value[activeIndex.value] : null;
+      const active = activeIndex.value >= 0 ? normalizedItems.value[activeIndex.value] : null;
       const modal = h(
         'div',
         { class: 'pg-modal', 'data-modal': '', hidden: !modalOpen.value, 'aria-hidden': String(!modalOpen.value), role: 'dialog', 'aria-label': 'Photo fullscreen' },
@@ -594,7 +539,7 @@ export default defineComponent({
         ]
       );
 
-      return h('div', { ref: root }, [header, filters, masonry, modal]);
+      return h('div', { ref: root }, [header, masonry, modal]);
     };
 
   },

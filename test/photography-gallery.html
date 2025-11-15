@@ -14,7 +14,7 @@
         'use strict';
 
         const BASE_URL = '..';
-        const V = String(Date.now());
+        const V = String(Date.now()) + '-' + Math.random().toString(36).substr(2, 9);
         const CSS_FILES = [
           '/components/portfolio-photo/portfolio-photo.css',
         ];
@@ -41,7 +41,7 @@
         'use strict';
 
         const BASE_URL = '..';
-        const V = String(Date.now());
+        const V = String(Date.now()) + '-' + Math.random().toString(36).substr(2, 9);
         const JS_FILES = [
           '/components/portfolio-photo/portfolio-photo.js',
         ];
