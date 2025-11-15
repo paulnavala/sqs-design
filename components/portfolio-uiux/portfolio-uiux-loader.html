@@ -21,35 +21,6 @@
   <!-- Skip link (a11y) -->
   <a class="portfolio__skip" href="#projects-list">Skip to projects</a>
 
-  <!-- About section -->
-  <section class="portfolio__about" aria-label="About">
-    <div class="portfolio__about-inner">
-      <p class="about__lead">UI/UX design is where empathy meets structure.</p>
-      <p>I believe that every interaction - a click, a scroll, a pause - tells part of a story.</p>
-      <p>My approach blends aesthetic sensitivity with functional clarity, creating experiences that feel as good as they look.</p>
-    </div>
-  </section>
-
-  
-
-  <!-- Filters (centered; JS reads .pill[data-filter]) -->
-  <nav class="portfolio__filters" aria-label="Project filters">
-    <button
-      class="pill is-active"
-      data-filter="all"
-      aria-pressed="true"
-      aria-controls="projects-list"
-    >
-      All
-    </button>
-    <button class="pill" data-filter="prototype" aria-pressed="false" aria-controls="projects-list">
-      Prototypes
-    </button>
-    <button class="pill" data-filter="cern" aria-pressed="false" aria-controls="projects-list">
-      CERN
-    </button>
-  </nav>
-
   <!-- Projects mount (JS will render cards here) -->
   <div class="portfolio__wrap" id="projects-list" data-mount></div>
 
@@ -106,9 +77,6 @@
   <!-- Template for each project card (JS clones & fills) -->
   <template id="project-card-template">
     <section class="project" aria-label="">
-      <!-- Accent -->
-      <div class="project__accent" aria-hidden="true"></div>
-
       <div class="project__card">
         <div class="project__grid">
           <!-- Text -->
