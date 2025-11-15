@@ -1,4 +1,4 @@
-(function(){"use strict";var Ks=document.createElement("style");Ks.textContent=`.project-cards-container{display:flex;flex-direction:column;gap:20px}.projects-text-grid{display:grid;gap:20px}.guideline-button{grid-column:1 / -1;width:100%}@media (min-width: 720px){.projects-text-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+(function(){"use strict";var Ks=document.createElement("style");Ks.textContent=`.project-cards-container{display:flex;flex-direction:column;gap:20px}.projects-text-grid{display:grid;gap:20px}.guideline-button{box-sizing:border-box;grid-column:1 / -1;width:100%}@media (min-width: 720px){.projects-text-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /*$vite$:1*/`,document.head.appendChild(Ks);/**
 * @vue/shared v3.5.22
 * (c) 2018-present Yuxi (Evan) You and Vue contributors

@@ -24,6 +24,7 @@
 
 /* Guideline button should span across both columns of the grid */
 .guideline-button {
+  box-sizing: border-box;
   grid-column: 1 / -1;
   width: 100%;
 }
