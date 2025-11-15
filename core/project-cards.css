@@ -45,13 +45,11 @@
 /**
  * Main grid container for project cards
  * Two-column layout on desktop, single column on mobile
- * Center-aligned grid items
  */
 .projects-text-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
-  justify-items: center;
 }
 
 /* ============================================================================
