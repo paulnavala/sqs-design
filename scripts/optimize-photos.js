@@ -9,10 +9,11 @@
  *   <name>-md.webp  (max width 1200)
  *   <name>-lg.webp  (max width 1920)
  *
- * Skips regeneration if the output is newer than the source.
+ * Regenerates all variants when source file content changes (content hash comparison).
  */
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const sharp = require('sharp');
 
 const ROOT = path.join(__dirname, '..');
@@ -21,6 +22,7 @@ const ORIG_DIR = fs.existsSync(path.join(BASE_DIR, 'originals'))
   ? path.join(BASE_DIR, 'originals')
   : BASE_DIR;
 const VAR_DIR = path.join(BASE_DIR, 'variants');
+const HASH_FILE = path.join(VAR_DIR, '.hashes.json');
 const SIZES = [
   { suffix: '-sm', width: 640, quality: 78 },
   { suffix: '-md', width: 1200, quality: 80 },
@@ -77,33 +79,57 @@ function isCandidate(file) {
   return true;
 }
 
-function mtime(file) {
-  try {
-    return fs.statSync(file).mtimeMs || 0;
-  } catch {
-    return 0;
+
+function getStoredHashes() {
+  if (!fs.existsSync(HASH_FILE)) {
+    return {};
   }
+  try {
+    const content = fs.readFileSync(HASH_FILE, 'utf8');
+    return JSON.parse(content);
+  } catch {
+    return {};
+  }
+}
+
+function storeHash(filename, hash) {
+  const hashes = getStoredHashes();
+  hashes[filename] = hash;
+  if (!fs.existsSync(VAR_DIR)) {
+    fs.mkdirSync(VAR_DIR, { recursive: true });
+  }
+  fs.writeFileSync(HASH_FILE, JSON.stringify(hashes, null, 2));
 }
 
 async function processOne(srcPath) {
   const dir = path.dirname(srcPath);
   const ext = path.extname(srcPath);
   const base = path.basename(srcPath, ext);
+  const filename = path.basename(srcPath);
 
-  const srcTime = mtime(srcPath);
+  // Read file once for both hash calculation and processing
   const buf = fs.readFileSync(srcPath);
+  
+  // Calculate current source hash
+  const currentHash = crypto.createHash('sha256').update(buf).digest('hex');
+  const storedHashes = getStoredHashes();
+  const storedHash = storedHashes[filename];
+
+  // If hash matches, skip all variants
+  if (storedHash === currentHash) {
+    console.log('skip (unchanged):', path.relative(ROOT, srcPath));
+    return;
+  }
+
+  // Source has changed, regenerate ALL variants
   const img = sharp(buf, { limitInputPixels: false }).rotate();
   const meta = await img.metadata();
 
   if (!fs.existsSync(VAR_DIR)) fs.mkdirSync(VAR_DIR, { recursive: true });
 
+  console.log('regenerating variants for:', path.relative(ROOT, srcPath));
   for (const { suffix, width, quality } of SIZES) {
     const outPath = path.join(VAR_DIR, `${base}${suffix}.webp`);
-    const outTime = mtime(outPath);
-    if (outTime >= srcTime) {
-      console.log('skip (fresh):', path.relative(ROOT, outPath));
-      continue;
-    }
     const targetWidth = Math.min(width, meta.width || width);
     await sharp(buf, { limitInputPixels: false })
       .rotate()
@@ -112,6 +138,9 @@ async function processOne(srcPath) {
       .toFile(outPath);
     console.log('wrote:', path.relative(ROOT, outPath));
   }
+
+  // Update stored hash after successful generation
+  storeHash(filename, currentHash);
 }
 
 async function main() {
