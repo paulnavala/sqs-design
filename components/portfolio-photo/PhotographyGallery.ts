@@ -92,7 +92,7 @@ export default defineComponent({
     }
 
     function variantCandidates(id: string, variant: 'after' | 'before' | 'thumb', sizes: Array<'sm' | 'md' | 'lg' | ''> = ['sm','md','lg','']): string[] {
-      const varBase = '/assets/photography/variants/';
+      const varBase = 'https://assets.peachless.design/assets/photography/variants/';
       const s = slug(id);
       const bases = unique([s, s.replace(/-/g, '_'), s.replace(/_/g, '-')]);
       const v = variant === 'thumb' ? 'after' : variant;
@@ -113,7 +113,7 @@ export default defineComponent({
     }
 
     function variantFromBasename(base: string, sizes: Array<'sm'|'md'|'lg'|''> = ['sm','md','lg','']): string[] {
-      const varBase = '/assets/photography/variants/';
+      const varBase = 'https://assets.peachless.design/assets/photography/variants/';
       const clean = base.replace(/\.[a-z0-9]+$/i, ''); // drop extension if present
       const names = sizes.map((sz) => `${clean}${sz ? '-' + sz : ''}.webp`);
       return names.map((n) => varBase + n);
@@ -131,8 +131,8 @@ export default defineComponent({
     }
 
     function originalCandidates(id: string, variant: 'after' | 'before'): string[] {
-      const baseA = '/assets/photography/';
-      const baseB = '/assets/photography/originals/';
+      const baseA = 'https://assets.peachless.design/assets/photography/';
+      const baseB = 'https://assets.peachless.design/assets/photography/originals/';
       const s = slug(id);
       const bases = unique([s, s.replace(/-/g, '_'), s.replace(/_/g, '-')]);
       const v = variant;
