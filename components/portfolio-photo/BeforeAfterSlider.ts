@@ -20,9 +20,16 @@ export default defineComponent({
     function setSplitFromClientX(clientX: number) {
       const el = root.value;
       if (!el) return;
+      
+      // Get the visible image bounds from CSS variables
+      const baLeft = parseFloat(el.style.getPropertyValue('--ba-left') || '0');
+      const baWidth = parseFloat(el.style.getPropertyValue('--ba-width') || el.getBoundingClientRect().width);
       const rect = el.getBoundingClientRect();
-      const x = Math.min(rect.right, Math.max(rect.left, clientX));
-      let ratio = (x - rect.left) / rect.width;
+      
+      // Calculate position relative to visible image area
+      const x = Math.min(rect.left + baLeft + baWidth, Math.max(rect.left + baLeft, clientX));
+      let ratio = (x - rect.left - baLeft) / baWidth;
+      
       // Snap near edges for precise before/after views
       if (ratio < 0.06) ratio = 0;
       if (ratio > 0.94) ratio = 1;
@@ -34,9 +41,16 @@ export default defineComponent({
       const el = root.value;
       const h = handleEl.value;
       if (!el || !h) return;
-      const rect = el.getBoundingClientRect();
-      const left = rect.width * split.value;
+      
+      // Get the visible image bounds from CSS variables
+      const baLeft = parseFloat(el.style.getPropertyValue('--ba-left') || '0');
+      const baWidth = parseFloat(el.style.getPropertyValue('--ba-width') || el.getBoundingClientRect().width);
+      
+      // Position handle relative to visible image area
+      const left = baLeft + (baWidth * split.value);
       h.style.left = left + 'px';
+      h.style.transform = 'translateX(-1px)';
+      
       // Update ARIA value
       el.setAttribute('aria-valuenow', String(Math.round(split.value * 100)));
       // Edge labels fade: hide when at 0% or 100%
@@ -116,18 +130,30 @@ export default defineComponent({
 
     function updateMetrics() {
       const el = root.value;
-      const img = afterImg.value;
+      const img = afterImg.value || beforeImg.value;
       if (!el || !img) return;
+      
       const cr = el.getBoundingClientRect();
       const ir = img.getBoundingClientRect();
+      
+      // With object-fit: contain, calculate the actual visible image bounds
+      // The image rect gives us the actual rendered size
       const top = Math.max(0, ir.top - cr.top);
       const height = Math.max(0, Math.min(cr.height, ir.height));
+      const left = Math.max(0, ir.left - cr.left);
+      const width = Math.max(0, Math.min(cr.width, ir.width));
+      
+      // Store metrics for handle positioning relative to visible image
       el.style.setProperty('--ba-top', `${top}px`);
       el.style.setProperty('--ba-height', `${height}px`);
+      el.style.setProperty('--ba-left', `${left}px`);
+      el.style.setProperty('--ba-width', `${width}px`);
+      
+      // Reposition handle after metrics update
+      positionHandle();
     }
 
     onMounted(() => {
-      positionHandle();
       const el = root.value;
       if (el) {
         el.addEventListener('mousedown', onDown as any);
@@ -136,9 +162,31 @@ export default defineComponent({
         el.addEventListener('keydown', onKeyDown as any);
       }
       window.addEventListener('resize', updateMetrics);
-      afterImg.value?.addEventListener('load', updateMetrics);
-      beforeImg.value?.addEventListener('load', updateMetrics);
-      updateMetrics();
+      
+      // Set up image load listeners
+      const setupImageListeners = () => {
+        if (afterImg.value) {
+          if (afterImg.value.complete) {
+            updateMetrics();
+          } else {
+            afterImg.value.addEventListener('load', updateMetrics, { once: true });
+          }
+        }
+        if (beforeImg.value) {
+          if (beforeImg.value.complete) {
+            updateMetrics();
+          } else {
+            beforeImg.value.addEventListener('load', updateMetrics, { once: true });
+          }
+        }
+      };
+      
+      // Use nextTick to ensure refs are set
+      setTimeout(() => {
+        setupImageListeners();
+        updateMetrics();
+        positionHandle();
+      }, 0);
     });
 
     onBeforeUnmount(() => {
@@ -188,7 +236,7 @@ export default defineComponent({
           }),
           // Visual rail + handle clipped to image height
           h('div', { class: 'pg-ba__rail' }, [
-            h('div', { ref: handleEl, class: 'pg-ba__handle', style: 'left:50%' }),
+            h('div', { ref: handleEl, class: 'pg-ba__handle' }),
           ]),
           // Labels (After on left, Before on right)
           h('div', { class: 'pg-ba__label pg-ba__label--left' }, 'After'),

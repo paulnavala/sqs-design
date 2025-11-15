@@ -91,21 +91,21 @@
 
 /* Before/After Slider */
 .pg-ba { position: relative; width: 100%; height: 100%; background: #fff; user-select: none; touch-action: none; }
-.pg-ba__after, .pg-ba__before { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.pg-ba__after, .pg-ba__before { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; }
 /* The before image will be clipped by a mask element width set inline */
 .pg-ba__before { clip-path: inset(0 0 0 0); }
 .pg-ba__mask { position: absolute; inset: 0; pointer-events: none; }
 /* Rail clips the handle to the visible image box */
-.pg-ba__rail { position: absolute; top: var(--ba-top, 0px); height: var(--ba-height, 100%); left: 0; right: 0; overflow: hidden; pointer-events: none; }
+.pg-ba__rail { position: absolute; top: var(--ba-top, 0px); height: var(--ba-height, 100%); left: var(--ba-left, 0px); width: var(--ba-width, 100%); overflow: hidden; pointer-events: none; }
 /* Hairline with subtle gradient */
-.pg-ba__handle { position: absolute; top: 0; bottom: 0; width: 2px; left: 50%; transform: translateX(-1px); background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.45)); box-shadow: 0 0 0 1px rgba(255,255,255,0.35); }
+.pg-ba__handle { position: absolute; top: 0; bottom: 0; width: 2px; left: 0; transform: translateX(-1px); background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.45)); box-shadow: 0 0 0 1px rgba(255,255,255,0.35); }
 .pg-ba.is-dragging .pg-ba__handle { background: linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.6)); }
 .pg-ba__handle::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 10px rgba(0,0,0,.18); }
 
 /* Before/After labels */
 .pg-ba__label { position: absolute; top: calc(var(--ba-top, 0px) + (var(--ba-height, 100%) / 2)); transform: translateY(-50%); font-size: 11.5px; letter-spacing: 0.02em; line-height: 1; color: var(--pg-ink-strong, #000); background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.08); border-radius: 999px; padding: 6px 10px; pointer-events: none; transition: opacity .24s ease; }
-.pg-ba__label--left { left: 12px; }
-.pg-ba__label--right { right: 12px; }
+.pg-ba__label--left { left: calc(var(--ba-left, 0px) + 12px); }
+.pg-ba__label--right { left: calc(var(--ba-left, 0px) + var(--ba-width, 100%) - 12px); transform: translateY(-50%) translateX(-100%); }
 .pg-ba.is-dragging .pg-ba__label { opacity: 0; }
 .pg-ba.is-edge .pg-ba__label { opacity: 0; }
 
