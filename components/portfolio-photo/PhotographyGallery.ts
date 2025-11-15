@@ -160,36 +160,46 @@ export default defineComponent({
       masonryLoadedCount.value = masonryBatchSize;
     }
 
-    function openModal(index: number) {
+    async function openModal(index: number) {
       lastScrollY = window.scrollY;
       lastFocusEl.value = (document.activeElement as HTMLElement) || null;
       activeIndex.value = index;
-      modalOpen.value = true;
-      // Preload both images to compute a common modal ratio based on the smaller resolution
+      
+      // Preload images and calculate aspect ratio BEFORE opening modal
       try {
         const item = normalizedItems.value[index];
         if (!item) return;
         const urls = [item.afterSrc, item.beforeSrc || ''].filter(Boolean) as string[];
         if (urls.length === 0) return;
+        
+        // Wait for all images to load and calculate aspect ratio
         const dims: Array<{ w: number; h: number }> = [];
-        let remaining = urls.length;
-        urls.forEach((src) => {
-          const img = new Image();
-          (img as any).decoding = 'async';
-          img.onload = () => {
-            if (img.naturalWidth && img.naturalHeight) {
-              dims.push({ w: img.naturalWidth, h: img.naturalHeight });
-            }
-            remaining -= 1;
-            if (remaining === 0 && dims.length > 0) {
-              // Pick the smaller by pixel area, use its aspect ratio
-              const small = dims.reduce((a, b) => (a.w * a.h <= b.w * b.h ? a : b));
-              modalRatio.value = small.w / small.h;
-            }
-          };
-          img.src = src;
-        });
+        await Promise.all(
+          urls.map((src) => {
+            return new Promise<void>((resolve) => {
+              const img = new Image();
+              (img as any).decoding = 'async';
+              img.onload = () => {
+                if (img.naturalWidth && img.naturalHeight) {
+                  dims.push({ w: img.naturalWidth, h: img.naturalHeight });
+                }
+                resolve();
+              };
+              img.onerror = () => resolve(); // Continue even if image fails to load
+              img.src = src;
+            });
+          })
+        );
+        
+        if (dims.length > 0) {
+          // Pick the smaller by pixel area, use its aspect ratio
+          const small = dims.reduce((a, b) => (a.w * a.h <= b.w * b.h ? a : b));
+          modalRatio.value = small.w / small.h;
+        }
       } catch {}
+      
+      // Now open the modal with the correct aspect ratio
+      modalOpen.value = true;
       void nextTick(() => {
         const closeBtn = document.querySelector('.pg-modal__close') as HTMLButtonElement | null;
         if (closeBtn) closeBtn.focus();
@@ -516,12 +526,6 @@ export default defineComponent({
                             ...originalCandidates(active.id, 'after'),
                             active.afterSrc,
                           ])[0],
-                          onLoad: (e: Event) => {
-                            const img = e.target as HTMLImageElement;
-                            if (img.naturalWidth && img.naturalHeight) {
-                              modalRatio.value = img.naturalWidth / img.naturalHeight;
-                            }
-                          },
                         }),
                   ]
                 : []
