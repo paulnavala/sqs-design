@@ -1,73 +1,32 @@
-/* Optional styles for Project Cards parallax wiring and layout */
+/**
+ * Project Cards Component - Minimal Layout Styles Only
+ * 
+ * This file contains only basic layout structure (flex, grid, gap).
+ * All visual styling (padding, fonts, colors, hover effects) is handled
+ * by core/project-cards.css which loads after this file.
+ * 
+ * DO NOT add padding, font-size, colors, or other visual styles here
+ * as they will conflict with and override the comprehensive styles in core.
+ */
 
+/* Container layout - flex column with gap */
 .project-cards-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
+/* Grid layout for project cards */
 .projects-text-grid {
   display: grid;
   gap: 20px;
 }
 
+/* Responsive grid columns */
 @media (min-width: 720px) {
   .projects-text-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-.project-card {
-  /* Uncomment and set a background if you want background parallax */
-  /* background: url(...) center/cover no-repeat; */
-  background-position: calc(50% + var(--bg-x, 0px)) calc(50% + var(--bg-y, 0px));
-  transition: background-position 0.3s ease-out;
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 18px;
-}
-
-.project-card h2 {
-  margin: 0 0 8px;
-  font-weight: 700;
-  font-size: 1.15rem;
-}
-
-.project-card p {
-  margin: 0;
-  color: #666;
-}
-
-/* Guideline Button - Full width below project cards */
-.guideline-button {
-  /* Same styling as project-card */
-  background-position: calc(50% + var(--bg-x, 0px)) calc(50% + var(--bg-y, 0px));
-  transition: background-position 0.3s ease-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 18px;
-  width: 100%;
-}
-
-.guideline-button h2 {
-  margin: 0 0 8px;
-  font-weight: 700;
-  font-size: 1.15rem;
-}
-
-.guideline-button p {
-  margin: 0;
-  color: #666;
-  text-align: center;
 }
 
 
