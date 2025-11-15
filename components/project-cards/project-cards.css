@@ -22,6 +22,12 @@
   gap: 20px;
 }
 
+/* Guideline button should span across both columns of the grid */
+.guideline-button {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
 /* Responsive grid columns */
 @media (min-width: 720px) {
   .projects-text-grid {
