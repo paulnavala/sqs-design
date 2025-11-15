@@ -8,9 +8,9 @@
       "description": "Fox in the woods",
       "categories": ["portrait", "studio"],
       "year": 2024,
-      "afterSrc": "https://assets.peachless.design/assets/photography/fox_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/fox_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/fox_after.jpg",
+      "afterSrc": "https://assets.peachless.design/assets/photography/originals/fox_after.jpg",
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/fox_before.jpg",
+      "thumb": "https://assets.peachless.design/assets/photography/originals/fox_after.jpg",
       "alt": "Portrait of a fox in the woods",
       "accent": ""
     },
