@@ -13,6 +13,7 @@
   // List of all CSS files to load (auto-generated)
   const CSS_FILES = [
     '/components/fortune-peach/fortune-peach.css',
+    '/components/portfolio-photo/portfolio-photo.css',
     '/components/portfolio-uiux/portfolio-uiux.css',
     '/components/project-cards/project-cards.css',
     '/components/tagline/tagline.css',

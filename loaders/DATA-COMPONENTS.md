@@ -1,12 +1,14 @@
 # Data-Component Snippets
 
-Generated: 06/11/2025, 16:39:43
+Generated: 15.11.2025, 20:37:02
 
 ## Quick Copy — All Components
 
 ```html
 <div data-component="fortune-peach"></div>
+<div data-component="portfolio-photo"></div>
 <div data-component="portfolio-uiux"></div>
+<div data-component="preview"></div>
 <div data-component="project-cards"></div>
 <div data-component="tagline"></div>
 <div data-component="twin-gallery"></div>
@@ -20,10 +22,22 @@ Generated: 06/11/2025, 16:39:43
 <div data-component="fortune-peach"></div>
 ```
 
+### Portfolio Photo
+
+```html
+<div data-component="portfolio-photo"></div>
+```
+
 ### Portfolio Uiux
 
 ```html
 <div data-component="portfolio-uiux"></div>
+```
+
+### Preview
+
+```html
+<div data-component="preview"></div>
 ```
 
 ### Project Cards

@@ -9,12 +9,28 @@
       "syntax": "fortune-peach"
     },
     {
+      "filename": "portfolio-photo-loader.html",
+      "name": "Portfolio Photo",
+      "description": "Photography Gallery Component Loader HTML",
+      "url": "https://assets.peachless.design/components/portfolio-photo/portfolio-photo-loader.html",
+      "localPath": "/components/portfolio-photo/portfolio-photo-loader.html",
+      "syntax": "portfolio-photo"
+    },
+    {
       "filename": "portfolio-uiux-loader.html",
       "name": "Portfolio Uiux",
       "description": "Modern portfolio showcase with filtering, Figma embeds, intro/CTA cards, and fullscreen modal views.",
       "url": "https://assets.peachless.design/components/portfolio-uiux/portfolio-uiux-loader.html",
       "localPath": "/components/portfolio-uiux/portfolio-uiux-loader.html",
       "syntax": "portfolio-uiux"
+    },
+    {
+      "filename": "preview.html",
+      "name": "Preview",
+      "description": "Project Cards Grid",
+      "url": "https://assets.peachless.design/components/project-cards/preview.html",
+      "localPath": "/components/project-cards/preview.html",
+      "syntax": "preview"
     },
     {
       "filename": "project-cards-loader.html",
@@ -40,16 +56,7 @@
       "localPath": "/components/twin-gallery/twin-gallery-loader.html",
       "syntax": "twin-gallery"
     }
-    ,
-    {
-      "filename": "portfolio-photo-loader.html",
-      "name": "Photography Gallery",
-      "description": "Modern photography gallery with category filters and fullscreen before/after slider.",
-      "url": "https://assets.peachless.design/components/portfolio-photo/portfolio-photo-loader.html",
-      "localPath": "/components/portfolio-photo/portfolio-photo-loader.html",
-      "syntax": "portfolio-photo"
-    }
   ],
-  "generated": "2025-11-06T16:05:00.000Z",
-  "total": 6
+  "generated": "2025-11-15T18:37:02.066Z",
+  "total": 7
 }
