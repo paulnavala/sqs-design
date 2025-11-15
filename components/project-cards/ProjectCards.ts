@@ -69,18 +69,6 @@ export default defineComponent({
     });
 
     return () => {
-      const cardsGrid = h(
-        'div',
-        { class: 'projects-text-grid' },
-        props.items.map((it) =>
-          h(
-            'a',
-            { href: it.href, class: `project-card${it.className ? ' ' + it.className : ''}` },
-            [h('h2', it.title), h('p', it.description)]
-          )
-        )
-      );
-
       const guidelineBtn = props.guideline
         ? h(
             'a',
@@ -95,7 +83,20 @@ export default defineComponent({
           )
         : null;
 
-      return h('div', { class: 'project-cards-container' }, [cardsGrid, guidelineBtn]);
+      const gridItems = [
+        ...props.items.map((it) =>
+          h(
+            'a',
+            { href: it.href, class: `project-card${it.className ? ' ' + it.className : ''}` },
+            [h('h2', it.title), h('p', it.description)]
+          )
+        ),
+        ...(guidelineBtn ? [guidelineBtn] : []),
+      ];
+
+      const cardsGrid = h('div', { class: 'projects-text-grid' }, gridItems);
+
+      return h('div', { class: 'project-cards-container' }, [cardsGrid]);
     };
   },
 });
