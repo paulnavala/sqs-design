@@ -34,6 +34,15 @@
    ============================================================================ */
 
 /**
+ * Container for project cards and guideline button
+ */
+.project-cards-container {
+  max-width: 1100px;
+  margin: 120px auto;
+  padding: 0 40px;
+}
+
+/**
  * Main grid container for project cards
  * Two-column layout on desktop, single column on mobile
  */
@@ -41,9 +50,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
-  max-width: 1100px;
-  margin: 120px auto;
-  padding: 0 40px;
 }
 
 /* ============================================================================
@@ -226,14 +232,164 @@
  * Stack cards vertically on smaller screens
  */
 @media (max-width: 800px) {
+  .project-cards-container {
+    padding: 0 20px;
+  }
+
   .projects-text-grid {
     grid-template-columns: 1fr;
     gap: 24px;
-    padding: 0 20px;
   }
 
   /* Reduce padding on mobile */
   .project-card {
     padding: 60px 30px;
   }
+
+  /* Guideline button mobile padding */
+  .guideline-button {
+    padding: 60px 30px;
+    margin-top: 24px;
+  }
+}
+
+/* ============================================================================
+   Guideline Button
+   ============================================================================ */
+
+/**
+ * Guideline button container
+ * Full width button below project cards grid
+ * Same styling and effects as project cards
+ */
+.guideline-button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  background: #fff;
+  color: #111;
+  border-radius: 20px;
+  text-decoration: none;
+  overflow: hidden;
+  margin-top: 40px;
+  width: 100%;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 0.85, 0.25, 1),
+    box-shadow 0.3s ease;
+  z-index: 1;
+}
+
+/**
+ * CSS custom properties for parallax effect
+ * Updated by JavaScript based on mouse position
+ */
+.guideline-button {
+  --bg-x: 0px;
+  --bg-y: 0px;
+}
+
+/**
+ * Background image (hidden by default)
+ * Reveals on hover with parallax offset
+ */
+.guideline-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  /* Initial transform with parallax offset */
+  transform: scale(1.05) translateY(6px) translate(var(--bg-x), var(--bg-y));
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s ease;
+  z-index: 0; /* Behind content */
+}
+
+/**
+ * Hover state: reveal and adjust background
+ * Image becomes visible with parallax maintained
+ */
+.guideline-button:hover::before {
+  opacity: 1;
+  transform: scale(1.03) translateY(0) translate(var(--bg-x), var(--bg-y));
+}
+
+/**
+ * Dark overlay for text contrast
+ * Ensures text remains readable over background image
+ */
+.guideline-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25); /* Semi-transparent dark overlay */
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1; /* Between background and text */
+}
+
+/**
+ * Show overlay on hover
+ * Darkens background image for better text visibility
+ */
+.guideline-button:hover::after {
+  opacity: 1;
+}
+
+/**
+ * All text content above overlay and background
+ * Maintains color contrast in both states
+ */
+.guideline-button * {
+  position: relative;
+  z-index: 2; /* Above overlay and background */
+  transition: none; /* No delay on color change */
+}
+
+/**
+ * Guideline button title
+ * Large, bold heading
+ */
+.guideline-button h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+/**
+ * Guideline button description
+ * Body text with optimal reading width, centered
+ */
+.guideline-button p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  max-width: 100%;
+  text-align: center;
+}
+
+/**
+ * Guideline button hover state: lift and reveal
+ * Button lifts slightly, shadow increases, text turns white
+ */
+.guideline-button:hover {
+  transform: translateY(-6px) scale(1.015); /* Lift and slight scale */
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12); /* Enhanced shadow */
+  color: #fff; /* Text color change (instant, no transition) */
+}
+
+/**
+ * Text color change on hover
+ * Immediate color swap for crisp effect
+ */
+.guideline-button:hover h2,
+.guideline-button:hover p {
+  color: #fff; /* White text over dark overlay */
 }

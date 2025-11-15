@@ -7,12 +7,22 @@ type CardItem = {
   className?: string;
 };
 
+type GuidelineItem = {
+  href: string;
+  title: string;
+  description?: string;
+};
+
 export default defineComponent({
   name: 'ProjectCards',
   props: {
     items: {
       type: Array as PropType<CardItem[]>,
       default: () => [],
+    },
+    guideline: {
+      type: Object as PropType<GuidelineItem | null>,
+      default: null,
     },
   },
   setup(props) {
@@ -38,10 +48,28 @@ export default defineComponent({
         card.addEventListener('mousemove', onMove);
         card.addEventListener('mouseleave', onLeave);
       });
+
+      // Add parallax effect to guideline button
+      const guidelineBtn = document.querySelector('.guideline-button');
+      if (guidelineBtn) {
+        function onMoveGuideline(e: MouseEvent) {
+          const rect = guidelineBtn.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+          const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+          (guidelineBtn as HTMLElement).style.setProperty('--bg-x', `${x * MAX_SHIFT}px`);
+          (guidelineBtn as HTMLElement).style.setProperty('--bg-y', `${y * MAX_SHIFT}px`);
+        }
+        function onLeaveGuideline() {
+          (guidelineBtn as HTMLElement).style.setProperty('--bg-x', '0px');
+          (guidelineBtn as HTMLElement).style.setProperty('--bg-y', '0px');
+        }
+        guidelineBtn.addEventListener('mousemove', onMoveGuideline);
+        guidelineBtn.addEventListener('mouseleave', onLeaveGuideline);
+      }
     });
 
-    return () =>
-      h(
+    return () => {
+      const cardsGrid = h(
         'div',
         { class: 'projects-text-grid' },
         props.items.map((it) =>
@@ -52,6 +80,23 @@ export default defineComponent({
           )
         )
       );
+
+      const guidelineBtn = props.guideline
+        ? h(
+            'a',
+            {
+              href: props.guideline.href,
+              class: 'guideline-button',
+            },
+            [
+              h('h2', props.guideline.title),
+              props.guideline.description ? h('p', props.guideline.description) : null,
+            ]
+          )
+        : null;
+
+      return h('div', { class: 'project-cards-container' }, [cardsGrid, guidelineBtn]);
+    };
   },
 });
 

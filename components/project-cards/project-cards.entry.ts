@@ -1,3 +1,4 @@
+import './project-cards.css';
 import { createApp } from 'vue';
 import ProjectCards from './ProjectCards';
 
@@ -11,9 +12,20 @@ function parseItemsFrom(el: HTMLElement): any[] {
   }
 }
 
+function parseGuidelineFrom(el: HTMLElement): any | null {
+  const script = el.querySelector('script[type="application/json"][data-guideline]') as HTMLScriptElement | null;
+  if (!script) return null;
+  try {
+    return JSON.parse(script.textContent || 'null');
+  } catch {
+    return null;
+  }
+}
+
 function mountInto(el: HTMLElement) {
   const items = parseItemsFrom(el);
-  const app = createApp(ProjectCards, { items });
+  const guideline = parseGuidelineFrom(el);
+  const app = createApp(ProjectCards, { items, guideline });
   app.mount(el);
 }
 

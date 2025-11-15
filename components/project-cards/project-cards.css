@@ -1,5 +1,11 @@
 /* Optional styles for Project Cards parallax wiring and layout */
 
+.project-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .projects-text-grid {
   display: grid;
   gap: 20px;
@@ -33,6 +39,35 @@
 .project-card p {
   margin: 0;
   color: #666;
+}
+
+/* Guideline Button - Full width below project cards */
+.guideline-button {
+  /* Same styling as project-card */
+  background-position: calc(50% + var(--bg-x, 0px)) calc(50% + var(--bg-y, 0px));
+  transition: background-position 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 18px;
+  width: 100%;
+}
+
+.guideline-button h2 {
+  margin: 0 0 8px;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.guideline-button p {
+  margin: 0;
+  color: #666;
+  text-align: center;
 }
 
 
