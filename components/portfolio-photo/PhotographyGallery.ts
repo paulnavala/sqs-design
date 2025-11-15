@@ -306,14 +306,6 @@ export default defineComponent({
     }
 
     return () => {
-      // Header
-      const header = h('header', { class: 'pg__header', role: 'region', 'aria-labelledby': 'pg-title' }, [
-        h('div', { class: 'pg__header-inner' }, [
-          h('h2', { id: 'pg-title', class: 'pg__title' }, props.title),
-          h('span', { class: 'pg__count', 'data-count': '', role: 'status', 'aria-live': 'polite' }, String(visibleCount.value)),
-        ]),
-      ]);
-
       // Masonry
       const masonrySentinel = h('div', {
         class: 'pg-masonry__sentinel',
@@ -534,12 +526,11 @@ export default defineComponent({
                   ]
                 : []
             ),
-            h('figcaption', { class: 'pg-modal__cap' }, active ? `${active.title}${active.description ? ' — ' + active.description : ''}` : ''),
           ]),
         ]
       );
 
-      return h('div', { ref: root }, [header, masonry, modal]);
+      return h('div', { ref: root }, [masonry, modal]);
     };
 
   },
