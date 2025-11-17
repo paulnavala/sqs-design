@@ -86,7 +86,6 @@
   width: 3px;
   height: 0.9em; /* Relative to font size */
   top: 0.05em; /* Slight vertical adjustment */
-  margin-left: 3px;
   vertical-align: baseline;
   background: currentColor; /* Matches text color */
   border-radius: 2px;

@@ -131,7 +131,15 @@ export default defineComponent({
         // Place the active caret immediately after the new character (before placeholder)
         if (activeCaret) {
           activeCaret.style.visibility = 'visible';
-          textEl.insertBefore(activeCaret, placeholder);
+          activeCaret.style.display = 'inline-block';
+          activeCaret.style.opacity = '1';
+          // Ensure caret is in the correct parent before moving it
+          if (activeCaret.parentNode !== textEl) {
+            textEl.insertBefore(activeCaret, placeholder);
+          } else {
+            // Move caret to be right after the new character
+            textEl.insertBefore(activeCaret, placeholder);
+          }
         }
         const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
         const delay = Math.max(20, baseSpeed + variance);
@@ -219,16 +227,27 @@ export default defineComponent({
         await sleep(props.waitBetweenLines);
         if (l2) {
           // Switch caret visibility to line 2 and type
-          if (caret1Ref.value) caret1Ref.value.style.visibility = 'hidden';
+          if (caret1Ref.value) {
+            caret1Ref.value.style.visibility = 'hidden';
+            caret1Ref.value.style.display = 'none';
+          }
           if (caret2Ref.value) {
+            // Ensure caret is properly initialized
             caret2Ref.value.style.visibility = 'visible';
+            caret2Ref.value.style.display = 'inline-block';
+            caret2Ref.value.style.opacity = '1';
+            caret2Ref.value.style.animation = 'blink 1s ease-in-out infinite';
+            caret2Ref.value.classList.remove('exit', 'fade-in');
             if (props.fixedCenter) {
               // Attach absolute caret to line 2 container
               l2.appendChild(caret2Ref.value);
               positionCaretAbs(l2, caret2Ref.value, null);
             } else {
               const ph2 = ensurePlaceholder(l2);
-              l2.insertBefore(caret2Ref.value, ph2);
+              // Ensure caret is attached to l2 before typing starts
+              if (caret2Ref.value.parentNode !== l2) {
+                l2.insertBefore(caret2Ref.value, ph2);
+              }
             }
           }
           if (props.fixedCenter) {
