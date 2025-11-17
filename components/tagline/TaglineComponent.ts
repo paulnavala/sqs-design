@@ -123,6 +123,20 @@ export default defineComponent({
 
     async function typeText(text: string, baseSpeed: number, textEl: HTMLElement, activeCaret: HTMLElement | null) {
       const placeholder = ensurePlaceholder(textEl);
+      
+      // Ensure caret is visible and attached before typing starts
+      if (activeCaret) {
+        // Force visibility and display properties
+        activeCaret.style.setProperty('visibility', 'visible', 'important');
+        activeCaret.style.setProperty('display', 'inline-block', 'important');
+        activeCaret.style.setProperty('opacity', '1', 'important');
+        activeCaret.style.setProperty('animation', 'blink 1s ease-in-out infinite', 'important');
+        // Ensure caret is in the correct parent
+        if (activeCaret.parentNode !== textEl) {
+          textEl.insertBefore(activeCaret, placeholder);
+        }
+      }
+      
       for (let i = 0; i < text.length; i++) {
         clearPreviousGlow(textEl);
         const span = makeCharSpan(text[i]);
@@ -130,16 +144,13 @@ export default defineComponent({
         textEl.insertBefore(span, placeholder);
         // Place the active caret immediately after the new character (before placeholder)
         if (activeCaret) {
-          activeCaret.style.visibility = 'visible';
-          activeCaret.style.display = 'inline-block';
-          activeCaret.style.opacity = '1';
-          // Ensure caret is in the correct parent before moving it
-          if (activeCaret.parentNode !== textEl) {
-            textEl.insertBefore(activeCaret, placeholder);
-          } else {
-            // Move caret to be right after the new character
-            textEl.insertBefore(activeCaret, placeholder);
-          }
+          // Force caret to remain visible throughout typing
+          activeCaret.style.setProperty('visibility', 'visible', 'important');
+          activeCaret.style.setProperty('display', 'inline-block', 'important');
+          activeCaret.style.setProperty('opacity', '1', 'important');
+          // Always move caret to be right after the new character
+          // insertBefore automatically moves the element if it's already in the DOM
+          textEl.insertBefore(activeCaret, placeholder);
         }
         const variance = Math.random() * props.typeVariance - props.typeVariance / 2;
         const delay = Math.max(20, baseSpeed + variance);
@@ -171,9 +182,11 @@ export default defineComponent({
     function hideCarets() {
       if (caret1Ref.value) {
         caret1Ref.value.style.visibility = 'hidden';
+        caret1Ref.value.style.display = 'none';
       }
       if (caret2Ref.value) {
         caret2Ref.value.style.visibility = 'hidden';
+        caret2Ref.value.style.display = 'none';
       }
     }
 
@@ -231,13 +244,15 @@ export default defineComponent({
             caret1Ref.value.style.visibility = 'hidden';
             caret1Ref.value.style.display = 'none';
           }
-          if (caret2Ref.value) {
-            // Ensure caret is properly initialized
-            caret2Ref.value.style.visibility = 'visible';
-            caret2Ref.value.style.display = 'inline-block';
-            caret2Ref.value.style.opacity = '1';
-            caret2Ref.value.style.animation = 'blink 1s ease-in-out infinite';
+          if (caret2Ref.value && l2) {
+            // Ensure caret is properly initialized BEFORE attaching to DOM
+            // Use setProperty with important to override any CSS
+            caret2Ref.value.style.setProperty('visibility', 'visible', 'important');
+            caret2Ref.value.style.setProperty('display', 'inline-block', 'important');
+            caret2Ref.value.style.setProperty('opacity', '1', 'important');
+            caret2Ref.value.style.setProperty('animation', 'blink 1s ease-in-out infinite', 'important');
             caret2Ref.value.classList.remove('exit', 'fade-in');
+            
             if (props.fixedCenter) {
               // Attach absolute caret to line 2 container
               l2.appendChild(caret2Ref.value);
@@ -245,11 +260,19 @@ export default defineComponent({
             } else {
               const ph2 = ensurePlaceholder(l2);
               // Ensure caret is attached to l2 before typing starts
-              if (caret2Ref.value.parentNode !== l2) {
-                l2.insertBefore(caret2Ref.value, ph2);
-              }
+              // insertBefore will automatically move the element if it's already in the DOM
+              l2.insertBefore(caret2Ref.value, ph2);
             }
+            
+            // Double-check visibility after DOM insertion
+            caret2Ref.value.style.setProperty('visibility', 'visible', 'important');
+            caret2Ref.value.style.setProperty('display', 'inline-block', 'important');
+            caret2Ref.value.style.setProperty('opacity', '1', 'important');
           }
+          
+          // Small delay to ensure DOM is ready before typing
+          await nextFrame();
+          
           if (props.fixedCenter) {
             const slots2 = buildSlots(l2, String(props.line2));
             for (let i = 0; i < slots2.length; i++) {
@@ -265,7 +288,10 @@ export default defineComponent({
               await sleep(delay);
             }
           } else {
-            await typeText(String(props.line2), props.typeSpeed, l2, caret2Ref.value || null);
+            // Ensure caret2Ref is still valid before typing
+            if (caret2Ref.value && l2) {
+              await typeText(String(props.line2), props.typeSpeed, l2, caret2Ref.value);
+            }
           }
         }
         hideCarets();
