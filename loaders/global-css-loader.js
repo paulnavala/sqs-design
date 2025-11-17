@@ -23,8 +23,7 @@
     '/core/mobile-menu.css',
     '/core/portfolio.css',
     '/core/project-cards.css',
-    '/core/prototype-showcase.css',
-    '/core/tagline.css'
+    '/core/prototype-showcase.css'
   ];
   
   // Function to load CSS

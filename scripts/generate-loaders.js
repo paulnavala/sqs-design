@@ -63,6 +63,7 @@ function getAllCSSFiles() {
   if (fs.existsSync(CSS_DIR)) {
     fs.readdirSync(CSS_DIR)
       .filter((file) => file.endsWith('.css'))
+      .filter((file) => file !== 'tagline.css') // Exclude core/tagline.css (Vue component version is used instead)
       .forEach((file) => {
         files.push({
           path: `/core/${file}`,
