@@ -40,10 +40,9 @@
   text-align: center;
   background: transparent;
   overflow: hidden;
-  width: min(90vw, 72rem);
-  max-width: 72rem;
-  margin: 0 auto;
-  padding-inline: 1.25rem;
+  width: 100%;
+  padding: clamp(1.5rem, 6vw, 4rem) clamp(1rem, 6vw, 5rem);
+  box-sizing: border-box;
 }
 
 /* ============================================================================
@@ -58,32 +57,36 @@
   font-family: inherit;
   font-weight: inherit;
   font-style: italic;
-  font-size: clamp(1.5rem, 4.5vw, calc(1.6 * var(--heading-font-size, 2rem)));
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
   line-height: 1.2;
   color: inherit;
   text-align: center;
   position: relative;
-  width: min(90vw, 60rem);
-  max-width: 60rem;
+  width: min(90vw, 48rem);
+  max-width: 100%;
   margin: 0 auto;
-  padding-inline: 1rem;
-}
-
-/**
- * Line wrapper for multi-line taglines
- */
-.tagline .line {
-  display: block;
-  text-align: center;
-  text-wrap: balance;
+  padding-inline: clamp(0.75rem, 4vw, 2.5rem);
+  box-sizing: border-box;
 }
 
 /**
  * Individual character spans
  * Created dynamically by JavaScript
  */
+.tagline .text,
+.tagline .line {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  white-space: normal;
+  text-wrap: balance;
+}
+
 .tagline.typewriter .text span {
   display: inline;
+  white-space: normal;
 }
 
 

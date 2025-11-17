@@ -22,7 +22,7 @@ export default defineComponent({
 
     function makeCharSpan(ch: string): HTMLSpanElement {
       const span = document.createElement('span');
-      span.textContent = ch === ' ' ? '\u00A0' : ch;
+      span.textContent = ch;
       span.style.animation = 'glow 0.6s ease';
       return span;
     }
@@ -37,7 +37,7 @@ export default defineComponent({
 
     function measureLineSize(
       text: string,
-      options?: { reference?: HTMLElement | null }
+      availableWidth: number
     ): { width: number; height: number } {
       // Create a hidden measurement container that mimics the line styling
       const measureRoot = document.createElement('div');
@@ -46,30 +46,18 @@ export default defineComponent({
       measureRoot.style.visibility = 'hidden';
       measureRoot.style.left = '-99999px';
       measureRoot.style.top = '0';
-      measureRoot.style.pointerEvents = 'none';
-
-      // Mirror responsive constraints from the real component when provided
-      if (options?.reference) {
-        const reference = options.reference;
-        const rect = reference.getBoundingClientRect();
-        if (rect.width > 0) {
-          measureRoot.style.width = `${rect.width}px`;
-        }
-        const refStyles = window.getComputedStyle(reference);
-        if (refStyles.maxWidth && refStyles.maxWidth !== 'none') {
-          measureRoot.style.maxWidth = refStyles.maxWidth;
-        }
-        measureRoot.style.boxSizing = refStyles.boxSizing;
-        measureRoot.style.paddingLeft = refStyles.paddingLeft;
-        measureRoot.style.paddingRight = refStyles.paddingRight;
+      measureRoot.style.display = 'flex';
+      measureRoot.style.flexDirection = 'column';
+      measureRoot.style.alignItems = 'center';
+      const constrainedWidth = Math.max(0, Math.floor(availableWidth));
+      if (constrainedWidth > 0) {
+        measureRoot.style.width = `${constrainedWidth}px`;
+        measureRoot.style.maxWidth = `${constrainedWidth}px`;
       }
 
       const line = document.createElement('div');
       line.className = 'text line';
-      // Add full text as a span to get exact width with same font
-      const span = document.createElement('span');
-      span.textContent = text;
-      line.appendChild(span);
+      line.textContent = text;
       measureRoot.appendChild(line);
       document.body.appendChild(measureRoot);
       const rect = line.getBoundingClientRect();
@@ -85,7 +73,7 @@ export default defineComponent({
       const slots: HTMLElement[] = [];
       for (let i = 0; i < text.length; i++) {
         const slot = document.createElement('span');
-        slot.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+        slot.textContent = text[i];
         // Reserve width without showing yet
         slot.style.visibility = 'hidden';
         slot.className = 'slot';
@@ -119,9 +107,14 @@ export default defineComponent({
         const l2 = line2Ref.value as HTMLElement | null;
         // Optionally fix line widths to final size to prevent lateral motion
         // Pre-measure final sizes to reserve space and avoid vertical/horizontal shifts
-        const measureOptions = { reference: tag };
-        const s1 = measureLineSize(String(props.line1), measureOptions);
-        const s2 = l2 ? measureLineSize(String(props.line2), measureOptions) : { width: 0, height: 0 };
+        const availableWidth =
+          tag.clientWidth ||
+          tag.getBoundingClientRect().width ||
+          window.innerWidth ||
+          document.documentElement.clientWidth ||
+          0;
+        const s1 = measureLineSize(String(props.line1), availableWidth);
+        const s2 = l2 ? measureLineSize(String(props.line2), availableWidth) : { width: 0, height: 0 };
 
         // Always reserve vertical space to avoid line jumping
         l1.style.minHeight = s1.height + 'px';

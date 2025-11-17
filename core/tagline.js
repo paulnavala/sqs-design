@@ -76,8 +76,7 @@
    */
   function makeCharSpan(ch) {
     const span = document.createElement('span');
-    // Use non-breaking space for regular spaces
-    span.textContent = ch === ' ' ? '\u00A0' : ch;
+    span.textContent = ch;
     span.style.animation = 'glow 0.6s ease';
     return span;
   }
