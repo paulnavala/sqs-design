@@ -2,12 +2,12 @@
  * Tagline Component
  *
  * Cinematic typewriter effect that displays text character-by-character
- * with a glowing animation. Features a blinking caret and smooth fade-out.
+ * with a glowing animation. The blinking caret has been removed for a
+ * cleaner presentation.
  *
  * Features:
  * - Character-by-character typewriter animation
  * - Glowing effect on each new character
- * - Blinking caret indicator
  * - Two-line text sequence
  * - Automatic looping
  * - Configurable timing
@@ -15,11 +15,10 @@
  * HTML Structure Required:
  * <div class="tagline">
  *   <div class="text"></div>
- *   <span class="caret"></span>
  * </div>
  *
  * CSS Dependencies:
- * - .tagline, .tagline .text, .tagline .caret classes
+ * - .tagline and .tagline .text classes
  * - @keyframes glow, blink animations
  * - .tagline.fade class for fade-out
  *
@@ -77,8 +76,7 @@
    */
   function makeCharSpan(ch) {
     const span = document.createElement('span');
-    // Use non-breaking space for regular spaces
-    span.textContent = ch === ' ' ? '\u00A0' : ch;
+    span.textContent = ch;
     span.style.animation = 'glow 0.6s ease';
     return span;
   }
@@ -132,30 +130,11 @@
    *
    * @param {HTMLElement} tag - Tagline container element
    * @param {HTMLElement} textEl - Text container element
-   * @param {HTMLElement} caretEl - Caret element
    */
-  function resetTagline(tag, textEl, caretEl) {
+  function resetTagline(tag, textEl) {
     // Reset container state
     tag.classList.remove('fade');
     textEl.innerHTML = '';
-
-    // Reset caret to visible, blinking state
-    caretEl.classList.remove('exit', 'fade-in');
-    caretEl.style.display = 'inline-block';
-    caretEl.style.opacity = '1';
-    caretEl.style.transform = 'translateX(0)';
-    caretEl.style.animation = 'blink 1s ease-in-out infinite';
-  }
-
-  /**
-   * Hide caret instantly (no fade)
-   *
-   * @param {HTMLElement} caretEl - Caret element
-   */
-  function hideCaret(caretEl) {
-    caretEl.style.animation = 'none';
-    caretEl.style.opacity = '0';
-    caretEl.style.display = 'none';
   }
 
   /**
@@ -166,19 +145,17 @@
    * 2. Type first line
    * 3. Wait
    * 4. Type second line
-   * 5. Hide caret
-   * 6. Hold visible
-   * 7. Fade out
-   * 8. Wait before restart
+   * 5. Hold visible
+   * 6. Fade out
+   * 7. Wait before restart
    *
    * @param {HTMLElement} tag - Tagline container element
    * @param {HTMLElement} textEl - Text container element
-   * @param {HTMLElement} caretEl - Caret element
    */
-  async function runSequence(tag, textEl, caretEl) {
+  async function runSequence(tag, textEl) {
     while (true) {
       // Reset to initial state
-      resetTagline(tag, textEl, caretEl);
+      resetTagline(tag, textEl);
 
       // Type first line
       await typeText(TEXT.line1, TIMING.typeSpeed, textEl);
@@ -188,9 +165,6 @@
 
       // Type second line
       await typeText(TEXT.line2, TIMING.typeSpeed, textEl);
-
-      // Hide caret instantly
-      hideCaret(caretEl);
 
       // Hold full tagline visible
       await sleep(TIMING.holdAfterLine2);
@@ -224,15 +198,14 @@
     }
 
     const textEl = tag.querySelector('.text');
-    const caretEl = tag.querySelector('.caret');
 
-    if (!textEl || !caretEl) {
-      console.warn('Tagline component: Missing required elements (.text or .caret)');
+    if (!textEl) {
+      console.warn('Tagline component: Missing required element (.text)');
       return;
     }
 
     // Start animation sequence
-    runSequence(tag, textEl, caretEl);
+    runSequence(tag, textEl);
   }
 
   /**
