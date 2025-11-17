@@ -161,6 +161,7 @@ export default defineComponent({
     }
 
     async function openModal(index: number) {
+      modalRatio.value = 1;
       lastScrollY = window.scrollY;
       lastFocusEl.value = (document.activeElement as HTMLElement) || null;
       activeIndex.value = index;
@@ -195,8 +196,12 @@ export default defineComponent({
           // Pick the smaller by pixel area, use its aspect ratio
           const small = dims.reduce((a, b) => (a.w * a.h <= b.w * b.h ? a : b));
           modalRatio.value = small.w / small.h;
+        } else {
+          modalRatio.value = 1;
         }
-      } catch {}
+      } catch {
+        modalRatio.value = 1;
+      }
       
       // Now open the modal with the correct aspect ratio
       modalOpen.value = true;
@@ -208,6 +213,7 @@ export default defineComponent({
 
     function closeModal() {
       modalOpen.value = false;
+      modalRatio.value = 1;
       activeIndex.value = -1;
       // Restore scroll and focus
       requestAnimationFrame(() => {
@@ -216,11 +222,31 @@ export default defineComponent({
       });
     }
 
+    type ScrollLockState = { applied: boolean; overflow: string; paddingRight: string };
+    const scrollLockState: ScrollLockState = { applied: false, overflow: '', paddingRight: '' };
+
     watch(modalOpen, (open) => {
+      const body = document.body;
+      if (!body) return;
       if (open) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.removeProperty('overflow');
+        if (!scrollLockState.applied) {
+          scrollLockState.overflow = body.style.overflow || '';
+          scrollLockState.paddingRight = body.style.paddingRight || '';
+        }
+        const scrollbar = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+        body.style.overflow = 'hidden';
+        if (scrollbar > 0) {
+          body.style.paddingRight = `${scrollbar}px`;
+        } else {
+          body.style.removeProperty('padding-right');
+        }
+        scrollLockState.applied = true;
+      } else if (scrollLockState.applied) {
+        if (scrollLockState.overflow) body.style.overflow = scrollLockState.overflow;
+        else body.style.removeProperty('overflow');
+        if (scrollLockState.paddingRight) body.style.paddingRight = scrollLockState.paddingRight;
+        else body.style.removeProperty('padding-right');
+        scrollLockState.applied = false;
       }
     });
 
@@ -279,7 +305,14 @@ export default defineComponent({
                 // Prefetch next 3 thumbnails
                 const nextStart = masonryLoadedCount.value;
                 const nextItems = normalizedItems.value.slice(nextStart, nextStart + 3);
-                requestIdleCallback?.(() => {
+                const schedulePrefetch = (cb: () => void) => {
+                  if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+                    window.requestIdleCallback(cb);
+                  } else {
+                    setTimeout(cb, 0);
+                  }
+                };
+                schedulePrefetch(() => {
                   nextItems.forEach((n) => {
                     const src = n.thumb || n.afterSrc;
                     if (src) {
