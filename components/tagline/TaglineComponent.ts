@@ -35,15 +35,34 @@ export default defineComponent({
       }
     }
 
-    function measureLineSize(text: string): { width: number; height: number } {
+    function measureLineSize(
+      text: string,
+      options?: { reference?: HTMLElement | null }
+    ): { width: number; height: number } {
       // Create a hidden measurement container that mimics the line styling
       const measureRoot = document.createElement('div');
       measureRoot.className = 'tagline typewriter';
       measureRoot.style.position = 'absolute';
       measureRoot.style.visibility = 'hidden';
-      measureRoot.style.whiteSpace = 'nowrap';
       measureRoot.style.left = '-99999px';
       measureRoot.style.top = '0';
+      measureRoot.style.pointerEvents = 'none';
+
+      // Mirror responsive constraints from the real component when provided
+      if (options?.reference) {
+        const reference = options.reference;
+        const rect = reference.getBoundingClientRect();
+        if (rect.width > 0) {
+          measureRoot.style.width = `${rect.width}px`;
+        }
+        const refStyles = window.getComputedStyle(reference);
+        if (refStyles.maxWidth && refStyles.maxWidth !== 'none') {
+          measureRoot.style.maxWidth = refStyles.maxWidth;
+        }
+        measureRoot.style.boxSizing = refStyles.boxSizing;
+        measureRoot.style.paddingLeft = refStyles.paddingLeft;
+        measureRoot.style.paddingRight = refStyles.paddingRight;
+      }
 
       const line = document.createElement('div');
       line.className = 'text line';
@@ -100,8 +119,9 @@ export default defineComponent({
         const l2 = line2Ref.value as HTMLElement | null;
         // Optionally fix line widths to final size to prevent lateral motion
         // Pre-measure final sizes to reserve space and avoid vertical/horizontal shifts
-        const s1 = measureLineSize(String(props.line1));
-        const s2 = l2 ? measureLineSize(String(props.line2)) : { width: 0, height: 0 };
+        const measureOptions = { reference: tag };
+        const s1 = measureLineSize(String(props.line1), measureOptions);
+        const s2 = l2 ? measureLineSize(String(props.line2), measureOptions) : { width: 0, height: 0 };
 
         // Always reserve vertical space to avoid line jumping
         l1.style.minHeight = s1.height + 'px';
