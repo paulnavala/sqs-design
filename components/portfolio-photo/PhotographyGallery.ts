@@ -285,7 +285,14 @@ export default defineComponent({
                 // Prefetch next 3 thumbnails
                 const nextStart = masonryLoadedCount.value;
                 const nextItems = normalizedItems.value.slice(nextStart, nextStart + 3);
-                requestIdleCallback?.(() => {
+                const schedulePrefetch = (cb: () => void) => {
+                  if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+                    window.requestIdleCallback(cb);
+                  } else {
+                    setTimeout(cb, 0);
+                  }
+                };
+                schedulePrefetch(() => {
                   nextItems.forEach((n) => {
                     const src = n.thumb || n.afterSrc;
                     if (src) {
