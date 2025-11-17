@@ -161,6 +161,7 @@ export default defineComponent({
     }
 
     async function openModal(index: number) {
+      modalRatio.value = 1;
       lastScrollY = window.scrollY;
       lastFocusEl.value = (document.activeElement as HTMLElement) || null;
       activeIndex.value = index;
@@ -195,8 +196,12 @@ export default defineComponent({
           // Pick the smaller by pixel area, use its aspect ratio
           const small = dims.reduce((a, b) => (a.w * a.h <= b.w * b.h ? a : b));
           modalRatio.value = small.w / small.h;
+        } else {
+          modalRatio.value = 1;
         }
-      } catch {}
+      } catch {
+        modalRatio.value = 1;
+      }
       
       // Now open the modal with the correct aspect ratio
       modalOpen.value = true;
@@ -208,6 +213,7 @@ export default defineComponent({
 
     function closeModal() {
       modalOpen.value = false;
+      modalRatio.value = 1;
       activeIndex.value = -1;
       // Restore scroll and focus
       requestAnimationFrame(() => {
