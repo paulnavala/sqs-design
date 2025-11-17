@@ -222,11 +222,31 @@ export default defineComponent({
       });
     }
 
+    type ScrollLockState = { applied: boolean; overflow: string; paddingRight: string };
+    const scrollLockState: ScrollLockState = { applied: false, overflow: '', paddingRight: '' };
+
     watch(modalOpen, (open) => {
+      const body = document.body;
+      if (!body) return;
       if (open) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.removeProperty('overflow');
+        if (!scrollLockState.applied) {
+          scrollLockState.overflow = body.style.overflow || '';
+          scrollLockState.paddingRight = body.style.paddingRight || '';
+        }
+        const scrollbar = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+        body.style.overflow = 'hidden';
+        if (scrollbar > 0) {
+          body.style.paddingRight = `${scrollbar}px`;
+        } else {
+          body.style.removeProperty('padding-right');
+        }
+        scrollLockState.applied = true;
+      } else if (scrollLockState.applied) {
+        if (scrollLockState.overflow) body.style.overflow = scrollLockState.overflow;
+        else body.style.removeProperty('overflow');
+        if (scrollLockState.paddingRight) body.style.paddingRight = scrollLockState.paddingRight;
+        else body.style.removeProperty('padding-right');
+        scrollLockState.applied = false;
       }
     });
 
