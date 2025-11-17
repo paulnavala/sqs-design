@@ -40,6 +40,10 @@
   text-align: center;
   background: transparent;
   overflow: hidden;
+  width: min(90vw, 72rem);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding-inline: 1.25rem;
 }
 
 /* ============================================================================
@@ -54,12 +58,24 @@
   font-family: inherit;
   font-weight: inherit;
   font-style: italic;
-  font-size: calc(1.6 * var(--heading-font-size, 2rem)); /* 60% larger than heading */
+  font-size: clamp(1.5rem, 4.5vw, calc(1.6 * var(--heading-font-size, 2rem)));
   line-height: 1.2;
   color: inherit;
   text-align: center;
-  white-space: nowrap; /* Prevent wrapping during typing */
   position: relative;
+  width: min(90vw, 60rem);
+  max-width: 60rem;
+  margin: 0 auto;
+  padding-inline: 1rem;
+}
+
+/**
+ * Line wrapper for multi-line taglines
+ */
+.tagline .line {
+  display: block;
+  text-align: center;
+  text-wrap: balance;
 }
 
 /**
@@ -68,7 +84,6 @@
  */
 .tagline.typewriter .text span {
   display: inline;
-  white-space: nowrap;
 }
 
 

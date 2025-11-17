@@ -1,18 +1,15 @@
 /* Tagline styles (mirrors core/tagline.css) */
 
-.tagline-hero { display: flex; justify-content: center; align-items: center; min-height: 55vh; text-align: center; background: transparent; overflow: hidden; }
-.tagline.typewriter { font-family: inherit; font-weight: inherit; font-style: italic; font-size: calc(1.6 * var(--heading-font-size, 2rem)); line-height: 1.2; color: inherit; text-align: center; white-space: nowrap; position: relative; }
+.tagline-hero { display: flex; justify-content: center; align-items: center; min-height: 55vh; text-align: center; background: transparent; overflow: hidden; width: min(90vw, 72rem); max-width: 72rem; margin: 0 auto; padding-inline: 1.25rem; }
+.tagline.typewriter { font-family: inherit; font-weight: inherit; font-style: italic; font-size: clamp(1.5rem, 4.5vw, calc(1.6 * var(--heading-font-size, 2rem))); line-height: 1.2; color: inherit; text-align: center; position: relative; width: min(90vw, 60rem); max-width: 60rem; margin: 0 auto; padding-inline: 1rem; }
 .tagline .line {
-  display: inline-flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 0.08em;
+  display: block;
   text-align: center;
-  position: relative;
-  white-space: nowrap;
+  text-wrap: balance;
+  margin-inline: auto;
 }
 .tagline .line .slot { display: inline-block; }
-.tagline.typewriter .text span { display: inline; white-space: nowrap; }
+.tagline.typewriter .text span { display: inline; }
 .tagline.typewriter.fade { animation: fadeout 2.5s ease-in-out forwards; }
 @keyframes fadeout { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(0); } }
 @keyframes glow { 0% { text-shadow: 0 0 8px currentColor; opacity: 1; } 80% { text-shadow: 0 0 3px currentColor; } 100% { text-shadow: none; opacity: 1; } }
