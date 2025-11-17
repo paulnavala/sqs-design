@@ -27,7 +27,7 @@
     {
       "filename": "preview.html",
       "name": "Preview",
-      "description": "Project Cards Grid",
+      "description": "Project Cards Grid with Guideline Button",
       "url": "https://assets.peachless.design/components/project-cards/preview.html",
       "localPath": "/components/project-cards/preview.html",
       "syntax": "preview"
@@ -57,6 +57,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-15T19:01:58.772Z",
+  "generated": "2025-11-17T18:25:10.120Z",
   "total": 7
 }
