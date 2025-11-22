@@ -42,7 +42,8 @@
     gap: 2rem;
     align-items: center;
     /* Vertically center detail panel */
-    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+    /* Ultra smooth transition */
     height: 500px;
     overflow: hidden;
 }
@@ -58,7 +59,7 @@
 
 .logo-showcase .main-content {
     flex: 1;
-    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
     height: 100%;
     overflow-y: auto;
     padding-right: 0.5rem;
@@ -90,7 +91,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
-    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
     padding-bottom: 2rem;
 }
 
@@ -248,7 +249,7 @@
 .logo-showcase .logo-image-preview {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 49.3%;
     transform: translate(-50%, -50%) scale(0.9);
     opacity: 0;
     max-width: 85%;
@@ -278,8 +279,8 @@
 .logo-showcase .scroll-indicator {
     position: absolute;
     bottom: 1.5rem;
-    left: 25%;
-    /* Position between 2nd and 3rd card in 4-column grid (25% = middle of 2nd column) */
+    left: 49.3%;
+    /* Positioned at 48% in grid view */
     transform: translateX(-50%);
     width: 32px;
     height: 32px;
@@ -304,10 +305,7 @@
     cursor: pointer;
 }
 
-/* When detail panel is open, hide the scroll indicator */
-.logo-showcase.has-selection .scroll-indicator {
-    display: none;
-}
+/* Scroll indicator can appear on hover even when detail panel is open */
 
 .logo-showcase .scroll-indicator.is-visible {
     opacity: 1;
@@ -353,23 +351,44 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    animation: slideInFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     border: 1px solid rgba(0, 0, 0, 0.04);
     height: 484px;
     /* 3 cards (140px × 3) + 2 gaps (2rem × 2 = 4rem = 64px) = 484px */
     overflow-y: auto;
     box-sizing: border-box;
+
+    /* Ultra smooth entrance animation */
+    animation: panelSlideIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    transform-origin: left center;
 }
 
-@keyframes slideInFade {
+/* Entrance animation */
+@keyframes panelSlideIn {
     0% {
         opacity: 0;
-        transform: translateX(20px) scale(0.98);
+        transform: translateX(40px) scale(0.95);
     }
 
     100% {
         opacity: 1;
         transform: translateX(0) scale(1);
+    }
+}
+
+/* Exit animation - applied when panel is being removed */
+.logo-showcase .detail-panel.closing {
+    animation: panelSlideOut 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes panelSlideOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(40px) scale(0.95);
     }
 }
 
