@@ -9,11 +9,15 @@
  * - Click interaction to reveal detail panel
  * - Grid compresses when detail panel is open
  * - Clean, minimal aesthetic with subtle hover effects
+ * - Scrollable grid layout (fixed height approx 3 rows)
  * 
  * HTML Structure:
  * <section class="logo-showcase">
  *   <div class="showcase-wrapper">
- *     <div class="main-content">...</div>
+ *     <div class="grid-container">
+ *       <div class="main-content">...</div>
+ *       <div class="scroll-indicator">...</div>
+ *     </div>
  *     <div class="detail-panel">...</div>
  *   </div>
  * </section>
@@ -35,17 +39,45 @@
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
-    gap: 2.5rem;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 2rem;
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    height: 500px;
+    overflow: hidden;
+}
+
+.logo-showcase .grid-container {
+    position: relative;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .logo-showcase .main-content {
     flex: 1;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    padding-top: 1rem;
+
+    /* Hide Scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.logo-showcase .main-content::-webkit-scrollbar {
+    display: none;
+}
+
+.logo-showcase.has-selection .grid-container {
+    flex: 1;
+    min-width: 0;
 }
 
 .logo-showcase.has-selection .main-content {
-    flex: 0 0 58%;
+    flex: 1;
 }
 
 /* ============================================================================
@@ -56,14 +88,16 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    padding-bottom: 2rem;
 }
 
 .logo-showcase.has-selection .logo-grid {
     gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
     .logo-showcase .logo-grid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -77,6 +111,70 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Staggered Animation Setup */
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Stagger delays for first 12 items */
+.logo-showcase .logo-item:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.logo-showcase .logo-item:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.logo-showcase .logo-item:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.logo-showcase .logo-item:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.logo-showcase .logo-item:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.logo-showcase .logo-item:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.logo-showcase .logo-item:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.logo-showcase .logo-item:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+.logo-showcase .logo-item:nth-child(9) {
+    animation-delay: 0.45s;
+}
+
+.logo-showcase .logo-item:nth-child(10) {
+    animation-delay: 0.5s;
+}
+
+.logo-showcase .logo-item:nth-child(11) {
+    animation-delay: 0.55s;
+}
+
+.logo-showcase .logo-item:nth-child(12) {
+    animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ============================================================================
@@ -85,43 +183,166 @@
 
 .logo-showcase .logo-placeholder {
     width: 100%;
-    height: 130px;
+    height: 140px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #fff;
+    background: #ffffff;
     border-radius: 20px;
-    transition: all 0.4s cubic-bezier(0.25, 0.85, 0.25, 1);
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+    padding: 1.75rem;
+    box-sizing: border-box;
+}
+
+.logo-showcase .logo-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
 .logo-showcase .logo-placeholder:hover {
-    transform: translateY(-6px) scale(1.015);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.08), 0 10px 20px -5px rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+.logo-showcase .logo-placeholder:hover::before {
+    opacity: 1;
 }
 
 .logo-showcase .logo-placeholder.is-selected {
     background: #f8f9fa;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 0 2px #111, 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: transparent;
+    transform: scale(0.98);
 }
 
-.logo-showcase .logo-text {
-    font-weight: 600;
-    font-size: 1.15rem;
-    color: #111;
-    letter-spacing: 0.02em;
-    transition: color 0.2s ease;
-}
-
-.logo-showcase .logo-placeholder:hover .logo-text {
-    color: #333;
-}
-
+/* Image Swap Styles */
 .logo-showcase .logo-image {
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.logo-showcase .logo-image-grid {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    /* Default transition */
+}
+
+.logo-showcase .logo-image-preview {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    max-width: 85%;
+    max-height: 85%;
+}
+
+/* Instant disappearance for grid image on hover */
+.logo-showcase .logo-placeholder:hover .logo-image-grid,
+.logo-showcase .logo-placeholder.is-selected .logo-image-grid {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0s, transform 0s;
+    /* INSTANT */
+}
+
+.logo-showcase .logo-placeholder:hover .logo-image-preview,
+.logo-showcase .logo-placeholder.is-selected .logo-image-preview {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* ============================================================================
+   Scroll Indicator
+   ============================================================================ */
+
+/* Gradient Mask for Scroll Hint */
+.logo-showcase .grid-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0.5rem;
+    /* Match scrollbar padding */
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Animated Scroll Arrow */
+.logo-showcase .scroll-indicator {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bounce 2s infinite;
+    pointer-events: auto;
+    /* Enable clicks */
+    z-index: 5;
+    color: #111;
+    font-size: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    /* Visibility Transition */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    cursor: pointer;
+}
+
+.logo-showcase .scroll-indicator.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.logo-showcase .scroll-indicator:hover {
+    background: #f8f9fa;
+    transform: translateX(-50%) scale(1.1);
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    40% {
+        transform: translateX(-50%) translateY(-6px);
+    }
+
+    60% {
+        transform: translateX(-50%) translateY(-3px);
+    }
 }
 
 /* ============================================================================
@@ -130,25 +351,27 @@
 
 .logo-showcase .detail-panel {
     position: relative;
-    flex: 0 0 38%;
-    background: #fff;
-    border-radius: 20px;
-    padding: 2.5rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    flex: 0 0 35%;
+    max-width: 450px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 4.5rem 3.5rem 6rem 2.5rem;
+    /* Increased Bottom to 6rem */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    animation: slideInFade 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 1.5rem;
+    animation: slideInFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 @keyframes slideInFade {
     0% {
         opacity: 0;
-        transform: translateX(40px) scale(0.95);
-    }
-
-    60% {
-        opacity: 1;
+        transform: translateX(20px) scale(0.98);
     }
 
     100% {
@@ -163,27 +386,27 @@
 
 .logo-showcase .close-button {
     position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
-    background: #f8f9fa;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(0, 0, 0, 0.04);
     border: none;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #666;
+    color: #555;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .logo-showcase .close-button:hover {
-    background: #e9ecef;
-    color: #111;
+    background: #111;
+    color: #fff;
     transform: rotate(90deg);
 }
 
@@ -194,30 +417,24 @@
 .logo-showcase .detail-content {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 2rem;
     height: 100%;
 }
 
 .logo-showcase .detail-logo {
     background: #f8f9fa;
-    border-radius: 20px;
-    height: 220px;
+    border-radius: 16px;
+    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.logo-showcase .detail-logo-text {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: #111;
-    letter-spacing: -0.02em;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    flex-shrink: 0;
 }
 
 .logo-showcase .detail-logo-image {
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 70%;
+    max-height: 70%;
     object-fit: contain;
 }
 
@@ -226,19 +443,19 @@
 }
 
 .logo-showcase .detail-title {
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 1.25rem;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
     color: #111;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
 }
 
 .logo-showcase .detail-description {
-    font-size: 1.05rem;
-    line-height: 1.75;
-    color: #333;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: #666;
     font-weight: 400;
-    letter-spacing: 0.01em;
 }
 
 /* ============================================================================
@@ -253,6 +470,19 @@
     .logo-showcase .showcase-wrapper {
         flex-direction: column;
         gap: 2rem;
+        height: auto;
+        overflow: visible;
+    }
+
+    .logo-showcase .grid-container {
+        height: auto;
+        overflow: visible;
+    }
+
+    .logo-showcase .main-content {
+        overflow-y: visible;
+        height: auto;
+        padding-top: 0;
     }
 
     .logo-showcase.has-selection .main-content {
@@ -262,6 +492,8 @@
     .logo-showcase .detail-panel {
         flex: 1;
         padding: 2rem;
+        height: auto;
+        max-width: none;
     }
 
     .logo-showcase.has-selection .logo-grid {
@@ -269,7 +501,7 @@
     }
 
     .logo-showcase .detail-title {
-        font-size: 1.75rem;
+        font-size: 2rem;
     }
 
     .logo-showcase .detail-logo {
