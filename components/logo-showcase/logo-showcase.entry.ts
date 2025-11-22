@@ -22,34 +22,49 @@ async function fetchLogos() {
     }
 }
 
+// Initialize logo showcase components
+async function initLogoShowcase() {
+    const containers = document.querySelectorAll('[data-component="logo-showcase"]');
+
+    if (containers.length === 0) {
+        return;
+    }
+
+    // Fetch logos once
+    const logos = await fetchLogos();
+
+    containers.forEach((container) => {
+        // Skip if already initialized
+        if (container.hasAttribute('data-logo-showcase-initialized')) {
+            return;
+        }
+
+        container.setAttribute('data-logo-showcase-initialized', 'true');
+
+        const app = createApp(LogoShowcase, {
+            logos: logos
+        });
+        app.mount(container);
+    });
+}
+
 // Auto-initialize on page load
 if (typeof window !== 'undefined') {
-    window.addEventListener('DOMContentLoaded', async () => {
-        const containers = document.querySelectorAll('[data-component="logo-showcase"]');
+    // Check if DOM is already loaded
+    if (document.readyState === 'loading') {
+        // DOM not ready yet, wait for it
+        document.addEventListener('DOMContentLoaded', initLogoShowcase);
+    } else {
+        // DOM is already ready, initialize immediately
+        initLogoShowcase();
+    }
 
-        // Fetch logos once
-        const logos = await fetchLogos();
+    // Support for dynamic loading (e.g., via Squarespace code blocks loaded after page load)
+    // Run initialization again after a short delay to catch any late-loaded elements
+    setTimeout(initLogoShowcase, 100);
+    setTimeout(initLogoShowcase, 500);
+    setTimeout(initLogoShowcase, 1000);
 
-        containers.forEach((container) => {
-            const app = createApp(LogoShowcase, {
-                logos: logos
-            });
-            app.mount(container);
-        });
-    });
-
-    // Support for dynamic loading (e.g., via Squarespace code blocks)
-    window.addEventListener('componentLoaded', async (e: Event) => {
-        const customEvent = e as CustomEvent;
-        if (customEvent.detail?.component === 'logo-showcase') {
-            const container = customEvent.detail.container;
-            if (container) {
-                const logos = await fetchLogos();
-                const app = createApp(LogoShowcase, {
-                    logos: logos
-                });
-                app.mount(container);
-            }
-        }
-    });
+    // Also expose as global function for manual initialization
+    (window as any).initLogoShowcase = initLogoShowcase;
 }

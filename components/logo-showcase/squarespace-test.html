@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squarespace Test - Logo Showcase</title>
+
+    <!-- Simulate Squarespace environment where scripts load after DOM -->
+    <link rel="stylesheet" href="logo-showcase.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .test-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="test-container">
+        <h1>Squarespace Simulation Test</h1>
+        <p>This simulates how the component loads on Squarespace (scripts load after DOM is ready)</p>
+
+        <!-- This is what users paste in Squarespace Code Block -->
+        <div data-component="logo-showcase"></div>
+    </div>
+
+    <!-- Vue loaded from CDN (like in Squarespace global loader) -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Component JS loaded AFTER DOM is ready (simulating Squarespace) -->
+    <script>
+        // Simulate delayed script loading (like Squarespace footer injection)
+        setTimeout(function () {
+            var script = document.createElement('script');
+            script.src = '../../dist-vue/components/logo-showcase/logo-showcase.js';
+            script.onload = function () {
+                console.log('Script loaded, initLogoShowcase exists:', typeof window.initLogoShowcase);
+                // The entry script already has setTimeout calls, so this should work automatically
+            };
+            document.body.appendChild(script);
+        }, 100);
+    </script>
+
+</body>
+
+</html>
