@@ -114,7 +114,6 @@ export default defineComponent({
             return h('section', { class: ['logo-showcase', { 'has-selection': selectedLogo.value !== null }] }, [
                 h('div', { class: 'showcase-wrapper' }, [
                     h('div', { class: 'main-content' }, [
-                        h('h2', { class: 'section-title' }, 'Trusted by innovative companies'),
                         h('div', { class: 'logo-grid' },
                             logoItems.map((logo, index) =>
                                 h('div', {
