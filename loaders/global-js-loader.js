@@ -21,6 +21,7 @@
     '/core/project-card.js',
     '/core/prototype-showcase.js',
     '/core/tagline.js',
+    '/components/contact-form/contact-form.js',
     '/components/fortune-peach/fortune-peach.js',
     '/components/guideline-page/guideline-page.js',
     '/components/logo-showcase/logo-showcase.js',

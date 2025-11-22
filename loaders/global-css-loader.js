@@ -12,6 +12,7 @@
   
   // List of all CSS files to load (auto-generated)
   const CSS_FILES = [
+    '/components/contact-form/contact-form.css',
     '/components/fortune-peach/fortune-peach.css',
     '/components/guideline-page/guideline-page.css',
     '/components/logo-showcase/logo-showcase.css',
@@ -20,6 +21,7 @@
     '/components/project-cards/project-cards.css',
     '/components/tagline/tagline.css',
     '/components/twin-gallery/twin-gallery.css',
+    '/core/contact-form.css',
     '/core/elegant-footer.css',
     '/core/header.css',
     '/core/mobile-menu.css',

@@ -1,6 +1,14 @@
 {
   "components": [
     {
+      "filename": "contact-form-loader.html",
+      "name": "Contact Form",
+      "description": "Contact Form Component Loader HTML",
+      "url": "https://assets.peachless.design/components/contact-form/contact-form-loader.html",
+      "localPath": "/components/contact-form/contact-form-loader.html",
+      "syntax": "contact-form"
+    },
+    {
       "filename": "fortune-peach-loader.html",
       "name": "Fortune Peach",
       "description": "Interactive fortune reveal widget with cracking animation and particle effects.",
@@ -81,6 +89,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-22T22:55:19.350Z",
-  "total": 10
+  "generated": "2025-11-22T23:01:09.126Z",
+  "total": 11
 }

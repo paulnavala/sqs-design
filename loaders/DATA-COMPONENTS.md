@@ -1,10 +1,11 @@
 # Data-Component Snippets
 
-Generated: 23.11.2025, 00:55:19
+Generated: 23.11.2025, 01:01:09
 
 ## Quick Copy — All Components
 
 ```html
+<div data-component="contact-form"></div>
 <div data-component="fortune-peach"></div>
 <div data-component="guideline-page"></div>
 <div data-component="logo-showcase"></div>
@@ -18,6 +19,12 @@ Generated: 23.11.2025, 00:55:19
 ```
 
 ## Per Component
+
+### Contact Form
+
+```html
+<div data-component="contact-form"></div>
+```
 
 ### Fortune Peach
 

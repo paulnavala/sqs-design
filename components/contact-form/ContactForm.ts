@@ -1,0 +1,129 @@
+import { defineComponent, h, ref, onMounted, PropType } from 'vue';
+
+type FormField = {
+    id: string;
+    label: string;
+    type: 'text' | 'email' | 'tel' | 'textarea';
+    placeholder?: string;
+    required?: boolean;
+};
+
+export default defineComponent({
+    name: 'ContactForm',
+    props: {
+        title: { type: String, default: "Let's Create Together" },
+        subtitle: { type: String, default: "Have a project in mind? Let's bring your vision to life." },
+        submitText: { type: String, default: 'Send Message' },
+        fields: {
+            type: Array as PropType<FormField[]>,
+            default: () => [
+                { id: 'name', label: 'Name', type: 'text', placeholder: 'Your Name', required: true },
+                { id: 'email', label: 'Email', type: 'email', placeholder: 'your@email.com', required: true },
+                { id: 'phone', label: 'Phone', type: 'tel', placeholder: '+1 (555) 000-0000', required: false },
+                { id: 'message', label: 'Message', type: 'textarea', placeholder: 'Tell us about your project...', required: true },
+            ],
+        },
+        formAction: { type: String, default: '' },
+        formMethod: { type: String, default: 'POST' },
+    },
+    setup(props) {
+        const formRef = ref<HTMLFormElement | null>(null);
+        const containerRef = ref<HTMLElement | null>(null);
+        const isSubmitting = ref(false);
+        const MAX_SHIFT = 6;
+
+        const handleSubmit = async (e: Event) => {
+            e.preventDefault();
+            if (!formRef.value) return;
+
+            isSubmitting.value = true;
+
+            // If formAction is provided, submit the form
+            if (props.formAction) {
+                formRef.value.submit();
+            } else {
+                // Custom submission logic can be added here
+                console.log('Form submitted');
+                setTimeout(() => {
+                    isSubmitting.value = false;
+                    alert("Thank you for your message! We'll get back to you soon.");
+                    formRef.value?.reset();
+                }, 1500);
+            }
+        };
+
+        onMounted(() => {
+            const container = containerRef.value;
+            if (!container) return;
+
+            function onMove(e: MouseEvent) {
+                const rect = container!.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+                const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+                container!.style.setProperty('--bg-x', `${x * MAX_SHIFT}px`);
+                container!.style.setProperty('--bg-y', `${y * MAX_SHIFT}px`);
+            }
+
+            function onLeave() {
+                container!.style.setProperty('--bg-x', '0px');
+                container!.style.setProperty('--bg-y', '0px');
+            }
+
+            container.addEventListener('mousemove', onMove);
+            container.addEventListener('mouseleave', onLeave);
+        });
+
+        return () => {
+            const formFields = props.fields.map((field) => {
+                const inputAttrs = {
+                    id: field.id,
+                    name: field.id,
+                    type: field.type !== 'textarea' ? field.type : undefined,
+                    placeholder: field.placeholder || '',
+                    required: field.required || false,
+                    class: 'form-input',
+                };
+
+                const inputElement =
+                    field.type === 'textarea'
+                        ? h('textarea', { ...inputAttrs, rows: 5 })
+                        : h('input', inputAttrs);
+
+                return h('div', { class: 'form-field' }, [
+                    h('label', { for: field.id, class: 'form-label' }, field.label),
+                    inputElement,
+                ]);
+            });
+
+            const submitButton = h(
+                'button',
+                {
+                    type: 'submit',
+                    class: 'form-submit',
+                    disabled: isSubmitting.value,
+                },
+                isSubmitting.value ? 'Sending...' : props.submitText
+            );
+
+            const form = h(
+                'form',
+                {
+                    ref: formRef,
+                    class: 'contact-form-inner',
+                    action: props.formAction,
+                    method: props.formMethod,
+                    onSubmit: handleSubmit,
+                },
+                [...formFields, submitButton]
+            );
+
+            return h('div', { ref: containerRef, class: 'contact-form-container' }, [
+                h('div', { class: 'contact-form-header' }, [
+                    h('h2', { class: 'contact-form-title' }, props.title),
+                    h('p', { class: 'contact-form-subtitle' }, props.subtitle),
+                ]),
+                form,
+            ]);
+        };
+    },
+});
