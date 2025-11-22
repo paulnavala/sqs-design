@@ -1,6 +1,6 @@
 # Data-Component Snippets
 
-Generated: 22/11/2025, 15:27:07
+Generated: 22/11/2025, 18:20:16
 
 ## Quick Copy — All Components
 

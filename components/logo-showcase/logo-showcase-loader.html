@@ -1,24 +1,19 @@
-<!--
+<!-- 
   Logo Showcase Component HTML
   
-  Description: A modern logo showcase grid with hover effects.
+  Description: Dynamic logo showcase with interactive detail panel. Loads logos from JSON data with optimized WebP variants.
   
-  Usage:
-  1. Ensure Global CSS and JS Loaders are installed.
-  2. Copy this entire block into a Code Block on your Squarespace page.
+  Usage in Squarespace:
+  1. Ensure Global CSS and JS Loaders are installed in Code Injection (see deployment guide)
+  2. Copy this entire block into a Code Block where you want the logo showcase to appear
+  3. The component will automatically load logos from data/logos.json
 -->
 
-<div id="logo-showcase-root"></div>
+<div data-component="logo-showcase"></div>
 
-<!-- Load Component -->
 <script>
     (function () {
-        // Dispatch event to trigger dynamic loading
-        document.dispatchEvent(new CustomEvent('componentLoaded', {
-            detail: {
-                componentName: 'logo-showcase-loader.html',
-                target: document.currentScript.parentElement
-            }
-        }));
+        // The global JS loader will handle component initialization
+        // This div with data-component="logo-showcase" will be automatically detected
     })();
 </script>
