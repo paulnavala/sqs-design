@@ -1,0 +1,185 @@
+#!/usr/bin/env node
+/**
+ * Optimize logo assets into small/medium/large WebP variants.
+ *
+ * Input dir: assets/logos/originals/
+ * Processes all logo image files (grid and preview versions).
+ * Outputs:
+ *   <name>-sm.webp  (max width  320)
+ *   <name>-md.webp  (max width  640)
+ *   <name>-lg.webp  (max width 1200)
+ *
+ * Regenerates all variants when source file content changes (content hash comparison).
+ */
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const sharp = require('sharp');
+
+const ROOT = path.join(__dirname, '..');
+const BASE_DIR = path.join(ROOT, 'assets', 'logos');
+const ORIG_DIR = fs.existsSync(path.join(BASE_DIR, 'originals'))
+    ? path.join(BASE_DIR, 'originals')
+    : BASE_DIR;
+const VAR_DIR = path.join(BASE_DIR, 'variants');
+const HASH_FILE = path.join(VAR_DIR, '.hashes.json');
+const SIZES = [
+    { suffix: '-sm', width: 320, quality: 90 },  // Grid thumbnails
+    { suffix: '-md', width: 640, quality: 90 },  // Detail panel
+    { suffix: '-lg', width: 1200, quality: 92 }, // High-res displays
+];
+const VALID_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.svg']);
+
+function isVariant(file) {
+    const ext = path.extname(file).toLowerCase();
+    if (!VALID_EXT.has(ext)) return false;
+    const base = path.basename(file, ext).toLowerCase();
+    // ends with -sm / -md / -lg
+    return /-(sm|md|lg)$/.test(base);
+}
+
+function baseFromVariant(file) {
+    const ext = path.extname(file);
+    const base = path.basename(file, ext);
+    return base.replace(/-(sm|md|lg)$/i, '');
+}
+
+function hasOriginal(dir, baseName) {
+    for (const ext of VALID_EXT) {
+        const candidate = path.join(dir, baseName + ext);
+        if (fs.existsSync(candidate)) return true;
+    }
+    return false;
+}
+
+function cleanupOrphans() {
+    if (!fs.existsSync(VAR_DIR)) return;
+    const files = fs.readdirSync(VAR_DIR);
+    files.forEach((f) => {
+        if (!isVariant(f)) return;
+        const baseName = baseFromVariant(f);
+        if (!hasOriginal(ORIG_DIR, baseName) && !hasOriginal(BASE_DIR, baseName)) {
+            try {
+                fs.unlinkSync(path.join(VAR_DIR, f));
+                console.log('deleted orphan:', path.relative(ROOT, path.join(VAR_DIR, f)));
+            } catch (e) {
+                console.warn('failed to delete orphan:', f, e.message);
+            }
+        }
+    });
+}
+
+function isCandidate(file) {
+    const ext = path.extname(file).toLowerCase();
+    if (!VALID_EXT.has(ext)) return false;
+    // Skip SVG files - they don't need optimization
+    if (ext === '.svg') return false;
+    const base = path.basename(file, ext).toLowerCase();
+    // Exclude already sized variants (-sm, -md, -lg)
+    if (/(?:-|_)(sm|md|lg)$/.test(base)) return false;
+    // Include all valid image files (both grid and preview versions)
+    return true;
+}
+
+function getStoredHashes() {
+    if (!fs.existsSync(HASH_FILE)) {
+        return {};
+    }
+    try {
+        const content = fs.readFileSync(HASH_FILE, 'utf8');
+        return JSON.parse(content);
+    } catch {
+        return {};
+    }
+}
+
+function storeHash(filename, hash) {
+    const hashes = getStoredHashes();
+    hashes[filename] = hash;
+    if (!fs.existsSync(VAR_DIR)) {
+        fs.mkdirSync(VAR_DIR, { recursive: true });
+    }
+    fs.writeFileSync(HASH_FILE, JSON.stringify(hashes, null, 2));
+}
+
+async function processOne(srcPath) {
+    const dir = path.dirname(srcPath);
+    const ext = path.extname(srcPath);
+    const base = path.basename(srcPath, ext);
+    const filename = path.basename(srcPath);
+
+    // Read file once for both hash calculation and processing
+    const buf = fs.readFileSync(srcPath);
+
+    // Calculate current source hash
+    const currentHash = crypto.createHash('sha256').update(buf).digest('hex');
+    const storedHashes = getStoredHashes();
+    const storedHash = storedHashes[filename];
+
+    // If hash matches, skip all variants
+    if (storedHash === currentHash) {
+        console.log('skip (unchanged):', path.relative(ROOT, srcPath));
+        return;
+    }
+
+    // Source has changed, regenerate ALL variants
+    const img = sharp(buf, { limitInputPixels: false }).rotate();
+    const meta = await img.metadata();
+
+    if (!fs.existsSync(VAR_DIR)) fs.mkdirSync(VAR_DIR, { recursive: true });
+
+    console.log('regenerating variants for:', path.relative(ROOT, srcPath));
+    for (const { suffix, width, quality } of SIZES) {
+        const outPath = path.join(VAR_DIR, `${base}${suffix}.webp`);
+        const targetWidth = Math.min(width, meta.width || width);
+        await sharp(buf, { limitInputPixels: false })
+            .rotate()
+            .resize({ width: targetWidth, withoutEnlargement: true })
+            .webp({ quality, effort: 6 }) // Higher effort for logos
+            .toFile(outPath);
+        console.log('wrote:', path.relative(ROOT, outPath));
+    }
+
+    // Update stored hash after successful generation
+    storeHash(filename, currentHash);
+}
+
+async function main() {
+    if (!fs.existsSync(ORIG_DIR)) {
+        console.error('Originals directory not found:', ORIG_DIR);
+        process.exit(1);
+    }
+    // Remove variants whose originals are missing
+    cleanupOrphans();
+    const files = fs
+        .readdirSync(ORIG_DIR)
+        .filter((f) => isCandidate(f))
+        .map((f) => path.join(ORIG_DIR, f));
+
+    if (files.length === 0) {
+        console.log('No source images found in', ORIG_DIR);
+        return;
+    }
+
+    console.log(`Optimizing ${files.length} logo images…`);
+    const concurrency = 4;
+    let i = 0;
+    async function next() {
+        const idx = i++;
+        if (idx >= files.length) return;
+        const file = files[idx];
+        try {
+            await processOne(file);
+        } catch (err) {
+            console.warn('Failed:', path.relative(ROOT, file), err.message);
+        }
+        await next();
+    }
+    await Promise.all(Array.from({ length: concurrency }, () => next()));
+    console.log('Done.');
+}
+
+main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+});

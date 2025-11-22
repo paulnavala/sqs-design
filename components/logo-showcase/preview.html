@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Showcase Preview</title>
+
+    <!-- Global CSS Loader (Simulated) -->
+    <link rel="stylesheet" href="../../core/reset.css">
+    <link rel="stylesheet" href="../../core/variables.css">
+    <link rel="stylesheet" href="../../core/typography.css">
+    <link rel="stylesheet" href="../../core/utilities.css">
+
+    <!-- Component CSS -->
+    <link rel="stylesheet" href="logo-showcase.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .preview-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="preview-container">
+        <h1>Logo Showcase Component</h1>
+        <div id="logo-showcase-root"></div>
+    </div>
+
+    <!-- Vue -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Component JS -->
+    <script src="logo-showcase.js"></script>
+
+    <script>
+        // Simulate initialization
+        if (window.initLogoShowcase) {
+            window.initLogoShowcase();
+        }
+    </script>
+</body>
+
+</html>

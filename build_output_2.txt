@@ -1,0 +1,30 @@
+⚙️  Building components/logo-showcase/logo-showcase.entry.ts -> components/logo-showcase/logo-showcase.js + components/logo-showcase/logo-showcase.css
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 3 modules transformed.
+[31mx[39m Build failed in 624ms
+Build failed: [31m[vite:vue] [plugin vite:vue] components/logo-showcase/LogoShowcase.vue: At least one <template> or <script> is required in a single file component. D:/Stuff/Pati/Peachless/source/sqs-design/components/logo-showcase/LogoShowcase.vue[39m
+file: [36mD:/Stuff/Pati/Peachless/source/sqs-design/components/logo-showcase/LogoShowcase.vue[39m
+SyntaxError: [plugin vite:vue] components/logo-showcase/LogoShowcase.vue: At least one <template> or <script> is required in a single file component. D:/Stuff/Pati/Peachless/source/sqs-design/components/logo-showcase/LogoShowcase.vue
+    at Object.parse$1 [as parse] (D:\Stuff\Pati\Peachless\source\sqs-design\node_modules\@vue\compiler-sfc\dist\compiler-sfc.cjs.js:1871:7)
+    at createDescriptor (file:///D:/Stuff/Pati/Peachless/source/sqs-design/node_modules/@vitejs/plugin-vue/dist/index.mjs:71:43)
+    at transformMain (file:///D:/Stuff/Pati/Peachless/source/sqs-design/node_modules/@vitejs/plugin-vue/dist/index.mjs:2421:34)
+    at Object.transform (file:///D:/Stuff/Pati/Peachless/source/sqs-design/node_modules/@vitejs/plugin-vue/dist/index.mjs:3053:16)
+    at file:///D:/Stuff/Pati/Peachless/source/sqs-design/node_modules/rollup/dist/es/shared/node-entry.js:22426:40
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  id: 'D:/Stuff/Pati/Peachless/source/sqs-design/components/logo-showcase/LogoShowcase.vue',
+  plugin: 'vite:vue',
+  name: 'RollupError',
+  hook: 'transform',
+  code: 'PLUGIN_ERROR',
+  watchFiles: [
+    'D:/Stuff/Pati/Peachless/source/sqs-design/components/logo-showcase/logo-showcase.entry.ts',
+    'D:\\Stuff\\Pati\\Peachless\\source\\sqs-design\\package.json',
+    'D:/Stuff/Pati/Peachless/source/sqs-design/node_modules/vue/dist/vue.runtime.esm-bundler.js',
+    'D:/Stuff/Pati/Peachless/source/sqs-design/components/logo-showcase/logo-showcase.css',
+    'D:/Stuff/Pati/Peachless/source/sqs-design/tailwind.config.js',
+    'D:/Stuff/Pati/Peachless/source/sqs-design/components/logo-showcase/LogoShowcase.vue'
+  ],
+  Symbol(augmented): true
+}

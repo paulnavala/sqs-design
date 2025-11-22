@@ -22,6 +22,7 @@
     '/core/prototype-showcase.js',
     '/core/tagline.js',
     '/components/fortune-peach/fortune-peach.js',
+    '/components/logo-showcase/logo-showcase.js',
     '/components/modern-footer/modern-footer.js',
     '/components/portfolio-photo/portfolio-photo.js',
     '/components/portfolio-uiux/portfolio.js',

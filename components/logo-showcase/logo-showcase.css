@@ -1,0 +1,289 @@
+/**
+ * Logo Showcase Component Styles
+ * 
+ * Interactive logo grid with detail panel that reveals on click.
+ * Matches the design system of other components (project-cards, tagline).
+ * 
+ * Features:
+ * - Responsive grid layout (2 columns mobile, 4 columns desktop)
+ * - Click interaction to reveal detail panel
+ * - Grid compresses when detail panel is open
+ * - Clean, minimal aesthetic with subtle hover effects
+ * 
+ * HTML Structure:
+ * <section class="logo-showcase">
+ *   <div class="showcase-wrapper">
+ *     <div class="main-content">...</div>
+ *     <div class="detail-panel">...</div>
+ *   </div>
+ * </section>
+ * 
+ * @module logo-showcase
+ */
+
+/* ============================================================================
+   Container
+   ============================================================================ */
+
+.logo-showcase {
+    padding: 5rem 2rem;
+    background: transparent;
+    color: #111;
+}
+
+.logo-showcase .showcase-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2.5rem;
+    transition: all 0.4s cubic-bezier(0.25, 0.85, 0.25, 1);
+}
+
+.logo-showcase .main-content {
+    flex: 1;
+    transition: all 0.4s cubic-bezier(0.25, 0.85, 0.25, 1);
+}
+
+.logo-showcase.has-selection .main-content {
+    flex: 0 0 58%;
+}
+
+/* ============================================================================
+   Section Title
+   ============================================================================ */
+
+.logo-showcase .section-title {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 3.5rem;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ============================================================================
+   Logo Grid
+   ============================================================================ */
+
+.logo-showcase .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    transition: all 0.4s cubic-bezier(0.25, 0.85, 0.25, 1);
+}
+
+.logo-showcase.has-selection .logo-grid {
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .logo-showcase .logo-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .logo-showcase.has-selection .logo-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.logo-showcase .logo-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ============================================================================
+   Logo Cards
+   ============================================================================ */
+
+.logo-showcase .logo-placeholder {
+    width: 100%;
+    height: 130px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 20px;
+    transition: all 0.4s cubic-bezier(0.25, 0.85, 0.25, 1);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.logo-showcase .logo-placeholder:hover {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+}
+
+.logo-showcase .logo-placeholder.is-selected {
+    background: #f8f9fa;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.logo-showcase .logo-text {
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: #111;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease;
+}
+
+.logo-showcase .logo-placeholder:hover .logo-text {
+    color: #333;
+}
+
+.logo-showcase .logo-image {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+/* ============================================================================
+   Detail Panel
+   ============================================================================ */
+
+.logo-showcase .detail-panel {
+    flex: 0 0 38%;
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    animation: slideInPanel 0.4s cubic-bezier(0.25, 0.85, 0.25, 1);
+    position: relative;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes slideInPanel {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================================================
+   Close Button
+   ============================================================================ */
+
+.logo-showcase .close-button {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: #f8f9fa;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 300;
+}
+
+.logo-showcase .close-button:hover {
+    background: #e9ecef;
+    color: #111;
+    transform: rotate(90deg);
+}
+
+/* ============================================================================
+   Detail Content
+   ============================================================================ */
+
+.logo-showcase .detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    height: 100%;
+}
+
+.logo-showcase .detail-logo {
+    background: #f8f9fa;
+    border-radius: 20px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.logo-showcase .detail-logo-text {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.02em;
+}
+
+.logo-showcase .detail-logo-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.logo-showcase .detail-info {
+    flex: 1;
+}
+
+.logo-showcase .detail-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: #111;
+    letter-spacing: -0.02em;
+}
+
+.logo-showcase .detail-description {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: #333;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+/* ============================================================================
+   Mobile Responsiveness
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .logo-showcase {
+        padding: 3rem 1.5rem;
+    }
+
+    .logo-showcase .showcase-wrapper {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .logo-showcase.has-selection .main-content {
+        flex: 1;
+    }
+
+    .logo-showcase .detail-panel {
+        flex: 1;
+        padding: 2rem;
+    }
+
+    .logo-showcase.has-selection .logo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .logo-showcase .section-title {
+        font-size: 1.5rem;
+    }
+
+    .logo-showcase .detail-title {
+        font-size: 1.75rem;
+    }
+
+    .logo-showcase .detail-logo {
+        height: 180px;
+    }
+}

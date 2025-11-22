@@ -9,6 +9,14 @@
       "syntax": "fortune-peach"
     },
     {
+      "filename": "logo-showcase-loader.html",
+      "name": "Logo Showcase",
+      "description": "A modern logo showcase grid with hover effects.",
+      "url": "https://assets.peachless.design/components/logo-showcase/logo-showcase-loader.html",
+      "localPath": "/components/logo-showcase/logo-showcase-loader.html",
+      "syntax": "logo-showcase"
+    },
+    {
       "filename": "modern-footer-loader.html",
       "name": "Modern Footer",
       "description": "A modern, elegant footer with dark theme, navigation, and social links.",
@@ -35,9 +43,9 @@
     {
       "filename": "preview.html",
       "name": "Preview",
-      "description": "Project Cards Grid with Guideline Button",
-      "url": "https://assets.peachless.design/components/project-cards/preview.html",
-      "localPath": "/components/project-cards/preview.html",
+      "description": "Global CSS Loader (Simulated)",
+      "url": "https://assets.peachless.design/components/logo-showcase/preview.html",
+      "localPath": "/components/logo-showcase/preview.html",
       "syntax": "preview"
     },
     {
@@ -65,6 +73,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-22T13:33:30.038Z",
-  "total": 8
+  "generated": "2025-11-22T14:27:07.095Z",
+  "total": 9
 }
