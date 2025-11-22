@@ -1,18 +1,20 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Component Test - Local Development (Auto-Load)</title>
 
-    <!-- Local CSS Loader -->
-    <script>
-      (function () {
-        'use strict';
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Component Test - Local Development (Auto-Load)</title>
 
-        const BASE_URL = '..'; // Parent directory for local paths
-        const CSS_FILES = [
+  <!-- Local CSS Loader -->
+  <script>
+    (function () {
+      'use strict';
+
+      const BASE_URL = '..'; // Parent directory for local paths
+      const CSS_FILES = [
     '/components/fortune-peach/fortune-peach.css',
+    '/components/modern-footer/modern-footer.css',
     '/components/portfolio-photo/portfolio-photo.css',
     '/components/portfolio-uiux/portfolio-uiux.css',
     '/components/project-cards/project-cards.css',
@@ -26,29 +28,29 @@
     '/core/prototype-showcase.css'
 ];
 
-        function loadCSS(href) {
-          const existing = document.querySelector(`link[href*="${href}"]`);
-          if (existing) return;
+      function loadCSS(href) {
+        const existing = document.querySelector(`link[href*="${href}"]`);
+        if (existing) return;
 
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = BASE_URL + href;
-          document.head.appendChild(link);
-        }
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = BASE_URL + href;
+        document.head.appendChild(link);
+      }
 
-        CSS_FILES.forEach(function (file) {
-          loadCSS(file);
-        });
-      })();
-    </script>
+      CSS_FILES.forEach(function (file) {
+        loadCSS(file);
+      });
+    })();
+  </script>
 
-    <!-- Local JS Loader -->
-    <script>
-      (function () {
-        'use strict';
+  <!-- Local JS Loader -->
+  <script>
+    (function () {
+      'use strict';
 
-        const BASE_URL = '..'; // Parent directory for local paths
-        const JS_FILES = [
+      const BASE_URL = '..'; // Parent directory for local paths
+      const JS_FILES = [
     '/core/utilities.js',
     '/core/component-loader.js',
     '/core/elegant-footer.js',
@@ -57,6 +59,7 @@
     '/core/prototype-showcase.js',
     '/core/tagline.js',
     '/components/fortune-peach/fortune-peach.js',
+    '/components/modern-footer/modern-footer.js',
     '/components/portfolio-photo/portfolio-photo.js',
     '/components/portfolio-uiux/portfolio.js',
     '/components/project-cards/project-cards.js',
@@ -64,156 +67,172 @@
     '/components/twin-gallery/twin-gallery.js'
 ];
 
-        function loadJS(src, callback) {
-          const existing = document.querySelector(`script[src*="${src}"]`);
-          if (existing) {
-            if (callback) callback();
-            return;
-          }
-
-          const script = document.createElement('script');
-          script.src = BASE_URL + src;
-          script.onerror = function () {
-            console.warn('Failed to load:', src);
-            if (callback) callback();
-          };
-          if (callback) {
-            script.onload = callback;
-          }
-          document.head.appendChild(script);
+      function loadJS(src, callback) {
+        const existing = document.querySelector(`script[src*="${src}"]`);
+        if (existing) {
+          if (callback) callback();
+          return;
         }
 
-        let index = 0;
-        function loadNext() {
-          if (index >= JS_FILES.length) return;
-
-          loadJS(JS_FILES[index], function () {
-            index++;
-            loadNext();
-          });
+        const script = document.createElement('script');
+        script.src = BASE_URL + src;
+        script.onerror = function () {
+          console.warn('Failed to load:', src);
+          if (callback) callback();
+        };
+        if (callback) {
+          script.onload = callback;
         }
+        document.head.appendChild(script);
+      }
 
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', loadNext);
-        } else {
+      let index = 0;
+      function loadNext() {
+        if (index >= JS_FILES.length) return;
+
+        loadJS(JS_FILES[index], function () {
+          index++;
           loadNext();
-        }
-      })();
-    </script>
+        });
+      }
 
-    <style>
-      body {
-        margin: 0;
-        padding: 40px 20px;
-        font-family:
-          system-ui,
-          -apple-system,
-          'Segoe UI',
-          Inter,
-          Roboto,
-          Arial,
-          sans-serif;
-        background: #f5f5f5;
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadNext);
+      } else {
+        loadNext();
       }
-      .test-container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      .component-section {
-        background: white;
-        border-radius: 8px;
-        padding: 40px;
-        margin-bottom: 60px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-      .component-title {
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        color: #333;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 10px;
-      }
-      .component-info {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 30px;
-        padding: 12px;
-        background: #f9f9f9;
-        border-radius: 4px;
-      }
-      .loading {
-        text-align: center;
-        padding: 40px;
-        color: #999;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="test-container">
-      <h1 style="text-align: center; margin-bottom: 40px">Component Test Page</h1>
-      <p class="loading" id="loading">Loading components...</p>
+    })();
+  </script>
 
-      <div class="component-section">
-        <h2 class="component-title">Project Cards (Vue, one-line)</h2>
-        <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
-        <div class="component-content">
-          <div data-component="project-cards" id="demo-project-cards"></div>
-        </div>
-      </div>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family:
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Inter,
+        Roboto,
+        Arial,
+        sans-serif;
+      background: #f5f5f5;
+    }
 
-      <div class="component-section">
-        <h2 class="component-title">Tagline (Vue, one-line)</h2>
-        <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
-        <div class="component-content">
-          <div data-component="tagline" id="demo-tagline"></div>
-        </div>
-      </div>
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-      <div class="component-section">
-        <h2 class="component-title">Photography Gallery (Vue, external JSON)</h2>
-        <div class="component-info">Using data-src attribute to load JSON from data/portfolio-photos.json</div>
-        <div class="component-content">
-          <div data-component="portfolio-photo" data-src="../data/portfolio-photos.json" id="demo-portfolio-photo"></div>
-        </div>
+    .component-section {
+      background: white;
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 60px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .component-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .component-info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 30px;
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="test-container">
+    <h1 style="text-align: center; margin-bottom: 40px">Component Test Page</h1>
+    <p class="loading" id="loading">Loading components...</p>
+
+    <div class="component-section">
+      <h2 class="component-title">Project Cards (Vue, one-line)</h2>
+      <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
+      <div class="component-content">
+        <div data-component="project-cards" id="demo-project-cards"></div>
       </div>
     </div>
 
-    <!-- Auto-load all components from registry -->
-    <script src="components.js"></script>
-    <script>
-      // Hide loading message once components start loading
-      setTimeout(() => {
-        const loading = document.getElementById('loading');
-        if (loading) loading.style.display = 'none';
-      }, 500);
-    </script>
+    <div class="component-section">
+      <h2 class="component-title">Tagline (Vue, one-line)</h2>
+      <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
+      <div class="component-content">
+        <div data-component="tagline" id="demo-tagline"></div>
+      </div>
+    </div>
 
-    <!-- Local loader HTML injection for the new Vue components (bypass CDN) -->
-    <script>
-      (function () {
-        'use strict';
-        function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
-        function injectLocal(targetSel, localPath, componentBase){
-          var target = document.querySelector(targetSel);
-          if(!target) return;
-          fetch(localPath).then(r=>r.text()).then(html=>{
-            var clean = html.replace(/<!--[\s\S]*?-->/g,'').trim();
+    <div class="component-section">
+      <h2 class="component-title">Photography Gallery (Vue, external JSON)</h2>
+      <div class="component-info">Using data-src attribute to load JSON from data/portfolio-photos.json</div>
+      <div class="component-content">
+        <div data-component="portfolio-photo" data-src="../data/portfolio-photos.json" id="demo-portfolio-photo"></div>
+      </div>
+    </div>
+
+    <div class="component-section">
+      <h2 class="component-title">Modern Footer (Vue)</h2>
+      <div class="component-info">Modern footer with dark theme and navigation.</div>
+      <div class="component-content">
+        <div data-component="modern-footer" id="demo-modern-footer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-load all components from registry -->
+  <script src="components.js"></script>
+  <script>
+    // Hide loading message once components start loading
+    setTimeout(() => {
+      const loading = document.getElementById('loading');
+      if (loading) loading.style.display = 'none';
+    }, 500);
+  </script>
+
+  <!-- Local loader HTML injection for the new Vue components (bypass CDN) -->
+  <script>
+    (function () {
+      'use strict';
+      function ready(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+      function injectLocal(targetSel, localPath, componentBase) {
+        var target = document.querySelector(targetSel);
+        if (!target) return;
+        fetch(localPath).then(r => r.text()).then(html => {
+          var clean = html.replace(/<!--[\s\S]*?-->/g,'').trim();
             target.innerHTML = clean;
-            var evt = new CustomEvent('componentLoaded', { detail: { componentName: componentBase + '-loader.html', target: target, url: localPath } });
-            try { target.dispatchEvent(evt); } catch(e) {}
-            try { document.dispatchEvent(evt); } catch(e) {}
-          }).catch(err=>{
-            target.innerHTML = '<div style="color:red">Failed to load loader HTML.</div>';
-            console.error('Local loader load failed:', localPath, err);
-          });
-        }
-        ready(function(){
-          injectLocal('#demo-project-cards', '../components/project-cards/project-cards-loader.html', 'project-cards');
-          injectLocal('#demo-tagline', '../components/tagline/tagline-loader.html', 'tagline');
-          injectLocal('#demo-portfolio-photo', '../components/portfolio-photo/portfolio-photo-loader.html', 'portfolio-photo');
+          var evt = new CustomEvent('componentLoaded', { detail: { componentName: componentBase + '-loader.html', target: target, url: localPath } });
+          try { target.dispatchEvent(evt); } catch (e) { }
+          try { document.dispatchEvent(evt); } catch (e) { }
+        }).catch(err => {
+          target.innerHTML = '<div style="color:red">Failed to load loader HTML.</div>';
+          console.error('Local loader load failed:', localPath, err);
         });
-      })();
-    </script>
-  </body>
+      }
+      ready(function () {
+        injectLocal('#demo-project-cards', '../components/project-cards/project-cards-loader.html', 'project-cards');
+        injectLocal('#demo-tagline', '../components/tagline/tagline-loader.html', 'tagline');
+        injectLocal('#demo-portfolio-photo', '../components/portfolio-photo/portfolio-photo-loader.html', 'portfolio-photo');
+        injectLocal('#demo-modern-footer', '../components/modern-footer/modern-footer-loader.html', 'modern-footer');
+      });
+    })();
+  </script>
+</body>
+
 </html>
