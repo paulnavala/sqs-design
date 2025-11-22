@@ -156,9 +156,13 @@ export default defineComponent({
         // Check on mount and resize
         import('vue').then(({ onMounted, onUnmounted, nextTick, watch }) => {
             onMounted(() => {
-                // Multiple checks to ensure layout is ready
+                // Multiple checks to ensure layout is ready - staggered timing
                 nextTick(checkScroll);
+                setTimeout(checkScroll, 100);
+                setTimeout(checkScroll, 300);
                 setTimeout(checkScroll, 500);
+                setTimeout(checkScroll, 1000);
+                setTimeout(checkScroll, 1500);
                 window.addEventListener('resize', checkScroll);
             });
             onUnmounted(() => {
