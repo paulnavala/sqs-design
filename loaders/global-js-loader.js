@@ -24,7 +24,6 @@
     '/components/fortune-peach/fortune-peach.js',
     '/components/guideline-page/guideline-page.js',
     '/components/logo-showcase/logo-showcase.js',
-    '/components/modern-footer/modern-footer.js',
     '/components/portfolio-photo/portfolio-photo.js',
     '/components/portfolio-uiux/portfolio.js',
     '/components/project-cards/project-cards.js',

@@ -25,14 +25,6 @@
       "syntax": "logo-showcase"
     },
     {
-      "filename": "modern-footer-loader.html",
-      "name": "Modern Footer",
-      "description": "A modern, elegant footer with dark theme, navigation, and social links.",
-      "url": "https://assets.peachless.design/components/modern-footer/modern-footer-loader.html",
-      "localPath": "/components/modern-footer/modern-footer-loader.html",
-      "syntax": "modern-footer"
-    },
-    {
       "filename": "portfolio-photo-loader.html",
       "name": "Portfolio Photo",
       "description": "Photography Gallery Component Loader HTML",
@@ -89,6 +81,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-22T22:16:32.307Z",
-  "total": 11
+  "generated": "2025-11-22T22:55:19.350Z",
+  "total": 10
 }

@@ -15,7 +15,6 @@
     '/components/fortune-peach/fortune-peach.css',
     '/components/guideline-page/guideline-page.css',
     '/components/logo-showcase/logo-showcase.css',
-    '/components/modern-footer/modern-footer.css',
     '/components/portfolio-photo/portfolio-photo.css',
     '/components/portfolio-uiux/portfolio-uiux.css',
     '/components/project-cards/project-cards.css',
