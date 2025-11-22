@@ -9,6 +9,14 @@
       "syntax": "fortune-peach"
     },
     {
+      "filename": "guideline-page-loader.html",
+      "name": "Guideline Page",
+      "description": "Interactive design guidelines showcase with expandable sections, color palette, and typography samples.",
+      "url": "https://assets.peachless.design/components/guideline-page/guideline-page-loader.html",
+      "localPath": "/components/guideline-page/guideline-page-loader.html",
+      "syntax": "guideline-page"
+    },
+    {
       "filename": "logo-showcase-loader.html",
       "name": "Logo Showcase",
       "description": "Dynamic logo showcase with interactive detail panel.",
@@ -43,9 +51,9 @@
     {
       "filename": "preview.html",
       "name": "Preview",
-      "description": "Global CSS Loader (Simulated)",
-      "url": "https://assets.peachless.design/components/logo-showcase/preview.html",
-      "localPath": "/components/logo-showcase/preview.html",
+      "description": "Component Container",
+      "url": "https://assets.peachless.design/components/guideline-page/preview.html",
+      "localPath": "/components/guideline-page/preview.html",
       "syntax": "preview"
     },
     {
@@ -81,6 +89,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-22T17:49:07.729Z",
-  "total": 10
+  "generated": "2025-11-22T22:16:32.307Z",
+  "total": 11
 }
