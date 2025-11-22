@@ -1,6 +1,6 @@
 # Data-Component Snippets
 
-Generated: 22/11/2025, 18:20:16
+Generated: 22/11/2025, 18:49:07
 
 ## Quick Copy — All Components
 
@@ -12,6 +12,7 @@ Generated: 22/11/2025, 18:20:16
 <div data-component="portfolio-uiux"></div>
 <div data-component="preview"></div>
 <div data-component="project-cards"></div>
+<div data-component="squarespace-test"></div>
 <div data-component="tagline"></div>
 <div data-component="twin-gallery"></div>
 ```
@@ -58,6 +59,12 @@ Generated: 22/11/2025, 18:20:16
 
 ```html
 <div data-component="project-cards"></div>
+```
+
+### Squarespace Test
+
+```html
+<div data-component="squarespace-test"></div>
 ```
 
 ### Tagline
