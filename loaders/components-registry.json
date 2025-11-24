@@ -51,9 +51,9 @@
     {
       "filename": "preview.html",
       "name": "Preview",
-      "description": "Component Container",
-      "url": "https://assets.peachless.design/components/guideline-page/preview.html",
-      "localPath": "/components/guideline-page/preview.html",
+      "description": "Load core CSS",
+      "url": "https://assets.peachless.design/components/contact-form/preview.html",
+      "localPath": "/components/contact-form/preview.html",
       "syntax": "preview"
     },
     {
@@ -89,6 +89,6 @@
       "syntax": "twin-gallery"
     }
   ],
-  "generated": "2025-11-22T23:01:09.126Z",
+  "generated": "2025-11-24T14:23:46.038Z",
   "total": 11
 }

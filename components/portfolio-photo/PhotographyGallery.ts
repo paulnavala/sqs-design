@@ -37,14 +37,7 @@ export default defineComponent({
     let lastScrollY = 0;
     const modalRatio = ref<number>(1);
 
-    type GalleryItem = PhotoItem & { categorySlugs: string[]; categoryLabels: string[] };
-    const normalizedItems = computed<GalleryItem[]>(() =>
-      (props.items || []).map((it) => {
-        const labels = (it.categories || []).filter(Boolean);
-        const slugs = labels.map((c) => slug(c)).filter(Boolean);
-        return { ...(it as PhotoItem), categoryLabels: labels, categorySlugs: slugs } as GalleryItem;
-      })
-    );
+
 
     const visibleCount = computed<number>(() => normalizedItems.value.length);
 
@@ -91,7 +84,7 @@ export default defineComponent({
       return out;
     }
 
-    function variantCandidates(id: string, variant: 'after' | 'before' | 'thumb', sizes: Array<'sm' | 'md' | 'lg' | ''> = ['sm','md','lg','']): string[] {
+    function variantCandidates(id: string, variant: 'after' | 'before' | 'thumb', sizes: Array<'sm' | 'md' | 'lg' | ''> = ['sm', 'md', 'lg', '']): string[] {
       const varBase = 'https://assets.peachless.design/assets/photography/variants/';
       const s = slug(id);
       const bases = unique([s, s.replace(/-/g, '_'), s.replace(/_/g, '-')]);
@@ -112,7 +105,7 @@ export default defineComponent({
       return urls;
     }
 
-    function variantFromBasename(base: string, sizes: Array<'sm'|'md'|'lg'|''> = ['sm','md','lg','']): string[] {
+    function variantFromBasename(base: string, sizes: Array<'sm' | 'md' | 'lg' | ''> = ['sm', 'md', 'lg', '']): string[] {
       const varBase = 'https://assets.peachless.design/assets/photography/variants/';
       const clean = base.replace(/\.[a-z0-9]+$/i, ''); // drop extension if present
       const names = sizes.map((sz) => `${clean}${sz ? '-' + sz : ''}.webp`);
@@ -152,9 +145,82 @@ export default defineComponent({
       return urls;
     }
 
-    function pickVariant(id: string, variant: 'after' | 'before' | 'thumb', preferred: Array<'sm'|'md'|'lg'|''>) {
+    function pickVariant(id: string, variant: 'after' | 'before' | 'thumb', preferred: Array<'sm' | 'md' | 'lg' | ''>) {
       return unique(variantCandidates(id, variant, preferred));
     }
+
+    type GalleryItem = PhotoItem & {
+      categorySlugs: string[];
+      categoryLabels: string[];
+      // Pre-calculated URLs
+      src: string;
+      srcset: string;
+      candidates: string;
+      modalAfter: string;
+      modalBefore: string;
+    };
+
+    const normalizedItems = computed<GalleryItem[]>(() =>
+      (props.items || []).map((it) => {
+        const labels = (it.categories || []).filter(Boolean);
+        const slugs = labels.map((c) => slug(c)).filter(Boolean);
+
+        // Pre-calculate masonry image props
+        const masonrySrc = unique([
+          it.thumb || '',
+          ...variantFromBasename(fileBaseFromPath(it.afterSrc), ['sm', 'md', 'lg', '']),
+          ...pickVariant(it.id, 'after', ['sm', 'md', 'lg', '']),
+          ...originalCandidates(it.id, 'after'),
+          it.afterSrc || '',
+        ])[0];
+
+        const masonrySrcset = unique([
+          ...variantFromBasename(fileBaseFromPath(it.afterSrc), ['sm', 'md', 'lg']),
+          ...pickVariant(it.id, 'after', ['sm', 'md', 'lg']),
+        ]).map((u) => {
+          if (u.includes('-sm.')) return `${u} 640w`;
+          if (u.includes('-md.')) return `${u} 1200w`;
+          if (u.includes('-lg.')) return `${u} 1920w`;
+          return `${u} 2560w`;
+        }).join(', ');
+
+        const candidates = JSON.stringify(
+          unique([
+            it.thumb || '',
+            ...variantFromBasename(fileBaseFromPath(it.afterSrc), ['md', 'lg', '']),
+            ...pickVariant(it.id, 'after', ['md', 'lg', '']),
+            ...originalCandidates(it.id, 'after'),
+            it.afterSrc || '',
+          ]).slice(1)
+        );
+
+        // Pre-calculate modal image props
+        const modalAfter = unique([
+          ...variantFromBasename(fileBaseFromPath(it.afterSrc), ['lg', 'md', '', 'sm']),
+          ...pickVariant(it.id, 'after', ['lg', 'md', '', 'sm']),
+          ...originalCandidates(it.id, 'after'),
+          it.afterSrc,
+        ])[0];
+
+        const modalBefore = it.beforeSrc ? unique([
+          ...variantFromBasename(fileBaseFromPath(it.beforeSrc), ['lg', 'md', '', 'sm']),
+          ...pickVariant(it.id, 'before', ['lg', 'md', '', 'sm']),
+          ...originalCandidates(it.id, 'before'),
+          it.beforeSrc,
+        ])[0] : '';
+
+        return {
+          ...(it as PhotoItem),
+          categoryLabels: labels,
+          categorySlugs: slugs,
+          src: masonrySrc,
+          srcset: masonrySrcset,
+          candidates,
+          modalAfter,
+          modalBefore
+        } as GalleryItem;
+      })
+    );
 
     function resetMasonryLoad() {
       masonryLoadedCount.value = masonryBatchSize;
@@ -165,15 +231,20 @@ export default defineComponent({
       lastScrollY = window.scrollY;
       lastFocusEl.value = (document.activeElement as HTMLElement) || null;
       activeIndex.value = index;
-      
-      // Preload images and calculate aspect ratio BEFORE opening modal
+      modalOpen.value = true; // Open immediately
+
+      void nextTick(() => {
+        const closeBtn = document.querySelector('.pg-modal__close') as HTMLButtonElement | null;
+        if (closeBtn) closeBtn.focus();
+      });
+
+      // Calculate aspect ratio in background
       try {
         const item = normalizedItems.value[index];
         if (!item) return;
-        const urls = [item.afterSrc, item.beforeSrc || ''].filter(Boolean) as string[];
+        const urls = [item.modalAfter, item.modalBefore].filter(Boolean) as string[];
         if (urls.length === 0) return;
-        
-        // Wait for all images to load and calculate aspect ratio
+
         const dims: Array<{ w: number; h: number }> = [];
         await Promise.all(
           urls.map((src) => {
@@ -186,29 +257,19 @@ export default defineComponent({
                 }
                 resolve();
               };
-              img.onerror = () => resolve(); // Continue even if image fails to load
+              img.onerror = () => resolve();
               img.src = src;
             });
           })
         );
-        
+
         if (dims.length > 0) {
-          // Pick the smaller by pixel area, use its aspect ratio
           const small = dims.reduce((a, b) => (a.w * a.h <= b.w * b.h ? a : b));
           modalRatio.value = small.w / small.h;
-        } else {
-          modalRatio.value = 1;
         }
       } catch {
-        modalRatio.value = 1;
+        // keep default
       }
-      
-      // Now open the modal with the correct aspect ratio
-      modalOpen.value = true;
-      void nextTick(() => {
-        const closeBtn = document.querySelector('.pg-modal__close') as HTMLButtonElement | null;
-        if (closeBtn) closeBtn.focus();
-      });
     }
 
     function closeModal() {
@@ -250,32 +311,58 @@ export default defineComponent({
       }
     });
 
+    function nextPhoto() {
+      if (activeIndex.value < 0) return;
+      activeIndex.value = (activeIndex.value + 1) % normalizedItems.value.length;
+      modalRatio.value = 1;
+      openModal(activeIndex.value);
+    }
+
+    function prevPhoto() {
+      if (activeIndex.value < 0) return;
+      activeIndex.value = (activeIndex.value - 1 + normalizedItems.value.length) % normalizedItems.value.length;
+      modalRatio.value = 1;
+      openModal(activeIndex.value);
+    }
+
     function onKeydown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && modalOpen.value) {
+      if (!modalOpen.value) return;
+      if (e.key === 'Escape') {
         e.preventDefault();
         closeModal();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextPhoto();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevPhoto();
       }
     }
 
+    // Reveal observer
+    let revealObserver: IntersectionObserver | null = null;
+
     onMounted(() => {
       computeColCount();
-      window.addEventListener('resize', computeColCount);
-      // Reveal animation for cards
-      const el = root.value;
-      if (!el) return;
-      const cards = Array.from(el.querySelectorAll('.pg-card')) as HTMLElement[];
-      const obs = new IntersectionObserver(
+      let resizeTimer: any = null;
+      const onResize = () => {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(computeColCount, 100);
+      };
+      window.addEventListener('resize', onResize);
+
+      // Setup reveal observer
+      revealObserver = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) {
               (e.target as HTMLElement).classList.add('is-visible');
-              obs.unobserve(e.target);
+              revealObserver?.unobserve(e.target);
             }
           });
         },
-        { rootMargin: '100px 0px', threshold: 0.2 }
+        { rootMargin: '100px 0px', threshold: 0.1 }
       );
-      cards.forEach((c) => obs.observe(c));
 
       // ESC to close modal
       window.addEventListener('keydown', onKeydown);
@@ -284,8 +371,8 @@ export default defineComponent({
     onBeforeUnmount(() => {
       window.removeEventListener('keydown', onKeydown);
       window.removeEventListener('resize', computeColCount);
+      if (revealObserver) revealObserver.disconnect();
     });
-
 
     // Masonry infinite loader
     function attachMasonryInfinite(container: HTMLElement, sentinel: HTMLElement) {
@@ -314,7 +401,7 @@ export default defineComponent({
                 };
                 schedulePrefetch(() => {
                   nextItems.forEach((n) => {
-                    const src = n.thumb || n.afterSrc;
+                    const src = n.src;
                     if (src) {
                       const im = new Image();
                       (im as any).decoding = 'async';
@@ -330,22 +417,6 @@ export default defineComponent({
         { root: null, rootMargin: '800px 0px', threshold: 0 }
       );
       io.observe(sentinel);
-
-      // Reveal observer for masonry items
-      const reveal = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              (e.target as HTMLElement).classList.add('is-visible');
-              reveal.unobserve(e.target);
-            }
-          });
-        },
-        { rootMargin: '120px 0px', threshold: 0.1 }
-      );
-      Array.from(container.querySelectorAll('.pg-masonry__item')).forEach((it) =>
-        reveal.observe(it as HTMLElement)
-      );
     }
 
     return () => {
@@ -369,7 +440,16 @@ export default defineComponent({
       const masonry = h('section', { class: 'pg-masonry', role: 'list', 'aria-label': 'Masonry gallery' },
         masonryItems.value.map((it, idx) => {
           const ratio = (hashToRange(it.item.id + 'r', 0.85, 1.35)).toFixed(2); // aspect ratio variety
-          return h('article', { key: it.item.id + '-' + idx, class: 'pg-masonry__item', role: 'listitem', 'aria-label': it.item.title, style: `--m-ratio:${ratio};` }, [
+          return h('article', {
+            key: it.item.id + '-' + idx,
+            class: 'pg-masonry__item',
+            role: 'listitem',
+            'aria-label': it.item.title,
+            style: `--m-ratio:${ratio};`,
+            onVnodeMounted: (v: any) => {
+              if (revealObserver && v.el) revealObserver.observe(v.el as HTMLElement);
+            }
+          }, [
             h('div', {
               class: 'pg-masonry__media',
               role: 'button',
@@ -448,34 +528,11 @@ export default defineComponent({
               h('img', {
                 class: 'pg-masonry__img',
                 alt: it.item.alt || it.item.title,
-                loading: 'lazy',
                 decoding: 'async',
-                src: unique([
-                  it.item.thumb || '',
-                  ...variantFromBasename(fileBaseFromPath(it.item.afterSrc), ['sm','md','lg','']),
-                  ...pickVariant(it.item.id, 'after', ['sm','md','lg','']),
-                  ...originalCandidates(it.item.id, 'after'),
-                  it.item.afterSrc || '',
-                ])[0],
-                srcset: unique([
-                  ...variantFromBasename(fileBaseFromPath(it.item.afterSrc), ['sm','md','lg']),
-                  ...pickVariant(it.item.id, 'after', ['sm','md','lg']),
-                ]).map((u) => {
-                  if (u.includes('-sm.')) return `${u} 640w`;
-                  if (u.includes('-md.')) return `${u} 1200w`;
-                  if (u.includes('-lg.')) return `${u} 1920w`;
-                  return `${u} 2560w`;
-                }).join(', '),
+                src: it.item.src,
+                srcset: it.item.srcset,
                 sizes: '(min-width: 900px) 33vw, (min-width: 600px) 50vw, 92vw',
-                'data-cand': JSON.stringify(
-                  unique([
-                    it.item.thumb || '',
-                    ...variantFromBasename(fileBaseFromPath(it.item.afterSrc), ['md','lg','']),
-                    ...pickVariant(it.item.id, 'after', ['md','lg','']),
-                    ...originalCandidates(it.item.id, 'after'),
-                    it.item.afterSrc || '',
-                  ]).slice(1)
-                ),
+                'data-cand': it.item.candidates,
                 onLoad: (e: Event) => {
                   const img = e.target as HTMLImageElement;
                   const media = img.parentElement as HTMLElement | null;
@@ -499,7 +556,7 @@ export default defineComponent({
                       img.src = next;
                       return;
                     }
-                  } catch {}
+                  } catch { }
                   img.style.opacity = '0.6';
                 },
               }),
@@ -527,40 +584,26 @@ export default defineComponent({
           h('div', { class: 'pg-modal__backdrop', 'data-close': '', onClick: closeModal }),
           h('div', { class: 'pg-modal__content', role: 'document' }, [
             h('button', { class: 'pg-modal__close', type: 'button', 'aria-label': 'Close', 'data-close': '', onClick: closeModal }, '\u00d7'),
+
             h(
               'div',
               { class: 'pg-modal__view', 'data-view': '', style: `--m-ratio: ${modalRatio.value || 1}` },
               active
                 ? [
-                    active.beforeSrc
-                      ? h(BeforeAfterSlider, {
-                          afterSrc: unique([
-                            ...variantFromBasename(fileBaseFromPath(active.afterSrc), ['lg','md','', 'sm']),
-                            ...pickVariant(active.id, 'after', ['lg','md','', 'sm']),
-                            ...originalCandidates(active.id, 'after'),
-                            active.afterSrc,
-                          ])[0],
-                          beforeSrc: unique([
-                            ...variantFromBasename(fileBaseFromPath(active.beforeSrc), ['lg','md','', 'sm']),
-                            ...pickVariant(active.id, 'before', ['lg','md','', 'sm']),
-                            ...originalCandidates(active.id, 'before'),
-                            active.beforeSrc,
-                          ])[0],
-                          alt: active.alt || active.title,
-                          initialSplit: 0.75,
-                        })
-                      : h('img', {
-                          class: 'pg-modal__img',
-                          'data-single': '',
-                          alt: active.alt || active.title,
-                          src: unique([
-                            ...variantFromBasename(fileBaseFromPath(active.afterSrc), ['lg','md','', 'sm']),
-                            ...pickVariant(active.id, 'after', ['lg','md','', 'sm']),
-                            ...originalCandidates(active.id, 'after'),
-                            active.afterSrc,
-                          ])[0],
-                        }),
-                  ]
+                  active.beforeSrc
+                    ? h(BeforeAfterSlider, {
+                      afterSrc: active.modalAfter,
+                      beforeSrc: active.modalBefore,
+                      alt: active.alt || active.title,
+                      initialSplit: 0.75,
+                    })
+                    : h('img', {
+                      class: 'pg-modal__img',
+                      'data-single': '',
+                      alt: active.alt || active.title,
+                      src: active.modalAfter,
+                    }),
+                ]
                 : []
             ),
           ]),
@@ -569,7 +612,6 @@ export default defineComponent({
 
       return h('div', { ref: root }, [masonry, modal]);
     };
-
   },
 });
 

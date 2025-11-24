@@ -1,4 +1,4 @@
-import { defineComponent, h, onMounted, onBeforeUnmount, PropType, ref } from 'vue';
+import { defineComponent, h, onMounted, onBeforeUnmount, ref, PropType } from 'vue';
 
 export default defineComponent({
   name: 'BeforeAfterSlider',
@@ -6,264 +6,81 @@ export default defineComponent({
     afterSrc: { type: String, required: true },
     beforeSrc: { type: String, required: true },
     alt: { type: String, default: '' },
-    initialSplit: { type: Number as PropType<number>, default: 0.5 }, // 0..1
   },
   setup(props) {
     const root = ref<HTMLElement | null>(null);
     const handleEl = ref<HTMLElement | null>(null);
     const afterImg = ref<HTMLImageElement | null>(null);
     const beforeImg = ref<HTMLImageElement | null>(null);
-    const split = ref(Math.min(1, Math.max(0, props.initialSplit)));
 
-    // Pixel-accurate metrics for the visible image area (object-fit: contain)
-    const baLeftPx = ref(0);
-    const baTopPx = ref(0);
-    const baWidthPx = ref(0);
-    const baHeightPx = ref(0);
-    const containerWidthPx = ref(0);
-    const containerHeightPx = ref(0);
+    const width = ref(0);
+    const height = ref(0);
+    const posX = ref(0);
+    const pageX = ref(0);
+    const isDragging = ref(false);
+    const allowNextFrame = ref(true);
 
-    let dragging = false;
-    let clickMoved = false;
+    const handleStyle = {
+      left: `${posX.value}px`,
+    };
 
-    function setSplitFromClientX(clientX: number) {
-      const el = root.value;
-      if (!el) return;
+    const imgStyle = {
+      width: `${width.value}px`,
+      height: 'auto',
+    };
 
-      // Calculate position relative to visible image area using pixel metrics
-      const rect = el.getBoundingClientRect();
-      const leftBound = rect.left + baLeftPx.value;
-      const rightBound = leftBound + baWidthPx.value;
-      const x = Math.min(rightBound, Math.max(leftBound, clientX));
-      let ratio = (x - leftBound) / Math.max(1, baWidthPx.value);
-
-      // Snap near edges for precise before/after views
-      if (ratio < 0.06) ratio = 0;
-      if (ratio > 0.94) ratio = 1;
-      split.value = Math.min(1, Math.max(0, ratio));
-      positionHandle();
-    }
-
-    function positionHandle() {
-      const el = root.value;
-      const h = handleEl.value;
-      if (!el || !h) return;
-
-      // Position handle relative to visible image area using pixel metrics
-      const left = baLeftPx.value + (baWidthPx.value * split.value);
-      h.style.left = left + 'px';
-      h.style.transform = 'translateX(-1px)';
-
-      // Update ARIA value
-      el.setAttribute('aria-valuenow', String(Math.round(split.value * 100)));
-      // Edge labels fade: hide when at 0% or 100%
-      if (split.value <= 0 || split.value >= 1) {
-        el.classList.add('is-edge');
-      } else {
-        el.classList.remove('is-edge');
-      }
-    }
-
-    function onDown(e: MouseEvent | TouchEvent) {
-      dragging = true;
-      clickMoved = false;
-      document.body.style.userSelect = 'none';
-      root.value?.classList.add('is-dragging');
-      if (e instanceof TouchEvent) {
-        setSplitFromClientX(e.touches[0].clientX);
-      } else {
-        setSplitFromClientX(e.clientX);
-      }
-      window.addEventListener('mousemove', onMove as any);
-      window.addEventListener('mouseup', onUp as any);
-      window.addEventListener('touchmove', onMove as any, { passive: false });
-      window.addEventListener('touchend', onUp as any);
-      e.preventDefault();
-    }
-
-    function onMove(e: MouseEvent | TouchEvent) {
-      if (!dragging) return;
-      clickMoved = true;
-      if (e instanceof TouchEvent) {
-        setSplitFromClientX(e.touches[0].clientX);
-      } else {
-        setSplitFromClientX(e.clientX);
-      }
-      e.preventDefault();
-    }
-
-    let idleTimer: number | undefined;
-    function onUp() {
-      dragging = false;
-      document.body.style.removeProperty('user-select');
-      if (idleTimer) clearTimeout(idleTimer);
-      // Keep labels hidden briefly, then fade back
-      idleTimer = window.setTimeout(() => {
-        root.value?.classList.remove('is-dragging');
-      }, 800);
-      window.removeEventListener('mousemove', onMove as any);
-      window.removeEventListener('mouseup', onUp as any);
-      window.removeEventListener('touchmove', onMove as any);
-      window.removeEventListener('touchend', onUp as any);
-    }
-
-    function onClick() {
-      if (dragging || clickMoved) return;
-      const target = split.value < 0.5 ? 1 : 0;
-      split.value = target;
-      positionHandle();
-    }
-
-    function onKeyDown(e: KeyboardEvent) {
-      const step = e.shiftKey ? 0.01 : 0.05;
-      if (e.key === 'ArrowLeft') {
-        split.value = Math.max(0, split.value - step);
-        positionHandle();
-        e.preventDefault();
-      } else if (e.key === 'ArrowRight') {
-        split.value = Math.min(1, split.value + step);
-        positionHandle();
-        e.preventDefault();
-      } else if (e.key === 'Home') {
-        split.value = 0; positionHandle(); e.preventDefault();
-      } else if (e.key === 'End') {
-        split.value = 1; positionHandle(); e.preventDefault();
-      }
-    }
-
-    function updateMetrics() {
-      const el = root.value;
-      const img = afterImg.value || beforeImg.value;
-      if (!el || !img) return;
-
-      const cr = el.getBoundingClientRect();
-      const ir = img.getBoundingClientRect();
-
-      // With object-fit: contain, calculate the actual visible image bounds
-      // The image rect gives us the actual rendered size
-      const top = Math.max(0, ir.top - cr.top);
-      const height = Math.max(0, Math.min(cr.height, ir.height));
-      const left = Math.max(0, ir.left - cr.left);
-      const width = Math.max(0, Math.min(cr.width, ir.width));
-
-      // Persist metrics in refs (for JS) and CSS variables (for CSS layout/labels)
-      baTopPx.value = top;
-      baHeightPx.value = height;
-      baLeftPx.value = left;
-      baWidthPx.value = width;
-      containerWidthPx.value = cr.width;
-      containerHeightPx.value = cr.height;
-
-      // Store metrics for handle positioning relative to visible image
-      el.style.setProperty('--ba-top', `${top}px`);
-      el.style.setProperty('--ba-height', `${height}px`);
-      el.style.setProperty('--ba-left', `${left}px`);
-      el.style.setProperty('--ba-width', `${width}px`);
-
-      // Reposition handle after metrics update
-      positionHandle();
-    }
-
-    onMounted(() => {
-      const el = root.value;
-      if (el) {
-        el.addEventListener('mousedown', onDown as any);
-        el.addEventListener('touchstart', onDown as any, { passive: false });
-        el.addEventListener('click', onClick as any);
-        el.addEventListener('keydown', onKeyDown as any);
-      }
-      window.addEventListener('resize', updateMetrics);
-      
-      // Set up image load listeners
-      const setupImageListeners = () => {
-        if (afterImg.value) {
-          if (afterImg.value.complete) {
-            updateMetrics();
-          } else {
-            afterImg.value.addEventListener('load', updateMetrics, { once: true });
-          }
-        }
-        if (beforeImg.value) {
-          if (beforeImg.value.complete) {
-            updateMetrics();
-          } else {
-            beforeImg.value.addEventListener('load', updateMetrics, { once: true });
-          }
-        }
-      };
-      
-      // Use nextTick to ensure refs are set
-      setTimeout(() => {
-        setupImageListeners();
-        updateMetrics();
-        positionHandle();
-      }, 0);
-    });
-
-    onBeforeUnmount(() => {
-      const el = root.value;
-      if (el) {
-        el.removeEventListener('mousedown', onDown as any);
-        el.removeEventListener('touchstart', onDown as any);
-        el.removeEventListener('click', onClick as any);
-        el.removeEventListener('keydown', onKeyDown as any);
-      }
-      window.removeEventListener('resize', updateMetrics);
-      afterImg.value?.removeEventListener('load', updateMetrics);
-      beforeImg.value?.removeEventListener('load', updateMetrics);
-    });
-
-    return () =>
+    return h(
+      'figure',
       {
-        // Compute pixel-aligned clip-path for the AFTER overlay (shown on the right side only)
-        const topPx = baTopPx.value;
-        const rightPx = Math.max(0, containerWidthPx.value - (baLeftPx.value + baWidthPx.value));
-        const bottomPx = Math.max(0, containerHeightPx.value - (baTopPx.value + baHeightPx.value));
-        const splitXPx = Math.max(0, Math.min(containerWidthPx.value, Math.round(baLeftPx.value + baWidthPx.value * split.value)));
-        const afterClip = `inset(${topPx}px ${rightPx}px ${bottomPx}px ${splitXPx}px)`;
-
-        return h(
+        ref: root,
+        class: 'image-compare',
+        onMousemove: (e: MouseEvent) => onMouseMove(e),
+        onTouchstart: (e: TouchEvent) => { e.preventDefault(); onMouseMove(e, true); },
+        onTouchmove: (e: TouchEvent) => { e.preventDefault(); onMouseMove(e, true); },
+        onClick: (e: MouseEvent) => onMouseMove(e, true),
+      },
+      [
+        // After image wrapper (clipped)
+        h(
           'div',
           {
-            ref: root,
-            class: 'pg-ba',
-            style: 'position:relative',
-            tabindex: 0,
-            role: 'slider',
-            'aria-label': 'Before/After split',
-            'aria-valuemin': '0',
-            'aria-valuemax': '100',
-            'aria-valuenow': String(Math.round(split.value * 100)),
+            class: 'image-compare-wrapper',
+            style: wrapperStyle,
           },
           [
-            // Base: BEFORE image visible everywhere
             h('img', {
-              class: 'pg-ba__before',
-              alt: props.alt,
-              src: props.beforeSrc,
-              ref: beforeImg,
-              draggable: false,
-            }),
-            // Overlay: AFTER image clipped to start at the split (so AFTER on the right)
-            h('img', {
-              class: 'pg-ba__after',
-              alt: props.alt,
-              src: props.afterSrc,
               ref: afterImg,
+              src: props.afterSrc,
+              alt: props.alt,
+              style: imgStyle,
               draggable: false,
-              style: `clip-path: ${afterClip}`,
             }),
-            // Visual rail + handle clipped to image height
-            h('div', { class: 'pg-ba__rail' }, [
-              h('div', { ref: handleEl, class: 'pg-ba__handle' }),
-            ]),
-            // Labels (Before on left, After on right)
-            h('div', { class: 'pg-ba__label pg-ba__label--left' }, 'Before'),
-            h('div', { class: 'pg-ba__label pg-ba__label--right' }, 'After'),
           ]
-        );
-      };
-  },
+        ),
+        // Before image (full width)
+        h('img', {
+          ref: beforeImg,
+          src: props.beforeSrc,
+          alt: props.alt,
+          style: imgStyle,
+          draggable: false,
+        }),
+        // Handle
+        h(
+          'div',
+          {
+            ref: handleEl,
+            class: 'image-compare-handle',
+            style: handleStyle,
+            onMousedown: onMouseDown,
+          },
+          [
+            h('span', { class: 'image-compare-handle-icon left' }, '‹'),
+            h('span', { class: 'image-compare-handle-icon right' }, '›'),
+          ]
+        ),
+      ]
+    );
+  };
+},
 });
-
-
