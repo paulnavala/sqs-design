@@ -276,10 +276,16 @@ export default defineComponent({
       modalOpen.value = false;
       modalRatio.value = 1;
       activeIndex.value = -1;
-      // Restore scroll and focus
+      // Restore scroll and blur focused element to prevent stuck hover state
       requestAnimationFrame(() => {
         window.scrollTo({ top: lastScrollY });
-        if (lastFocusEl.value) lastFocusEl.value.focus({ preventScroll: true });
+        if (lastFocusEl.value) {
+          lastFocusEl.value.blur();
+        }
+        // Remove focus from any active element
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
       });
     }
 
