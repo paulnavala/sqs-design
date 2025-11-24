@@ -583,7 +583,6 @@ export default defineComponent({
         [
           h('div', { class: 'pg-modal__backdrop', 'data-close': '', onClick: closeModal }),
           h('div', { class: 'pg-modal__content', role: 'document' }, [
-            h('button', { class: 'pg-modal__close', type: 'button', 'aria-label': 'Close', 'data-close': '', onClick: closeModal }, '\u00d7'),
 
             h(
               'div',
