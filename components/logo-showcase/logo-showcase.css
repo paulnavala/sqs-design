@@ -171,22 +171,37 @@
    ============================================================================ */
 
 .logo-showcase {
-    padding: 4rem 2rem 5rem;
+    padding: 5rem 2rem 6rem;
     background: var(--ls-bg);
     color: var(--ls-text);
     position: relative;
 }
 
-/* Subtle top border */
+/* Subtle top accent */
 .logo-showcase::before {
     content: '';
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: min(200px, 30vw);
+    width: min(280px, 40vw);
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--ls-accent-light), transparent);
+    background: linear-gradient(90deg, transparent, var(--ls-accent), transparent);
+    opacity: 0.5;
+}
+
+/* Bottom decorative flourish */
+.logo-showcase::after {
+    content: '';
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: var(--ls-accent);
+    border-radius: 50%;
+    opacity: 0.4;
 }
 
 .logo-showcase .showcase-wrapper {
@@ -310,24 +325,47 @@
     align-items: center;
     background: var(--ls-card-bg);
     border-radius: var(--ls-radius-md);
-    transition: transform 0.3s var(--ls-transition), box-shadow 0.3s var(--ls-transition);
+    transition: transform 0.35s var(--ls-transition), 
+                box-shadow 0.35s var(--ls-transition),
+                border-color 0.35s var(--ls-transition);
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(88, 67, 59, 0.04), 0 4px 12px rgba(88, 67, 59, 0.03);
-    border: none;
+    box-shadow: 0 1px 2px rgba(88, 67, 59, 0.04), 
+                0 2px 8px rgba(88, 67, 59, 0.03);
+    border: 1px solid rgba(88, 67, 59, 0.06);
     position: relative;
     overflow: hidden;
     padding: 1.5rem;
     box-sizing: border-box;
 }
 
+/* Subtle inner glow */
+.logo-showcase .logo-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s var(--ls-transition);
+    pointer-events: none;
+}
+
 .logo-showcase .logo-placeholder:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(88, 67, 59, 0.06), 0 12px 28px rgba(88, 67, 59, 0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(88, 67, 59, 0.08), 
+                0 16px 40px rgba(88, 67, 59, 0.06);
+    border-color: rgba(210, 154, 132, 0.2);
+}
+
+.logo-showcase .logo-placeholder:hover::before {
+    opacity: 1;
 }
 
 .logo-showcase .logo-placeholder.is-selected {
-    box-shadow: 0 0 0 1.5px var(--ls-accent), 0 4px 16px rgba(210, 154, 132, 0.15);
+    box-shadow: 0 0 0 2px var(--ls-accent), 
+                0 8px 24px rgba(210, 154, 132, 0.2);
     transform: scale(0.98);
+    border-color: transparent;
 }
 
 /* ============================================================================
@@ -396,11 +434,12 @@
     bottom: 1rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     background: var(--ls-card-bg);
     border-radius: 50%;
-    box-shadow: var(--ls-shadow-md);
+    box-shadow: 0 2px 8px rgba(88, 67, 59, 0.08),
+                0 8px 24px rgba(88, 67, 59, 0.06);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -408,13 +447,11 @@
     pointer-events: auto;
     z-index: 10;
     color: var(--ls-accent-dark);
-    font-size: 18px;
-    border: 1px solid var(--ls-border);
+    font-size: 16px;
+    border: 1px solid rgba(210, 154, 132, 0.15);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s var(--ls-transition), 
-                visibility 0.3s var(--ls-transition),
-                background 0.2s var(--ls-transition);
+    transition: all 0.3s var(--ls-transition);
     cursor: pointer;
 }
 
@@ -423,12 +460,13 @@
     visibility: visible;
 }
 
-.logo-showcase .scroll-indicator:hover,
-.logo-showcase .scroll-indicator:focus {
-    background: var(--ls-accent-light);
-    color: var(--ls-text);
+.logo-showcase .scroll-indicator:hover {
+    background: var(--ls-accent);
+    color: white;
+    border-color: var(--ls-accent);
     animation-play-state: paused;
-    transform: translateX(-50%) scale(1.1);
+    transform: translateX(-50%) scale(1.08);
+    box-shadow: 0 4px 16px rgba(210, 154, 132, 0.3);
 }
 
 .logo-showcase .scroll-indicator:focus {
@@ -454,18 +492,33 @@
 
 .logo-showcase .detail-panel {
     position: relative;
-    flex: 0 0 360px;
-    max-width: 380px;
+    flex: 0 0 380px;
+    max-width: 400px;
     background: var(--ls-card-bg);
     border-radius: var(--ls-radius-lg);
-    padding: 1.75rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    border: none;
-    box-shadow: var(--ls-shadow-lg);
+    gap: 1.5rem;
+    border: 1px solid rgba(88, 67, 59, 0.06);
+    box-shadow: 0 4px 16px rgba(88, 67, 59, 0.06),
+                0 16px 48px rgba(88, 67, 59, 0.08),
+                0 32px 64px rgba(88, 67, 59, 0.04);
     animation: ls-panelSlideIn 0.4s ease-in-out forwards;
     transform-origin: left center;
+}
+
+/* Decorative accent line at top */
+.logo-showcase .detail-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--ls-accent), transparent);
+    border-radius: 0 0 2px 2px;
+    opacity: 0.6;
 }
 
 @keyframes ls-panelSlideIn {
@@ -500,18 +553,18 @@
 
 .logo-showcase .close-button {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    background: transparent;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(88, 67, 59, 0.04);
     border: none;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
-    transition: all 0.2s var(--ls-transition);
-    color: var(--ls-text-muted);
+    transition: all 0.25s var(--ls-transition);
+    color: var(--ls-text-light);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -522,7 +575,8 @@
 .logo-showcase .close-button:hover {
     background: var(--ls-accent);
     color: white;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.05);
+    box-shadow: 0 4px 12px rgba(210, 154, 132, 0.3);
 }
 
 .logo-showcase .close-button:focus {
@@ -534,7 +588,7 @@
 }
 
 .logo-showcase .close-button:active {
-    transform: rotate(90deg) scale(0.9);
+    transform: rotate(90deg) scale(0.92);
 }
 
 /* ============================================================================
@@ -549,24 +603,39 @@
 }
 
 .logo-showcase .detail-logo {
-    background: var(--ls-bg);
-    border-radius: var(--ls-radius-md);
-    height: 200px;
+    background: linear-gradient(135deg, var(--ls-bg) 0%, rgba(239, 225, 212, 0.6) 100%);
+    border-radius: var(--ls-radius-lg);
+    height: 220px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
+    border: 1px solid rgba(88, 67, 59, 0.04);
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(88, 67, 59, 0.03);
 }
 
+/* Subtle corner accents */
+.logo-showcase .detail-logo::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border: 1px solid rgba(210, 154, 132, 0.15);
+    border-radius: calc(var(--ls-radius-lg) - 8px);
+    pointer-events: none;
+}
 
 .logo-showcase .detail-logo-image {
-    max-width: 65%;
-    max-height: 65%;
+    max-width: 60%;
+    max-height: 60%;
     object-fit: contain;
-    animation: ls-logoReveal 0.4s var(--ls-transition) forwards;
+    animation: ls-logoReveal 0.5s var(--ls-transition) 0.1s forwards;
+    opacity: 0;
+    filter: drop-shadow(0 4px 12px rgba(88, 67, 59, 0.08));
 }
 
 @keyframes ls-logoReveal {
@@ -582,25 +651,42 @@
 
 .logo-showcase .detail-info {
     flex: 1;
-    padding-top: 0.25rem;
+    padding: 0.5rem 0.25rem 0;
 }
 
 .logo-showcase .detail-title {
     font-family: 'PT Serif', Georgia, serif;
-    font-size: 1.5rem;
+    font-size: 1.625rem;
     font-weight: 400;
-    margin: 0 0 0.875rem;
+    margin: 0 0 1rem;
     color: var(--ls-text);
-    letter-spacing: -0.01em;
-    line-height: 1.25;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+/* Elegant underline */
+.logo-showcase .detail-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ls-accent), transparent);
+    border-radius: 1px;
 }
 
 .logo-showcase .detail-description {
-    font-size: 0.9375rem;
-    line-height: 1.65;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.0625rem;
+    line-height: 1.75;
     color: var(--ls-text-muted);
     font-weight: 400;
+    font-style: italic;
     margin: 0;
+    letter-spacing: 0.01em;
 }
 
 
@@ -678,7 +764,7 @@
 
 @media (max-width: 600px) {
     .logo-showcase {
-        padding: 3rem 1.25rem 4rem;
+        padding: 3.5rem 1.25rem 5rem;
     }
 
     .logo-showcase .logo-grid {
@@ -695,9 +781,21 @@
         border-radius: var(--ls-radius-md);
     }
 
+    .logo-showcase .detail-panel::before {
+        left: 1.5rem;
+        right: 1.5rem;
+    }
+
     .logo-showcase .detail-logo {
         height: 180px;
-        border-radius: var(--ls-radius-sm);
+        border-radius: var(--ls-radius-md);
+    }
+
+    .logo-showcase .detail-logo::after {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
     }
 
     .logo-showcase .detail-title {
@@ -705,14 +803,14 @@
     }
 
     .logo-showcase .detail-description {
-        font-size: 0.9375rem;
+        font-size: 1rem;
     }
 
     .logo-showcase .close-button {
-        width: 28px;
-        height: 28px;
-        font-size: 16px;
-        top: 0.5rem;
-        right: 0.5rem;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+        top: 0.75rem;
+        right: 0.75rem;
     }
 }
