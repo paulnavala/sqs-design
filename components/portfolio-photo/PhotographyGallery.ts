@@ -348,41 +348,75 @@ export default defineComponent({
     // Observers
     let revealObserver: IntersectionObserver | null = null;
     let resizeObserver: ResizeObserver | null = null;
+    let resizeRafId: number | null = null;
+    let initialRevealDone = false;
 
     onMounted(() => {
       computeColCount();
 
-      // Use ResizeObserver for better performance than window resize
-      resizeObserver = new ResizeObserver((entries) => {
-        // Debounce with requestAnimationFrame
-        requestAnimationFrame(() => {
+      // Use ResizeObserver with debounced RAF for smooth resize handling
+      resizeObserver = new ResizeObserver(() => {
+        // Cancel pending RAF to debounce
+        if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+        resizeRafId = requestAnimationFrame(() => {
           computeColCount();
+          resizeRafId = null;
         });
       });
-      // Observe document body for layout changes
-      resizeObserver.observe(document.body);
+      resizeObserver.observe(document.documentElement);
 
-      // Setup reveal observer
+      // Setup reveal observer with optimized options
       revealObserver = new IntersectionObserver(
         (entries) => {
+          // Batch DOM updates
+          const toReveal: Element[] = [];
           entries.forEach((e) => {
             if (e.isIntersecting) {
-              (e.target as HTMLElement).classList.add('is-visible');
+              toReveal.push(e.target);
               revealObserver?.unobserve(e.target);
             }
           });
+          // Apply class changes in single batch
+          if (toReveal.length > 0) {
+            requestAnimationFrame(() => {
+              toReveal.forEach((el) => {
+                const htmlEl = el as HTMLElement;
+                // Only animate on initial load, instant reveal on scroll
+                if (initialRevealDone) {
+                  htmlEl.classList.add('is-visible', 'is-instant');
+                } else {
+                  htmlEl.classList.add('is-visible');
+                }
+              });
+              // Mark initial reveal as complete after first batch
+              if (!initialRevealDone) {
+                setTimeout(() => { initialRevealDone = true; }, 100);
+              }
+            });
+          }
         },
-        { rootMargin: '100px 0px', threshold: 0.1 }
+        { rootMargin: '50px 0px', threshold: 0 }
       );
 
-      // ESC to close modal
-      window.addEventListener('keydown', onKeydown);
+      // Observe already-mounted items
+      nextTick(() => {
+        if (root.value && revealObserver) {
+          const items = root.value.querySelectorAll('.pg-masonry__item');
+          items.forEach((item) => revealObserver!.observe(item));
+        }
+      });
+
+      // ESC to close modal - passive where possible
+      window.addEventListener('keydown', onKeydown, { passive: false });
     });
 
     onBeforeUnmount(() => {
       window.removeEventListener('keydown', onKeydown);
+      if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
       if (resizeObserver) resizeObserver.disconnect();
       if (revealObserver) revealObserver.disconnect();
+      resizeObserver = null;
+      revealObserver = null;
     });
 
     // Masonry infinite loader
@@ -595,6 +629,13 @@ export default defineComponent({
         { class: 'pg-modal', 'data-modal': '', hidden: !modalOpen.value, 'aria-hidden': String(!modalOpen.value), role: 'dialog', 'aria-label': 'Photo fullscreen' },
         [
           h('div', { class: 'pg-modal__backdrop', 'data-close': '', onClick: closeModal }),
+          // Close button for mobile
+          h('button', {
+            class: 'pg-modal__close',
+            type: 'button',
+            'aria-label': 'Close fullscreen',
+            onClick: closeModal,
+          }, '×'),
           h('div', { class: 'pg-modal__content', role: 'document' }, [
 
             h(
@@ -622,7 +663,16 @@ export default defineComponent({
         ]
       );
 
-      return h('div', { ref: root }, [masonry, modal]);
+      // Section Title
+      const sectionTitle = h('header', { class: 'pg-section-title' }, [
+        h('h2', { class: 'pg-section-title__text' }, 'Photography'),
+        h('div', { class: 'pg-section-title__flourish', 'aria-hidden': 'true' }, [
+          h('span', { class: 'pg-section-title__flourish-icon' }),
+        ]),
+        h('span', { class: 'pg-section-title__sub' }, `${visibleCount.value} selected works`),
+      ]);
+
+      return h('div', { ref: root }, [sectionTitle, masonry, modal]);
     };
   },
 });

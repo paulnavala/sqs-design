@@ -17,6 +17,35 @@ import PhotographyGallery, { PhotoItem } from './PhotographyGallery';
   document.head.appendChild(dns);
 })();
 
+// Load elegant serif font for section title - optimized loading
+(function injectFont() {
+  const fontUrl = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&display=swap';
+  if (document.querySelector(`link[href*="Cormorant+Garamond"]`)) return;
+  
+  // Preconnect to Google Fonts (check if already exists)
+  if (!document.querySelector('link[href="https://fonts.googleapis.com"]')) {
+    const preconnect = document.createElement('link');
+    preconnect.rel = 'preconnect';
+    preconnect.href = 'https://fonts.googleapis.com';
+    document.head.appendChild(preconnect);
+  }
+  if (!document.querySelector('link[href="https://fonts.gstatic.com"]')) {
+    const preconnectStatic = document.createElement('link');
+    preconnectStatic.rel = 'preconnect';
+    preconnectStatic.href = 'https://fonts.gstatic.com';
+    preconnectStatic.crossOrigin = 'anonymous';
+    document.head.appendChild(preconnectStatic);
+  }
+  
+  // Load the font with preload for critical text
+  const fontLink = document.createElement('link');
+  fontLink.rel = 'stylesheet';
+  fontLink.href = fontUrl;
+  fontLink.media = 'print'; // Load async
+  fontLink.onload = function() { (this as HTMLLinkElement).media = 'all'; };
+  document.head.appendChild(fontLink);
+})();
+
 function toArray<T>(list: NodeListOf<T> | HTMLCollectionOf<T>): T[] {
   return Array.prototype.slice.call(list);
 }
