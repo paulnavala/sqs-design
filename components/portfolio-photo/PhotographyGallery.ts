@@ -272,10 +272,26 @@ export default defineComponent({
       }
     }
 
-    function closeModal() {
+    // Track if we pushed a history state for the modal
+    let historyStatePushed = false;
+
+    function closeModal(fromPopState = false) {
+      if (!modalOpen.value) return;
+      
       modalOpen.value = false;
       modalRatio.value = 1;
       activeIndex.value = -1;
+      
+      // If not triggered by popstate, go back in history to remove our pushed state
+      if (!fromPopState && historyStatePushed) {
+        historyStatePushed = false;
+        try {
+          history.back();
+        } catch { /* ignore */ }
+      } else {
+        historyStatePushed = false;
+      }
+      
       // Restore scroll and blur focused element to prevent stuck hover state
       requestAnimationFrame(() => {
         window.scrollTo({ top: lastScrollY });
@@ -287,6 +303,14 @@ export default defineComponent({
           document.activeElement.blur();
         }
       });
+    }
+
+    // Handle browser back button
+    function onPopState(e: PopStateEvent) {
+      if (modalOpen.value) {
+        e.preventDefault();
+        closeModal(true);
+      }
     }
 
     type ScrollLockState = { applied: boolean; overflow: string; paddingRight: string };
@@ -310,6 +334,14 @@ export default defineComponent({
         scrollLockState.applied = true;
         // Add class to body to help hide site header
         body.classList.add('pg-modal-open');
+        
+        // Push history state for back button support on mobile
+        try {
+          if (!historyStatePushed) {
+            history.pushState({ pgModal: true }, '', window.location.href);
+            historyStatePushed = true;
+          }
+        } catch { /* ignore */ }
       } else if (scrollLockState.applied) {
         if (scrollLockState.overflow) body.style.overflow = scrollLockState.overflow;
         else body.style.removeProperty('overflow');
@@ -412,10 +444,12 @@ export default defineComponent({
 
       // ESC to close modal - passive where possible
       window.addEventListener('keydown', onKeydown, { passive: false });
+      window.addEventListener('popstate', onPopState);
     });
 
     onBeforeUnmount(() => {
       window.removeEventListener('keydown', onKeydown);
+      window.removeEventListener('popstate', onPopState);
       if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
       if (resizeObserver) resizeObserver.disconnect();
       if (revealObserver) revealObserver.disconnect();
