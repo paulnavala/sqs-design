@@ -833,7 +833,7 @@ body.pg-modal-open .site-header {
     height: 32px;
     opacity: 1;
     transform: scale(1) translateY(0);
-    font-size: 14px;
+    font-size: 16px;
     border-radius: 8px;
   }
   
@@ -863,9 +863,9 @@ body.pg-modal-open .site-header {
   .pg-masonry__fs {
     top: 10px;
     right: 10px;
-    width: 30px;
-    height: 30px;
-    font-size: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
   }
   
   .pg-masonry__title {
