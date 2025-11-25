@@ -308,12 +308,16 @@ export default defineComponent({
           body.style.removeProperty('padding-right');
         }
         scrollLockState.applied = true;
+        // Add class to body to help hide site header
+        body.classList.add('pg-modal-open');
       } else if (scrollLockState.applied) {
         if (scrollLockState.overflow) body.style.overflow = scrollLockState.overflow;
         else body.style.removeProperty('overflow');
         if (scrollLockState.paddingRight) body.style.paddingRight = scrollLockState.paddingRight;
         else body.style.removeProperty('padding-right');
         scrollLockState.applied = false;
+        // Remove class from body
+        body.classList.remove('pg-modal-open');
       }
     });
 
