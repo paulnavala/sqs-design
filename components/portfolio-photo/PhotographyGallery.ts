@@ -227,49 +227,78 @@ export default defineComponent({
     }
 
     async function openModal(index: number) {
+      const item = normalizedItems.value[index];
+      if (!item) return;
+
       modalRatio.value = 1;
       lastScrollY = window.scrollY;
       lastFocusEl.value = (document.activeElement as HTMLElement) || null;
       activeIndex.value = index;
-      modalOpen.value = true; // Open immediately
+
+      // Preload main image before opening modal to prevent empty flash
+      const urls = [item.modalAfter, item.modalBefore].filter(Boolean) as string[];
+      
+      if (urls.length > 0) {
+        try {
+          const dims: Array<{ w: number; h: number }> = [];
+          
+          // Preload images with a timeout fallback
+          await Promise.race([
+            Promise.all(
+              urls.map((src) => {
+                return new Promise<void>((resolve) => {
+                  const img = new Image();
+                  (img as any).decoding = 'async';
+                  img.onload = () => {
+                    if (img.naturalWidth && img.naturalHeight) {
+                      dims.push({ w: img.naturalWidth, h: img.naturalHeight });
+                    }
+                    resolve();
+                  };
+                  img.onerror = () => resolve();
+                  img.src = src;
+                });
+              })
+            ),
+            // Timeout after 400ms - don't make user wait too long
+            new Promise<void>((resolve) => setTimeout(resolve, 400))
+          ]);
+
+          if (dims.length > 0) {
+            const small = dims.reduce((a, b) => (a.w * a.h <= b.w * b.h ? a : b));
+            modalRatio.value = small.w / small.h;
+          }
+        } catch {
+          // Continue with default ratio
+        }
+      }
+
+      // Open modal after preloading (or timeout)
+      modalOpen.value = true;
 
       void nextTick(() => {
         const closeBtn = document.querySelector('.pg-modal__close') as HTMLButtonElement | null;
         if (closeBtn) closeBtn.focus();
       });
+    }
 
-      // Calculate aspect ratio in background
-      try {
-        const item = normalizedItems.value[index];
-        if (!item) return;
-        const urls = [item.modalAfter, item.modalBefore].filter(Boolean) as string[];
-        if (urls.length === 0) return;
-
-        const dims: Array<{ w: number; h: number }> = [];
-        await Promise.all(
-          urls.map((src) => {
-            return new Promise<void>((resolve) => {
-              const img = new Image();
-              (img as any).decoding = 'async';
-              img.onload = () => {
-                if (img.naturalWidth && img.naturalHeight) {
-                  dims.push({ w: img.naturalWidth, h: img.naturalHeight });
-                }
-                resolve();
-              };
-              img.onerror = () => resolve();
-              img.src = src;
-            });
-          })
-        );
-
-        if (dims.length > 0) {
-          const small = dims.reduce((a, b) => (a.w * a.h <= b.w * b.h ? a : b));
-          modalRatio.value = small.w / small.h;
-        }
-      } catch {
-        // keep default
-      }
+    // Prefetch modal images on hover/focus for instant modal open
+    const prefetchedIndices = new Set<number>();
+    function prefetchModalImages(index: number) {
+      if (prefetchedIndices.has(index)) return;
+      prefetchedIndices.add(index);
+      
+      const item = normalizedItems.value[index];
+      if (!item) return;
+      
+      const urls = [item.modalAfter, item.modalBefore].filter(Boolean) as string[];
+      urls.forEach((src) => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.as = 'image';
+        link.href = src;
+        document.head.appendChild(link);
+      });
     }
 
     // Track if we pushed a history state for the modal
@@ -543,6 +572,8 @@ export default defineComponent({
                 // mark as loading to show skeleton until image load
                 el.classList.add('is-loading');
               },
+              onMouseenter: () => prefetchModalImages(it.originalIndex),
+              onFocus: () => prefetchModalImages(it.originalIndex),
               onKeydown: (e: KeyboardEvent) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
