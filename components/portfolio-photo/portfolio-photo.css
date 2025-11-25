@@ -70,19 +70,19 @@
 /* Section Title */
 .pg-section-title {
   width: min(1200px, 92vw);
-  margin: 0 auto 72px;
+  margin: 0 auto 48px;
   text-align: center;
   position: relative;
 }
 
 .pg-section-title__text {
   margin: 0;
-  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 300;
-  font-style: italic;
-  letter-spacing: -0.01em;
-  color: var(--pg-ink-strong);
+  font-family: 'PT Serif', Georgia, serif;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #000;
   line-height: 1;
   position: relative;
   display: inline-block;
@@ -135,7 +135,7 @@
 
 .pg-section-title__sub {
   display: block;
-  margin-top: 28px;
+  margin-top: 20px;
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.125rem;
   font-weight: 400;
@@ -150,11 +150,11 @@
 
 @media (max-width: 600px) {
   .pg-section-title {
-    margin-bottom: 36px;
+    margin-bottom: 32px;
   }
   
   .pg-section-title__text {
-    font-size: clamp(2.25rem, 10vw, 3.5rem);
+    font-size: clamp(1.25rem, 6vw, 2rem);
   }
   
   .pg-section-title__flourish {
@@ -173,18 +173,18 @@
   }
   
   .pg-section-title__sub {
-    margin-top: 16px;
+    margin-top: 14px;
     font-size: 0.9375rem;
   }
 }
 
 @media (max-width: 400px) {
   .pg-section-title {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
   
   .pg-section-title__text {
-    font-size: 2rem;
+    font-size: 1.25rem;
   }
   
   .pg-section-title__sub {

@@ -19,8 +19,8 @@ import PhotographyGallery, { PhotoItem } from './PhotographyGallery';
 
 // Load elegant serif font for section title - optimized loading
 (function injectFont() {
-  const fontUrl = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&display=swap';
-  if (document.querySelector(`link[href*="Cormorant+Garamond"]`)) return;
+  const fontUrl = 'https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap';
+  if (document.querySelector(`link[href*="PT+Serif"]`)) return;
   
   // Preconnect to Google Fonts (check if already exists)
   if (!document.querySelector('link[href="https://fonts.googleapis.com"]')) {
