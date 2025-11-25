@@ -398,27 +398,17 @@ body.pg-modal-open .site-header {
     padding-top: env(safe-area-inset-top, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
     border: none;
-  }
-  
-  .pg-modal__view {
-    border-radius: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-  }
-  
-  /* Fit image to screen instead of filling/cropping */
-  .pg-modal .image-compare {
+    background: #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #000;
   }
   
-  .pg-modal .image-compare img {
-    object-fit: contain !important;
-    width: 100% !important;
-    height: 100% !important;
+  /* Use aspect-ratio-aware sizing on mobile too */
+  .pg-modal__view {
+    border-radius: 0 !important;
+    width: min(100vw, calc(100dvh * var(--m-ratio, 1))) !important;
+    height: min(100dvh, calc(100vw / var(--m-ratio, 1))) !important;
   }
 }
 
@@ -436,27 +426,17 @@ body.pg-modal-open .site-header {
     padding-left: env(safe-area-inset-left, 0);
     padding-right: env(safe-area-inset-right, 0);
     border: none;
-  }
-  
-  .pg-modal__view {
-    border-radius: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-  }
-  
-  /* Fit image to screen instead of filling/cropping */
-  .pg-modal .image-compare {
+    background: #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #000;
   }
   
-  .pg-modal .image-compare img {
-    object-fit: contain !important;
-    width: 100% !important;
-    height: 100% !important;
+  /* Use aspect-ratio-aware sizing in landscape too */
+  .pg-modal__view {
+    border-radius: 0 !important;
+    width: min(100vw, calc(100dvh * var(--m-ratio, 1))) !important;
+    height: min(100dvh, calc(100vw / var(--m-ratio, 1))) !important;
   }
   
   /* Reposition close button for landscape */
