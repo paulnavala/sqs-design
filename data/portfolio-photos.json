@@ -3,8 +3,8 @@
   "description": "Photography gallery data - easy to edit and maintain",
   "photos": [
     {
-      "id": "Fox",
-      "title": "Fox",
+      "id": "Wild Fox",
+      "title": "Wild Fox",
       "description": "Fox in the woods",
       "categories": ["portrait", "studio"],
       "year": 2024,
@@ -15,8 +15,8 @@
       "accent": ""
     },
     {
-      "id": "Cave",
-      "title": "Cave Entrance",
+      "id": "Cave in Gibraltar",
+      "title": "Cave in Gibraltar",
       "description": "Gibraltar cave entrance",
       "categories": ["landscape", "Nature"],
       "year": 2024,
@@ -27,8 +27,8 @@
       "accent": "#88EE3FF"
     },
     {
-      "id": "Moon",
-      "title": "Moon",
+      "id": "The Moon",
+      "title": "The Moon",
       "description": "Moon Museum",
       "categories": ["portrait", "studio"],
       "year": 2024,
@@ -39,8 +39,8 @@
       "accent": ""
     },
     {
-      "id": "Cave2",
-      "title": "Cave Entrance",
+      "id": "Sunset",
+      "title": "Sunset",
       "description": "Gibraltar cave entrance",
       "categories": ["landscape", "Nature"],
       "year": 2024,
@@ -51,8 +51,8 @@
       "accent": ""
     },
     {
-      "id": "arch",
-      "title": "Cave Entrance",
+      "id": "Stairway",
+      "title": "Stairway",
       "description": "Gibraltar cave entrance",
       "categories": ["landscape", "Nature"],
       "year": 2024,
@@ -63,8 +63,8 @@
       "accent": ""
     },
     {
-      "id": "Fish",
-      "title": "Cave Entrance",
+      "id": "Fish in the Sea",
+      "title": "Fish in the Sea",
       "description": "Gibraltar cave entrance",
       "categories": ["landscape", "Nature"],
       "year": 2024,
@@ -75,8 +75,8 @@
       "accent": ""
     },
     {
-      "id": "Arcada",
-      "title": "Arcada",
+      "id": "Italian Arch",
+      "title": "Italian Arch",
       "description": "",
       "categories": [],
       "year": 2024,
@@ -87,8 +87,8 @@
       "accent": ""
     },
     {
-      "id": "Forest",
-      "title": "Forest",
+      "id": "Alpine Forest",
+      "title": "Alpine Forest",
       "description": "",
       "categories": [],
       "year": 2024,
