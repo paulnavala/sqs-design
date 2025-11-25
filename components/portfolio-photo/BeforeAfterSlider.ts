@@ -36,13 +36,41 @@ export default defineComponent({
       posX.value = width.value * 0.25; // Start at 25%
     }
 
-    function onMouseDown(e: MouseEvent) {
+    function onMouseDown(e: MouseEvent | TouchEvent) {
       e.preventDefault();
       isDragging.value = true;
+      // Attach window-level listeners for fast mouse movement
+      window.addEventListener('mousemove', onWindowMouseMove);
+      window.addEventListener('touchmove', onWindowTouchMove, { passive: false });
     }
 
     function onMouseUp(e: Event) {
-      isDragging.value = false;
+      if (isDragging.value) {
+        isDragging.value = false;
+        // Remove window-level listeners
+        window.removeEventListener('mousemove', onWindowMouseMove);
+        window.removeEventListener('touchmove', onWindowTouchMove);
+      }
+    }
+
+    function onWindowMouseMove(e: MouseEvent) {
+      if (!isDragging.value) return;
+      e.preventDefault();
+      pageX.value = e.pageX;
+      if (allowNextFrame.value) {
+        allowNextFrame.value = false;
+        requestAnimationFrame(updatePos);
+      }
+    }
+
+    function onWindowTouchMove(e: TouchEvent) {
+      if (!isDragging.value) return;
+      e.preventDefault();
+      pageX.value = e.touches[0]?.pageX || e.targetTouches[0]?.pageX || 0;
+      if (allowNextFrame.value) {
+        allowNextFrame.value = false;
+        requestAnimationFrame(updatePos);
+      }
     }
 
     function onMouseMove(e: MouseEvent | TouchEvent, forceUpdate = false) {
@@ -65,16 +93,29 @@ export default defineComponent({
       const el = root.value;
       if (!el) return;
 
-      const rect = cachedRect || el.getBoundingClientRect();
+      // Always get fresh rect for accurate positioning
+      const rect = el.getBoundingClientRect();
+      cachedRect = rect;
+      
+      // Update width if needed
+      if (el.clientWidth > 0) {
+        width.value = el.clientWidth;
+      }
+      
+      if (width.value <= 0) return;
+
       let newPosX = pageX.value - rect.left;
 
-      // Clamp to bounds
+      // Clamp to bounds first
       newPosX = Math.max(0, Math.min(width.value, newPosX));
 
-      // Edge snapping (3%)
-      const snapThreshold = width.value * 0.03;
-      if (newPosX < snapThreshold) newPosX = 0;
-      if (newPosX > width.value - snapThreshold) newPosX = width.value;
+      // Edge snapping - snap when slider passes the label position (~40px from edge)
+      const snapThreshold = Math.max(width.value * 0.05, 40);
+      if (newPosX <= snapThreshold) {
+        newPosX = 0;
+      } else if (newPosX >= width.value - snapThreshold) {
+        newPosX = width.value;
+      }
 
       posX.value = newPosX;
       allowNextFrame.value = true;
@@ -172,6 +213,7 @@ export default defineComponent({
         el.addEventListener('keydown', onKeyDown);
       }
       window.addEventListener('mouseup', onMouseUp);
+      window.addEventListener('touchend', onMouseUp);
       window.addEventListener('resize', onResize);
 
       setTimeout(() => {
@@ -191,6 +233,9 @@ export default defineComponent({
         el.removeEventListener('keydown', onKeyDown);
       }
       window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('touchend', onMouseUp);
+      window.removeEventListener('mousemove', onWindowMouseMove);
+      window.removeEventListener('touchmove', onWindowTouchMove);
       window.removeEventListener('resize', onResize);
       cachedRect = null;
     });
@@ -211,6 +256,33 @@ export default defineComponent({
         display: 'block',
       };
 
+      // Label visibility logic:
+      // - While sliding in middle: both labels visible
+      // - At left edge (full AFTER): BEFORE hides immediately (even while dragging), AFTER hides with delay after release
+      // - At right edge (full BEFORE): AFTER hides immediately (even while dragging), BEFORE hides with delay after release
+      const atLeftEdge = posX.value === 0;
+      const atRightEdge = width.value > 0 && posX.value >= width.value;
+
+      // Determine label visibility
+      let beforeLabelClass = '';
+      let afterLabelClass = '';
+      
+      if (atLeftEdge) {
+        // Full AFTER image showing: BEFORE hidden immediately (image gone)
+        beforeLabelClass = 'is-hidden-immediate';
+        // AFTER label only hides with delay after mouse release
+        if (!isDragging.value) {
+          afterLabelClass = 'is-hidden-delayed';
+        }
+      } else if (atRightEdge) {
+        // Full BEFORE image showing: AFTER hidden immediately (image gone)
+        afterLabelClass = 'is-hidden-immediate';
+        // BEFORE label only hides with delay after mouse release
+        if (!isDragging.value) {
+          beforeLabelClass = 'is-hidden-delayed';
+        }
+      }
+
       return h(
         'figure',
         {
@@ -227,9 +299,13 @@ export default defineComponent({
         },
         [
           // Before label (left side)
-          h('div', { class: 'image-compare-label before' }, 'BEFORE'),
+          h('div', { 
+            class: ['image-compare-label', 'before', beforeLabelClass].filter(Boolean),
+          }, 'BEFORE'),
           // After label (right side)
-          h('div', { class: 'image-compare-label after' }, 'AFTER'),
+          h('div', { 
+            class: ['image-compare-label', 'after', afterLabelClass].filter(Boolean),
+          }, 'AFTER'),
           h(
             'div',
             {
@@ -260,6 +336,7 @@ export default defineComponent({
               class: 'image-compare-handle',
               style: handleStyle,
               onMousedown: onMouseDown,
+              onTouchstart: onMouseDown,
             },
             [
               h('span', { class: 'image-compare-handle-icon left' }, '‹'),
