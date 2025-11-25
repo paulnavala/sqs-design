@@ -150,9 +150,6 @@ export default defineComponent({
     }
 
     type GalleryItem = PhotoItem & {
-      categorySlugs: string[];
-      categoryLabels: string[];
-      // Pre-calculated URLs
       src: string;
       srcset: string;
       candidates: string;
@@ -160,11 +157,11 @@ export default defineComponent({
       modalBefore: string;
     };
 
+    // Helper for display title (falls back to id)
+    const displayTitle = (item: GalleryItem) => item.title || item.id;
+
     const normalizedItems = computed<GalleryItem[]>(() =>
       (props.items || []).map((it) => {
-        const labels = (it.categories || []).filter(Boolean);
-        const slugs = labels.map((c) => slug(c)).filter(Boolean);
-
         // Pre-calculate masonry image props
         const masonrySrc = unique([
           it.thumb || '',
@@ -211,8 +208,6 @@ export default defineComponent({
 
         return {
           ...(it as PhotoItem),
-          categoryLabels: labels,
-          categorySlugs: slugs,
           src: masonrySrc,
           srcset: masonrySrcset,
           candidates,
@@ -221,10 +216,6 @@ export default defineComponent({
         } as GalleryItem;
       })
     );
-
-    function resetMasonryLoad() {
-      masonryLoadedCount.value = masonryBatchSize;
-    }
 
     async function openModal(index: number) {
       const item = normalizedItems.value[index];
@@ -539,7 +530,7 @@ export default defineComponent({
             key: it.item.id + '-' + idx,
             class: 'pg-masonry__item',
             role: 'listitem',
-            'aria-label': it.item.title || it.item.id,
+            'aria-label': displayTitle(it.item),
             style: `--m-ratio:${ratio};`,
             onVnodeMounted: (v: any) => {
               if (revealObserver && v.el) revealObserver.observe(v.el as HTMLElement);
@@ -549,7 +540,7 @@ export default defineComponent({
               class: 'pg-masonry__media',
               role: 'button',
               tabindex: 0,
-              'aria-label': `Open ${it.item.title || it.item.id} in fullscreen`,
+              'aria-label': `Open ${displayTitle(it.item)} in fullscreen`,
               onVnodeMounted: (v: any) => {
                 const el = v.el as HTMLElement;
                 // mark as loading to show skeleton until image load
@@ -624,7 +615,7 @@ export default defineComponent({
               h('div', { class: 'pg-skel' }),
               h('img', {
                 class: 'pg-masonry__img',
-                alt: it.item.alt || it.item.title || it.item.id,
+                alt: it.item.alt || displayTitle(it.item),
                 decoding: 'async',
                 loading: idx < 6 ? 'eager' : 'lazy',
                 fetchpriority: idx < 3 ? 'high' : undefined,
@@ -659,11 +650,11 @@ export default defineComponent({
                   img.style.opacity = '0.6';
                 },
               }),
-              h('div', { class: 'pg-masonry__title' }, it.item.title || it.item.id),
+              h('div', { class: 'pg-masonry__title' }, displayTitle(it.item)),
               h('button', {
                 class: 'pg-masonry__fs',
                 type: 'button',
-                'aria-label': `Open ${it.item.title || it.item.id} fullscreen`,
+                'aria-label': `Open ${displayTitle(it.item)} fullscreen`,
                 onClick: (ev: MouseEvent) => {
                   ev.stopPropagation();
                   openModal(it.originalIndex);
@@ -699,13 +690,13 @@ export default defineComponent({
                     ? h(BeforeAfterSlider, {
                       afterSrc: active.modalAfter,
                       beforeSrc: active.modalBefore,
-                      alt: active.alt || active.title || active.id,
+                      alt: active.alt || displayTitle(active),
                       initialSplit: 0.75,
                     })
                     : h('img', {
                       class: 'pg-modal__img',
                       'data-single': '',
-                      alt: active.alt || active.title || active.id,
+                      alt: active.alt || displayTitle(active),
                       src: active.modalAfter,
                     }),
                 ]
