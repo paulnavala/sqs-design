@@ -1,107 +1,43 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Photography gallery data - easy to edit and maintain",
   "photos": [
     {
       "id": "Wild Fox",
-      "title": "Wild Fox",
-      "description": "Fox in the woods",
-      "categories": ["portrait", "studio"],
-      "year": 2024,
       "afterSrc": "https://assets.peachless.design/assets/photography/originals/fox_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/fox_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/fox_after.jpg",
-      "alt": "Portrait of a fox in the woods",
-      "accent": ""
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/fox_before.jpg"
     },
     {
       "id": "Cave in Gibraltar",
-      "title": "Cave in Gibraltar",
-      "description": "Gibraltar cave entrance",
-      "categories": ["landscape", "Nature"],
-      "year": 2024,
       "afterSrc": "https://assets.peachless.design/assets/photography/originals/cave_angel_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/cave_angel_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/cave_angel_after.jpg",
-      "alt": "Cave entrance in Gibraltar",
-      "accent": "#88EE3FF"
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/cave_angel_before.jpg"
     },
     {
       "id": "The Moon",
-      "title": "The Moon",
-      "description": "Moon Museum",
-      "categories": ["portrait", "studio"],
-      "year": 2024,
       "afterSrc": "https://assets.peachless.design/assets/photography/originals/moon_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/moon_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/moon_after.jpg",
-      "alt": "Portrait of a fox in the woods",
-      "accent": ""
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/moon_before.jpg"
     },
     {
       "id": "Sunset",
-      "title": "Sunset",
-      "description": "Gibraltar cave entrance",
-      "categories": ["landscape", "Nature"],
-      "year": 2024,
       "afterSrc": "https://assets.peachless.design/assets/photography/originals/sunset_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/sunset_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/sunset_after.jpg",
-      "alt": "Cave entrance in Gibraltar",
-      "accent": ""
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/sunset_before.jpg"
     },
     {
       "id": "Stairway",
-      "title": "Stairway",
-      "description": "Gibraltar cave entrance",
-      "categories": ["landscape", "Nature"],
-      "year": 2024,
       "afterSrc": "https://assets.peachless.design/assets/photography/originals/architecture_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/architecture_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/architecture_after.jpg",
-      "alt": "Cave entrance in Gibraltar",
-      "accent": ""
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/architecture_before.jpg"
     },
     {
       "id": "Fish in the Sea",
-      "title": "Fish in the Sea",
-      "description": "Gibraltar cave entrance",
-      "categories": ["landscape", "Nature"],
-      "year": 2024,
       "afterSrc": "https://assets.peachless.design/assets/photography/originals/fish_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/fish_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/fish_after.jpg",
-      "alt": "Cave entrance in Gibraltar",
-      "accent": ""
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/fish_before.jpg"
     },
     {
       "id": "Italian Arch",
-      "title": "Italian Arch",
-      "description": "",
-      "categories": [],
-      "year": 2024,
       "afterSrc": "https://assets.peachless.design/assets/photography/originals/arcada_after.jpg",
-      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/arcada_before.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/arcada_after.jpg",
-      "alt": "Arcada",
-      "accent": ""
+      "beforeSrc": "https://assets.peachless.design/assets/photography/originals/arcada_before.jpg"
     },
     {
       "id": "Alpine Forest",
-      "title": "Alpine Forest",
-      "description": "",
-      "categories": [],
-      "year": 2024,
-      "afterSrc": "https://assets.peachless.design/assets/photography/originals/forest.jpg",
-      "thumb": "https://assets.peachless.design/assets/photography/originals/forest.jpg",
-      "alt": "Forest",
-      "accent": ""
+      "afterSrc": "https://assets.peachless.design/assets/photography/originals/forest.jpg"
     }
-  ],
-  "settings": {
-    "defaultYear": null,
-    "defaultAccent": ""
-  }
+  ]
 }
-
-

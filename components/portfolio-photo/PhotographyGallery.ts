@@ -3,14 +3,14 @@ import BeforeAfterSlider from './BeforeAfterSlider';
 
 export type PhotoItem = {
   id: string;
-  title: string;
-  description: string;
-  categories: string[];
-  year: number;
+  title?: string; // Optional - falls back to id
+  description?: string;
+  categories?: string[];
+  year?: number;
   afterSrc: string;
   beforeSrc?: string;
   thumb?: string;
-  alt: string;
+  alt?: string;
   accent?: string | null;
 };
 
@@ -539,7 +539,7 @@ export default defineComponent({
             key: it.item.id + '-' + idx,
             class: 'pg-masonry__item',
             role: 'listitem',
-            'aria-label': it.item.title,
+            'aria-label': it.item.title || it.item.id,
             style: `--m-ratio:${ratio};`,
             onVnodeMounted: (v: any) => {
               if (revealObserver && v.el) revealObserver.observe(v.el as HTMLElement);
@@ -549,7 +549,7 @@ export default defineComponent({
               class: 'pg-masonry__media',
               role: 'button',
               tabindex: 0,
-              'aria-label': `Open ${it.item.title} in fullscreen`,
+              'aria-label': `Open ${it.item.title || it.item.id} in fullscreen`,
               onVnodeMounted: (v: any) => {
                 const el = v.el as HTMLElement;
                 // mark as loading to show skeleton until image load
@@ -624,7 +624,7 @@ export default defineComponent({
               h('div', { class: 'pg-skel' }),
               h('img', {
                 class: 'pg-masonry__img',
-                alt: it.item.alt || it.item.title,
+                alt: it.item.alt || it.item.title || it.item.id,
                 decoding: 'async',
                 loading: idx < 6 ? 'eager' : 'lazy',
                 fetchpriority: idx < 3 ? 'high' : undefined,
@@ -659,11 +659,11 @@ export default defineComponent({
                   img.style.opacity = '0.6';
                 },
               }),
-              h('div', { class: 'pg-masonry__title' }, it.item.title),
+              h('div', { class: 'pg-masonry__title' }, it.item.title || it.item.id),
               h('button', {
                 class: 'pg-masonry__fs',
                 type: 'button',
-                'aria-label': `Open ${it.item.title} fullscreen`,
+                'aria-label': `Open ${it.item.title || it.item.id} fullscreen`,
                 onClick: (ev: MouseEvent) => {
                   ev.stopPropagation();
                   openModal(it.originalIndex);
@@ -699,13 +699,13 @@ export default defineComponent({
                     ? h(BeforeAfterSlider, {
                       afterSrc: active.modalAfter,
                       beforeSrc: active.modalBefore,
-                      alt: active.alt || active.title,
+                      alt: active.alt || active.title || active.id,
                       initialSplit: 0.75,
                     })
                     : h('img', {
                       class: 'pg-modal__img',
                       'data-single': '',
-                      alt: active.alt || active.title,
+                      alt: active.alt || active.title || active.id,
                       src: active.modalAfter,
                     }),
                 ]
