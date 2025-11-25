@@ -301,25 +301,12 @@ export default defineComponent({
       });
     }
 
-    // Track if we pushed a history state for the modal
-    let historyStatePushed = false;
-
-    function closeModal(fromPopState = false) {
+    function closeModal() {
       if (!modalOpen.value) return;
       
       modalOpen.value = false;
       modalRatio.value = 1;
       activeIndex.value = -1;
-      
-      // If not triggered by popstate, go back in history to remove our pushed state
-      if (!fromPopState && historyStatePushed) {
-        historyStatePushed = false;
-        try {
-          history.back();
-        } catch { /* ignore */ }
-      } else {
-        historyStatePushed = false;
-      }
       
       // Restore scroll and blur focused element to prevent stuck hover state
       requestAnimationFrame(() => {
@@ -334,11 +321,10 @@ export default defineComponent({
       });
     }
 
-    // Handle browser back button
-    function onPopState(e: PopStateEvent) {
+    // Handle browser back button - only close modal if open
+    function onPopState() {
       if (modalOpen.value) {
-        e.preventDefault();
-        closeModal(true);
+        closeModal();
       }
     }
 
@@ -366,10 +352,7 @@ export default defineComponent({
         
         // Push history state for back button support on mobile
         try {
-          if (!historyStatePushed) {
-            history.pushState({ pgModal: true }, '', window.location.href);
-            historyStatePushed = true;
-          }
+          history.pushState({ pgModal: true }, '', window.location.href);
         } catch { /* ignore */ }
       } else if (scrollLockState.applied) {
         if (scrollLockState.overflow) body.style.overflow = scrollLockState.overflow;
