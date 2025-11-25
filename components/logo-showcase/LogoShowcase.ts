@@ -1,4 +1,4 @@
-import { defineComponent, h, ref, PropType, computed } from 'vue';
+import { defineComponent, h, ref, PropType, onMounted, onUnmounted, nextTick } from 'vue';
 
 export type LogoItem = {
     id: string;
@@ -53,7 +53,7 @@ function variantCandidates(id: string, variant: 'grid' | 'preview', sizes: Array
 
 function variantFromBasename(base: string, sizes: Array<'sm' | 'md' | 'lg' | ''> = ['sm', 'md', 'lg', '']): string[] {
     const varBase = 'https://assets.peachless.design/assets/logos/variants/';
-    const clean = base.replace(/\.[a-z0-9]+$/i, ''); // drop extension if present
+    const clean = base.replace(/\.[a-z0-9]+$/i, '');
     const names = sizes.map((sz) => `${clean}${sz ? '-' + sz : ''}.webp`);
     return names.map((n) => varBase + n);
 }
@@ -101,27 +101,29 @@ export default defineComponent({
         logos: { type: Array as PropType<LogoItem[]>, default: () => [] }
     },
     setup(props) {
-        const activeIndex = ref<number | null>(null);
         const selectedLogo = ref<number | null>(null);
+        const focusedIndex = ref<number>(0);
         const mainContentRef = ref<HTMLElement | null>(null);
         const gridContainerRef = ref<HTMLElement | null>(null);
+        const sectionRef = ref<HTMLElement | null>(null);
+        const closeButtonRef = ref<HTMLButtonElement | null>(null);
 
         // State for scroll cue
         const canScrollDown = ref(false);
         const isHoveringBottom = ref(false);
         const isInitial = ref(true);
+        
+        // Loading states
+        const loadedImages = ref<Set<string>>(new Set());
 
         const checkScroll = () => {
             if (!mainContentRef.value) return;
             const el = mainContentRef.value;
-            // Check if there is content below the current scroll position
-            // Tolerance of 5px
             canScrollDown.value = el.scrollHeight - el.scrollTop > el.clientHeight + 5;
         };
 
         const handleScroll = () => {
             checkScroll();
-            // Once user scrolls, remove the "initial" force-show state
             if (isInitial.value) {
                 isInitial.value = false;
             }
@@ -132,15 +134,9 @@ export default defineComponent({
             const rect = gridContainerRef.value.getBoundingClientRect();
             const y = e.clientY - rect.top;
             const height = rect.height;
-
-            // Define "bottom area" as the last 120px (approx last row + padding)
             const bottomThreshold = height - 120;
 
-            if (y > bottomThreshold) {
-                isHoveringBottom.value = true;
-            } else {
-                isHoveringBottom.value = false;
-            }
+            isHoveringBottom.value = y > bottomThreshold;
         };
 
         const handleMouseLeave = () => {
@@ -153,49 +149,158 @@ export default defineComponent({
             el.scrollBy({ top: el.clientHeight * 0.7, behavior: 'smooth' });
         };
 
-        // Check on mount and resize
-        import('vue').then(({ onMounted, onUnmounted, nextTick, watch }) => {
-            onMounted(() => {
-                // Multiple checks to ensure layout is ready - staggered timing
-                nextTick(checkScroll);
-                setTimeout(checkScroll, 100);
-                setTimeout(checkScroll, 300);
-                setTimeout(checkScroll, 500);
-                setTimeout(checkScroll, 1000);
-                setTimeout(checkScroll, 1500);
-                window.addEventListener('resize', checkScroll);
-            });
-            onUnmounted(() => {
-                window.removeEventListener('resize', checkScroll);
-            });
-        });
+        const scrollToItem = (index: number) => {
+            if (!mainContentRef.value) return;
+            const items = mainContentRef.value.querySelectorAll('.logo-item');
+            const item = items[index] as HTMLElement;
+            if (item) {
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        };
 
         const handleLogoClick = (index: number) => {
             if (selectedLogo.value === index) {
                 selectedLogo.value = null;
             } else {
                 selectedLogo.value = index;
+                focusedIndex.value = index;
+                // Focus the close button after panel opens
+                nextTick(() => {
+                    closeButtonRef.value?.focus();
+                });
             }
             setTimeout(checkScroll, 650);
         };
 
         const closeDetail = () => {
             selectedLogo.value = null;
+            focusedIndex.value = -1;
             setTimeout(checkScroll, 650);
+            // Blur any focused element to remove highlight
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
         };
+
+        // Keyboard navigation
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const logos = props.logos;
+            if (!logos.length) return;
+
+            // If detail panel is open, only handle Escape
+            if (selectedLogo.value !== null) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeDetail();
+                }
+                return;
+            }
+
+            const cols = window.innerWidth >= 1024 ? 4 : window.innerWidth >= 768 ? 3 : 2;
+            let newIndex = focusedIndex.value;
+
+            switch (e.key) {
+                case 'ArrowRight':
+                    e.preventDefault();
+                    newIndex = Math.min(focusedIndex.value + 1, logos.length - 1);
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    newIndex = Math.max(focusedIndex.value - 1, 0);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    newIndex = Math.min(focusedIndex.value + cols, logos.length - 1);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    newIndex = Math.max(focusedIndex.value - cols, 0);
+                    break;
+                case 'Enter':
+                case ' ':
+                    e.preventDefault();
+                    handleLogoClick(focusedIndex.value);
+                    return;
+                case 'Home':
+                    e.preventDefault();
+                    newIndex = 0;
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    newIndex = logos.length - 1;
+                    break;
+                default:
+                    return;
+            }
+
+            if (newIndex !== focusedIndex.value) {
+                focusedIndex.value = newIndex;
+                scrollToItem(newIndex);
+                // Focus the new item
+                nextTick(() => {
+                    const items = mainContentRef.value?.querySelectorAll('.logo-placeholder');
+                    const item = items?.[newIndex] as HTMLElement;
+                    item?.focus();
+                });
+            }
+        };
+
+        // Handle click outside to close panel
+        const handleClickOutside = (e: MouseEvent) => {
+            if (selectedLogo.value === null) return;
+            const target = e.target as HTMLElement;
+            const panel = target.closest('.detail-panel');
+            const card = target.closest('.logo-placeholder');
+            if (!panel && !card) {
+                closeDetail();
+            }
+        };
+
+        // Image load handler
+        const handleImageLoad = (id: string) => {
+            loadedImages.value.add(id);
+        };
+
+        onMounted(() => {
+            nextTick(checkScroll);
+            setTimeout(checkScroll, 100);
+            setTimeout(checkScroll, 300);
+            setTimeout(checkScroll, 500);
+            window.addEventListener('resize', checkScroll);
+            document.addEventListener('keydown', handleKeyDown);
+        });
+
+        onUnmounted(() => {
+            window.removeEventListener('resize', checkScroll);
+            document.removeEventListener('keydown', handleKeyDown);
+        });
 
         return () => {
             const logoItems = props.logos;
             const selectedLogoData = selectedLogo.value !== null ? logoItems[selectedLogo.value] : null;
+            const logoCount = logoItems.length;
 
-            // Cue is visible if we CAN scroll down AND (it's the initial state OR we are hovering the bottom)
             const showCue = canScrollDown.value && (isInitial.value || isHoveringBottom.value);
 
+            // Section Title
+            const sectionTitle = h('header', { class: 'ls-section-title' }, [
+                h('h2', { class: 'ls-section-title__text' }, 'Logo design'),
+                h('div', { class: 'ls-section-title__flourish', 'aria-hidden': 'true' }, [
+                    h('span', { class: 'ls-section-title__flourish-icon' }),
+                ]),
+                h('span', { class: 'ls-section-title__sub' }, `${logoCount} selected works`),
+            ]);
+
             return h('section', {
-                class: ['logo-showcase', { 'has-selection': selectedLogo.value !== null }]
+                class: ['logo-showcase', { 'has-selection': selectedLogo.value !== null }],
+                ref: sectionRef,
+                onClick: handleClickOutside,
+                role: 'region',
+                'aria-label': 'Logo design portfolio'
             }, [
+                sectionTitle,
                 h('div', { class: 'showcase-wrapper' }, [
-                    // Grid Container (Wrapper for scroll mask)
+                    // Grid Container
                     h('div', {
                         class: 'grid-container',
                         ref: gridContainerRef,
@@ -207,20 +312,46 @@ export default defineComponent({
                             ref: mainContentRef,
                             onScroll: handleScroll
                         }, [
-                            h('div', { class: 'logo-grid' },
+                            h('div', {
+                                class: 'logo-grid',
+                                role: 'grid',
+                                'aria-label': 'Logo gallery'
+                            },
                                 logoItems.map((logo, index) => {
+                                    const isSelected = selectedLogo.value === index;
+                                    const isFocused = focusedIndex.value === index;
+                                    const isLoaded = loadedImages.value.has(logo.id);
+
                                     return h('div', {
                                         class: 'logo-item',
                                         key: logo.id,
-                                        onClick: () => handleLogoClick(index)
+                                        role: 'gridcell'
                                     }, [
                                         h('div', {
                                             class: ['logo-placeholder', {
-                                                'is-active': activeIndex.value === index,
-                                                'is-selected': selectedLogo.value === index
-                                            }]
+                                                'is-selected': isSelected,
+                                                'is-focused': isFocused,
+                                                'is-loaded': isLoaded
+                                            }],
+                                            tabindex: isFocused ? 0 : -1,
+                                            role: 'button',
+                                            'aria-pressed': isSelected,
+                                            'aria-label': `${logo.name}. Click to view details`,
+                                            onClick: (e: MouseEvent) => {
+                                                e.stopPropagation();
+                                                handleLogoClick(index);
+                                            },
+                                            onKeydown: (e: KeyboardEvent) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    handleLogoClick(index);
+                                                }
+                                            },
+                                            onFocus: () => {
+                                                focusedIndex.value = index;
+                                            }
                                         }, [
-                                            // Grid Image (Default)
+                                            // Grid Image
                                             h('img', {
                                                 class: 'logo-image logo-image-grid',
                                                 alt: logo.alt || logo.name,
@@ -249,6 +380,7 @@ export default defineComponent({
                                                         logo.gridSrc || '',
                                                     ]).slice(1)
                                                 ),
+                                                onLoad: () => handleImageLoad(logo.id),
                                                 onError: (e: Event) => {
                                                     const img = e.target as HTMLImageElement;
                                                     try {
@@ -266,7 +398,8 @@ export default defineComponent({
                                             // Preview Image (Hover)
                                             h('img', {
                                                 class: 'logo-image logo-image-preview',
-                                                alt: (logo.alt || logo.name) + ' Preview',
+                                                alt: '',
+                                                'aria-hidden': 'true',
                                                 loading: 'lazy',
                                                 decoding: 'async',
                                                 src: unique([
@@ -301,21 +434,36 @@ export default defineComponent({
                         // Scroll Indicator
                         h('div', {
                             class: ['scroll-indicator', { 'is-visible': showCue }],
-                            onClick: scrollDown
+                            onClick: (e: MouseEvent) => {
+                                e.stopPropagation();
+                                scrollDown();
+                            },
+                            role: 'button',
+                            'aria-label': 'Scroll down to see more logos',
+                            tabindex: showCue ? 0 : -1
                         }, [
-                            h('span', { class: 'scroll-arrow' }, '↓')
+                            h('span', { class: 'scroll-arrow', 'aria-hidden': 'true' }, '↓')
                         ])
-                    ]), // End grid-container
+                    ]),
 
                     // Detail Panel
-                    selectedLogoData ? h('div', { class: 'detail-panel' }, [
-                        h('button', {
-                            class: 'close-button',
-                            onClick: closeDetail,
-                            'aria-label': 'Close details'
-                        }, '×'),
+                    selectedLogoData ? h('aside', {
+                        class: 'detail-panel',
+                        role: 'dialog',
+                        'aria-label': `Details for ${selectedLogoData.name}`,
+                        'aria-modal': 'false'
+                    }, [
                         h('div', { class: 'detail-content' }, [
                             h('div', { class: 'detail-logo' }, [
+                                h('button', {
+                                    class: 'close-button',
+                                    ref: closeButtonRef,
+                                    onClick: (e: MouseEvent) => {
+                                        e.stopPropagation();
+                                        closeDetail();
+                                    },
+                                    'aria-label': 'Close details panel'
+                                }, '×'),
                                 h('img', {
                                     class: 'detail-logo-image',
                                     alt: selectedLogoData.alt || selectedLogoData.name,

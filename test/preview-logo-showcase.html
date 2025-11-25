@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logo Showcase Preview</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Google Fonts for section title -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Local CSS Loader -->
+    <script>
+      (function () {
+        'use strict';
+
+        const BASE_URL = '..';
+        const V = String(Date.now()) + '-' + Math.random().toString(36).substr(2, 9);
+        const CSS_FILES = [
+          '/components/logo-showcase/logo-showcase.css',
+        ];
+
+        function loadCSS(href) {
+          const existing = document.querySelector(`link[href*="${href}"]`);
+          if (existing) return;
+
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = BASE_URL + href + '?v=' + V;
+          document.head.appendChild(link);
+        }
+
+        CSS_FILES.forEach(function (file) {
+          loadCSS(file);
+        });
+      })();
+    </script>
+
+    <!-- Local JS Loader -->
+    <script>
+      (function () {
+        'use strict';
+
+        const BASE_URL = '..';
+        const V = String(Date.now()) + '-' + Math.random().toString(36).substr(2, 9);
+        const JS_FILES = [
+          '/components/logo-showcase/logo-showcase.js',
+        ];
+
+        function loadJS(src, callback) {
+          const existing = document.querySelector(`script[src*="${src}"]`);
+          if (existing) {
+            if (callback) callback();
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = BASE_URL + src + '?v=' + V;
+          script.onerror = function () {
+            console.warn('Failed to load:', src);
+            if (callback) callback();
+          };
+          if (callback) {
+            script.onload = callback;
+          }
+          document.head.appendChild(script);
+        }
+
+        let index = 0;
+        function loadNext() {
+          if (index >= JS_FILES.length) return;
+
+          loadJS(JS_FILES[index], function () {
+            index++;
+            loadNext();
+          });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadNext);
+        } else {
+          loadNext();
+        }
+      })();
+    </script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Inter,
+          Roboto,
+          Arial,
+          sans-serif;
+        background: #faf9f7;
+        min-height: 100vh;
+      }
+      
+      .test-header {
+        background: white;
+        padding: 24px;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        text-align: center;
+      }
+      
+      .test-header h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+        color: #1a1a1a;
+        font-weight: 600;
+      }
+      
+      .test-header p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+      }
+      
+      .test-header code {
+        background: #f0f0f0;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-family: monospace;
+      }
+      
+      .component-wrapper {
+        background: #faf9f7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-header">
+      <h1>Logo Showcase Preview</h1>
+      <p>
+        Loading data from <code>data/logos.json</code> (remote) or <code>/data/logos.json</code> (local fallback)
+      </p>
+    </div>
+
+    <!-- Logo Showcase Component -->
+    <div class="component-wrapper">
+      <div data-component="logo-showcase" id="demo-logo-showcase"></div>
+    </div>
+
+    <!-- Live reload client (SSE) -->
+    <script>
+      (function () {
+        'use strict';
+        function connect() {
+          var es = new EventSource('/__livereload');
+          es.onmessage = function (e) {
+            if (e.data === 'reload') {
+              if (document.visibilityState === 'hidden') { location.reload(); return; }
+              location.reload();
+            }
+          };
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', connect); else connect();
+      })();
+    </script>
+  </body>
+</html>
+
