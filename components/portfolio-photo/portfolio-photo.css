@@ -139,9 +139,10 @@
 .pg-modal {
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 2147483647; /* Max 32-bit integer - above everything */
   display: grid;
   place-items: center;
+  isolation: isolate; /* Create new stacking context */
 }
 
 .pg-modal__backdrop {
@@ -150,6 +151,7 @@
   background: radial-gradient(circle at center, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.75));
   backdrop-filter: blur(12px) saturate(120%);
   animation: backdropFadeIn 0.3s ease;
+  cursor: pointer;
 }
 
 @keyframes backdropFadeIn {
