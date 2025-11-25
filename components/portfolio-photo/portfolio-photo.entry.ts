@@ -1,6 +1,22 @@
 import { createApp } from 'vue';
 import PhotographyGallery, { PhotoItem } from './PhotographyGallery';
 
+// Preconnect to asset domain for faster image loading
+(function injectPreconnect() {
+  const domain = 'https://assets.peachless.design';
+  if (document.querySelector(`link[rel="preconnect"][href="${domain}"]`)) return;
+  const link = document.createElement('link');
+  link.rel = 'preconnect';
+  link.href = domain;
+  link.crossOrigin = 'anonymous';
+  document.head.appendChild(link);
+  // Also add dns-prefetch as fallback
+  const dns = document.createElement('link');
+  dns.rel = 'dns-prefetch';
+  dns.href = domain;
+  document.head.appendChild(dns);
+})();
+
 function toArray<T>(list: NodeListOf<T> | HTMLCollectionOf<T>): T[] {
   return Array.prototype.slice.call(list);
 }

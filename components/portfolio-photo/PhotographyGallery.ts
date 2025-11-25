@@ -345,17 +345,22 @@ export default defineComponent({
       }
     }
 
-    // Reveal observer
+    // Observers
     let revealObserver: IntersectionObserver | null = null;
+    let resizeObserver: ResizeObserver | null = null;
 
     onMounted(() => {
       computeColCount();
-      let resizeTimer: any = null;
-      const onResize = () => {
-        if (resizeTimer) clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(computeColCount, 100);
-      };
-      window.addEventListener('resize', onResize);
+
+      // Use ResizeObserver for better performance than window resize
+      resizeObserver = new ResizeObserver((entries) => {
+        // Debounce with requestAnimationFrame
+        requestAnimationFrame(() => {
+          computeColCount();
+        });
+      });
+      // Observe document body for layout changes
+      resizeObserver.observe(document.body);
 
       // Setup reveal observer
       revealObserver = new IntersectionObserver(
@@ -376,7 +381,7 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       window.removeEventListener('keydown', onKeydown);
-      window.removeEventListener('resize', computeColCount);
+      if (resizeObserver) resizeObserver.disconnect();
       if (revealObserver) revealObserver.disconnect();
     });
 
@@ -535,9 +540,11 @@ export default defineComponent({
                 class: 'pg-masonry__img',
                 alt: it.item.alt || it.item.title,
                 decoding: 'async',
+                loading: idx < 6 ? 'eager' : 'lazy',
+                fetchpriority: idx < 3 ? 'high' : undefined,
                 src: it.item.src,
                 srcset: it.item.srcset,
-                sizes: '(min-width: 900px) 33vw, (min-width: 600px) 50vw, 92vw',
+                sizes: '(min-width: 900px) 30vw, (min-width: 600px) 46vw, 92vw',
                 'data-cand': it.item.candidates,
                 onLoad: (e: Event) => {
                   const img = e.target as HTMLImageElement;
