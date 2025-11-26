@@ -180,9 +180,10 @@ export default defineComponent({
                     historyStatePushed.value = true;
                 }
                 
-                // Lock body scroll on mobile
+                // Lock body scroll on mobile and hide site header
                 if (isMobileBreakpoint()) {
                     document.body.style.overflow = 'hidden';
+                    document.body.classList.add('ls-panel-open');
                 }
                 
                 // Focus the close button after panel opens
@@ -198,8 +199,9 @@ export default defineComponent({
             focusedIndex.value = -1;
             setTimeout(checkScroll, 650);
             
-            // Restore body scroll
+            // Restore body scroll and show site header
             document.body.style.overflow = '';
+            document.body.classList.remove('ls-panel-open');
             
             // If we pushed history state and this isn't from popstate, go back
             if (historyStatePushed.value && !fromPopstate && !isClosingFromHistory.value) {

@@ -596,6 +596,19 @@
         animation: ls-panelSlideUp 0.35s ease-in-out forwards;
     }
     
+    /* Hide site header when panel is open on mobile */
+    body.ls-panel-open header,
+    body.ls-panel-open .header,
+    body.ls-panel-open .Header,
+    body.ls-panel-open [class*="header"],
+    body.ls-panel-open [class*="Header"],
+    body.ls-panel-open nav[role="navigation"],
+    body.ls-panel-open .sqs-announcement-bar,
+    body.ls-panel-open .site-header {
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    
     .logo-showcase .detail-panel::before {
         display: none; /* Remove top accent on fullscreen */
     }
