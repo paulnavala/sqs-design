@@ -583,7 +583,7 @@
     .logo-showcase .detail-panel {
         position: fixed;
         inset: 0;
-        z-index: 1000;
+        z-index: 10000;
         flex: none;
         width: 100%;
         max-width: none;
@@ -604,15 +604,22 @@
     }
 
     .logo-showcase .detail-panel .detail-content {
-        min-height: 100%;
-        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 3rem 0;
         gap: 0;
     }
     
     .logo-showcase .detail-panel .detail-logo {
-        height: 60vh;
-        min-height: 320px;
-        max-height: 480px;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        flex: 0 0 auto;
+        aspect-ratio: 1 / 1;
+        max-width: 70vw;
+        margin: 0 auto;
         border-radius: 0;
         border: none;
         background: linear-gradient(180deg, var(--ls-card-bg) 0%, var(--ls-bg) 100%);
@@ -672,12 +679,23 @@
    ============================================================================ */
 
 @media (max-width: 900px) and (orientation: landscape) {
+    .logo-showcase {
+        padding: 1.5rem 2rem;
+    }
+    
+    .logo-showcase .logo-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
     .logo-showcase .detail-panel {
         flex-direction: row;
     }
     
     .logo-showcase .detail-panel .detail-content {
         flex-direction: row;
+        min-height: 100vh;
+        padding: 0;
         gap: 0;
     }
     
@@ -686,6 +704,9 @@
         height: 100vh;
         max-height: none;
         min-height: 0;
+        max-width: none;
+        aspect-ratio: auto;
+        margin: 0;
         flex-shrink: 0;
     }
     
@@ -703,10 +724,15 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        position: relative;
     }
     
     .logo-showcase .detail-panel .close-button {
-        right: calc(1rem + env(safe-area-inset-right, 0px));
+        /* Position in the info pane (right side), not logo pane */
+        left: 100%;
+        right: auto;
+        margin-left: 1rem;
+        top: 1rem;
     }
 }
 
