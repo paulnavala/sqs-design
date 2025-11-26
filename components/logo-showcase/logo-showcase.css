@@ -583,7 +583,8 @@
     .logo-showcase .detail-panel {
         position: fixed;
         inset: 0;
-        z-index: 99999;
+        z-index: 2147483647; /* Maximum possible z-index */
+        isolation: isolate;
         flex: none;
         width: 100%;
         max-width: none;
@@ -610,7 +611,6 @@
         justify-content: center;
         padding: 3rem 0;
         gap: 0;
-        position: relative;
     }
     
     .logo-showcase .detail-panel .detail-logo {
@@ -641,7 +641,7 @@
     }
     
     .logo-showcase .detail-panel .close-button {
-        position: absolute;
+        position: fixed;
         top: calc(1rem + env(safe-area-inset-top, 0px));
         right: 1rem;
         width: 44px;
@@ -730,7 +730,8 @@
     }
     
     .logo-showcase .detail-panel .close-button {
-        /* Position in the info pane (right side), not logo pane */
+        /* Position fixed in top-right of viewport (within info pane area) */
+        position: fixed;
         left: auto;
         right: calc(1rem + env(safe-area-inset-right, 0px));
         top: 1rem;
