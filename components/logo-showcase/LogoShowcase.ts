@@ -505,16 +505,16 @@ export default defineComponent({
                         'aria-modal': 'false'
                     }, [
                         h('div', { class: 'detail-content' }, [
+                            h('button', {
+                                class: 'close-button',
+                                ref: closeButtonRef,
+                                onClick: (e: MouseEvent) => {
+                                    e.stopPropagation();
+                                    closeDetail();
+                                },
+                                'aria-label': 'Close details panel'
+                            }, '×'),
                             h('div', { class: 'detail-logo' }, [
-                                h('button', {
-                                    class: 'close-button',
-                                    ref: closeButtonRef,
-                                    onClick: (e: MouseEvent) => {
-                                        e.stopPropagation();
-                                        closeDetail();
-                                    },
-                                    'aria-label': 'Close details panel'
-                                }, '×'),
                                 h('img', {
                                     class: 'detail-logo-image',
                                     alt: selectedLogoData.alt || selectedLogoData.name,

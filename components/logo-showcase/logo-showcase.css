@@ -583,7 +583,7 @@
     .logo-showcase .detail-panel {
         position: fixed;
         inset: 0;
-        z-index: 10000;
+        z-index: 99999;
         flex: none;
         width: 100%;
         max-width: none;
@@ -610,6 +610,7 @@
         justify-content: center;
         padding: 3rem 0;
         gap: 0;
+        position: relative;
     }
     
     .logo-showcase .detail-panel .detail-logo {
@@ -640,15 +641,16 @@
     }
     
     .logo-showcase .detail-panel .close-button {
-        top: 1rem;
-        right: 1rem;
+        position: absolute;
         top: calc(1rem + env(safe-area-inset-top, 0px));
+        right: 1rem;
         width: 44px;
         height: 44px;
         font-size: 24px;
         background: rgba(var(--ls-shadow-color), 0.08);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
+        z-index: 10;
     }
 
     @keyframes ls-panelSlideUp {
@@ -729,9 +731,8 @@
     
     .logo-showcase .detail-panel .close-button {
         /* Position in the info pane (right side), not logo pane */
-        left: 100%;
-        right: auto;
-        margin-left: 1rem;
+        left: auto;
+        right: calc(1rem + env(safe-area-inset-right, 0px));
         top: 1rem;
     }
 }
