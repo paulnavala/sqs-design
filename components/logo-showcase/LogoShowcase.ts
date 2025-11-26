@@ -1,4 +1,4 @@
-import { defineComponent, h, ref, PropType, onMounted, onUnmounted, nextTick } from 'vue';
+import { defineComponent, h, ref, PropType, onMounted, onUnmounted, nextTick, watch } from 'vue';
 
 export type LogoItem = {
     id: string;
@@ -8,6 +8,11 @@ export type LogoItem = {
     previewSrc: string;
     alt: string;
 };
+
+// Check if we're on mobile/tablet breakpoint
+function isMobileBreakpoint(): boolean {
+    return window.innerWidth <= 900;
+}
 
 function slug(s: string): string {
     return String(s || '')
@@ -115,6 +120,10 @@ export default defineComponent({
         
         // Loading states
         const loadedImages = ref<Set<string>>(new Set());
+        
+        // History state management for mobile back button
+        const historyStatePushed = ref(false);
+        const isClosingFromHistory = ref(false);
 
         const checkScroll = () => {
             if (!mainContentRef.value) return;
@@ -160,10 +169,22 @@ export default defineComponent({
 
         const handleLogoClick = (index: number) => {
             if (selectedLogo.value === index) {
-                selectedLogo.value = null;
+                closeDetail();
             } else {
                 selectedLogo.value = index;
                 focusedIndex.value = index;
+                
+                // Push history state on mobile to enable back button
+                if (isMobileBreakpoint() && !historyStatePushed.value) {
+                    window.history.pushState({ logoDetail: true }, '');
+                    historyStatePushed.value = true;
+                }
+                
+                // Lock body scroll on mobile
+                if (isMobileBreakpoint()) {
+                    document.body.style.overflow = 'hidden';
+                }
+                
                 // Focus the close button after panel opens
                 nextTick(() => {
                     closeButtonRef.value?.focus();
@@ -172,13 +193,39 @@ export default defineComponent({
             setTimeout(checkScroll, 650);
         };
 
-        const closeDetail = () => {
+        const closeDetail = (fromPopstate = false) => {
             selectedLogo.value = null;
             focusedIndex.value = -1;
             setTimeout(checkScroll, 650);
+            
+            // Restore body scroll
+            document.body.style.overflow = '';
+            
+            // If we pushed history state and this isn't from popstate, go back
+            if (historyStatePushed.value && !fromPopstate && !isClosingFromHistory.value) {
+                isClosingFromHistory.value = true;
+                window.history.back();
+                // Reset flag after history navigation
+                setTimeout(() => {
+                    isClosingFromHistory.value = false;
+                    historyStatePushed.value = false;
+                }, 100);
+            } else {
+                historyStatePushed.value = false;
+            }
+            
             // Blur any focused element to remove highlight
             if (document.activeElement instanceof HTMLElement) {
                 document.activeElement.blur();
+            }
+        };
+        
+        // Handle browser back button
+        const handlePopstate = (e: PopStateEvent) => {
+            if (selectedLogo.value !== null && historyStatePushed.value) {
+                e.preventDefault();
+                historyStatePushed.value = false;
+                closeDetail(true);
             }
         };
 
@@ -268,11 +315,15 @@ export default defineComponent({
             setTimeout(checkScroll, 500);
             window.addEventListener('resize', checkScroll);
             document.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('popstate', handlePopstate);
         });
 
         onUnmounted(() => {
             window.removeEventListener('resize', checkScroll);
             document.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('popstate', handlePopstate);
+            // Restore body scroll if we unmount with panel open
+            document.body.style.overflow = '';
         });
 
         return () => {
