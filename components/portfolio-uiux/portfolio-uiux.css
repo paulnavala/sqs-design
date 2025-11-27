@@ -35,18 +35,29 @@
  * Scoped to #portfolio-uiux for component isolation
  */
 #portfolio-uiux {
-  /* Base Brand Colors */
+  /* Base Brand Colors - matching portfolio-photo and logo-showcase */
   --white: #ffffff;
   --linen: #efe1d4; /* Background color */
   --clay: #d29a84; /* Accent/brand color */
   --cacao: #58433b; /* Text color */
-  --black: #000000; /* Strong text */
+  --black: #3D2E28; /* Strong text - warm dark brown */
+
+  /* Extended Color Palette */
+  --accent-light: #E4BBA8;
+  --accent-dark: #B8806A;
+  --text-muted: #7A6459;
+  --text-light: #9C8A80;
+  --card-bg: #FAF6F2;
+
+  /* RGB values for shadow consistency */
+  --shadow-color: 88, 67, 59;
+  --accent-rgb: 210, 154, 132;
 
   /* Semantic Color Variables */
   --bg: var(--linen); /* Background */
-  --surface: #fff; /* Card/surface background */
+  --surface: var(--card-bg); /* Card/surface background */
   --ink: var(--cacao); /* Body text */
-  --ink-strong: var(--black); /* Heading text */
+  --ink-strong: #3D2E28; /* Heading text - warm dark brown */
 
   /* Color Mixes (for softer variations) */
   --muted: color-mix(in oklab, var(--ink) 70%, var(--linen));
@@ -57,8 +68,8 @@
   /* Spacing & Layout */
   --radius-xl: 24px; /* Large border radius */
   --radius-md: 12px; /* Medium border radius */
-  --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 18px 46px rgba(0, 0, 0, 0.12);
+  --shadow: 0 12px 30px rgba(var(--shadow-color), 0.08);
+  --shadow-hover: 0 18px 46px rgba(var(--shadow-color), 0.12);
   --focus: var(--clay); /* Focus ring color */
   --padX: 24px; /* Horizontal padding */
   --sectionY: 110px; /* Vertical section padding */
@@ -122,7 +133,154 @@
  */
 #portfolio-uiux .portfolio__skip:focus {
   left: 16px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 16px rgba(var(--shadow-color), 0.12);
+}
+
+/* ============================================================================
+   Section Title
+   ============================================================================ */
+
+/**
+ * Decorative section title matching portfolio-photo and logo-showcase
+ * Features staggered reveal animations
+ */
+#portfolio-uiux .ux-section-title {
+  width: min(1200px, 92vw);
+  margin: 0 auto 48px;
+  text-align: center;
+  position: relative;
+}
+
+/**
+ * Main title text
+ * PT Serif font, uppercase with letter-spacing
+ */
+#portfolio-uiux .ux-section-title__text {
+  margin: 0;
+  font-family: 'PT Serif', Georgia, serif;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink);
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: ux-title-reveal 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+  will-change: opacity, transform;
+}
+
+/**
+ * Shared reveal animation keyframes
+ */
+@keyframes ux-title-reveal {
+  to {
+    opacity: 1;
+    transform: translateZ(0);
+  }
+}
+
+/**
+ * Decorative flourish with lines and center dot
+ */
+#portfolio-uiux .ux-section-title__flourish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: ux-title-reveal 1s cubic-bezier(0.23, 1, 0.32, 1) 0.5s forwards;
+  will-change: opacity, transform;
+}
+
+#portfolio-uiux .ux-section-title__flourish::before,
+#portfolio-uiux .ux-section-title__flourish::after {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--clay));
+}
+
+#portfolio-uiux .ux-section-title__flourish::after {
+  background: linear-gradient(90deg, var(--clay), transparent);
+}
+
+#portfolio-uiux .ux-section-title__flourish-icon {
+  width: 6px;
+  height: 6px;
+  background: var(--clay);
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+/**
+ * Subtitle text
+ * Cormorant Garamond italic
+ */
+#portfolio-uiux .ux-section-title__sub {
+  display: block;
+  margin-top: 20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: ux-title-reveal 1s cubic-bezier(0.23, 1, 0.32, 1) 0.7s forwards;
+  will-change: opacity, transform;
+}
+
+/**
+ * Mobile responsive adjustments
+ */
+@media (max-width: 600px) {
+  #portfolio-uiux .ux-section-title {
+    margin-bottom: 32px;
+  }
+
+  #portfolio-uiux .ux-section-title__text {
+    font-size: clamp(1.25rem, 6vw, 2rem);
+  }
+
+  #portfolio-uiux .ux-section-title__flourish {
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  #portfolio-uiux .ux-section-title__flourish::before,
+  #portfolio-uiux .ux-section-title__flourish::after {
+    width: 20px;
+  }
+
+  #portfolio-uiux .ux-section-title__flourish-icon {
+    width: 4px;
+    height: 4px;
+  }
+
+  #portfolio-uiux .ux-section-title__sub {
+    margin-top: 14px;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 400px) {
+  #portfolio-uiux .ux-section-title {
+    margin-bottom: 24px;
+  }
+
+  #portfolio-uiux .ux-section-title__text {
+    font-size: 1.25rem;
+  }
+
+  #portfolio-uiux .ux-section-title__sub {
+    font-size: 0.875rem;
+  }
 }
 
 /* ============================================================================
@@ -289,7 +447,7 @@
   background: var(--ink-strong);
   color: #fff;
   border-color: var(--ink-strong);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px rgba(var(--shadow-color), 0.12);
 }
 
 /* ============================================================================
@@ -487,7 +645,7 @@
   border-radius: 999px;
   box-shadow:
     0 0 0 4px #fff,
-    0 10px 20px rgba(0, 0, 0, 0.1);
+    0 10px 20px rgba(var(--shadow-color), 0.1);
   z-index: 2; /* Above card */
 }
 
@@ -581,7 +739,7 @@
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 7px 12px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 0 rgba(var(--shadow-color), 0.04);
 }
 
 /**
@@ -612,7 +770,7 @@
   overflow: hidden;
   background: #f7f7f7; /* Loading background */
   border: 1px solid #eaeaea;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 60px rgba(var(--shadow-color), 0.08);
   opacity: 0;
   transform: translateY(16px);
   transition:
@@ -634,7 +792,7 @@
   position: absolute;
   inset: 0;
   border-radius: 22px;
-  box-shadow: inset 0 0 0 10px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 0 0 10px rgba(var(--shadow-color), 0.04);
   pointer-events: none;
 }
 
@@ -652,11 +810,11 @@
   font-size: 0.88rem;
   line-height: 1;
   color: #fff;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(var(--shadow-color), 0.55);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   backdrop-filter: saturate(130%) blur(2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(var(--shadow-color), 0.2);
   cursor: pointer;
   transition:
     opacity 0.22s,
@@ -666,7 +824,7 @@
 }
 
 #portfolio-uiux .proto-chip:hover {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(var(--shadow-color), 0.7);
 }
 
 #portfolio-uiux .proto-chip:focus-visible {
@@ -788,7 +946,7 @@
   box-shadow:
     0 0 0 6px #fff,
     0 0 0 1px var(--border-strong),
-    0 6px 18px rgba(0, 0, 0, 0.08);
+    0 6px 18px rgba(var(--shadow-color), 0.08);
 }
 
 /* CTA Card removed */
@@ -820,7 +978,7 @@
 #portfolio-uiux .portfolio-modal__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(var(--shadow-color), 0.5);
   backdrop-filter: blur(2px);
   cursor: pointer; /* Indicates clickable */
 }
@@ -833,11 +991,11 @@
   position: relative;
   width: min(1100px, 92vw);
   max-height: min(88dvh, 820px);
-  background: #fff;
+  background: var(--card-bg);
   color: var(--ink-strong);
   border-radius: 18px;
   border: 1px solid var(--border);
-  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 26px 80px rgba(var(--shadow-color), 0.25);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -921,10 +1079,10 @@
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.05) 0%,
-    rgba(0, 0, 0, 0.08) 35%,
-    rgba(0, 0, 0, 0.05) 65%,
-    rgba(0, 0, 0, 0.03) 100%
+    rgba(var(--shadow-color), 0.04) 0%,
+    rgba(var(--shadow-color), 0.06) 35%,
+    rgba(var(--shadow-color), 0.04) 65%,
+    rgba(var(--shadow-color), 0.03) 100%
   );
   background-size: 200% 100%;
   animation: ux-shimmer 1.4s linear infinite;
@@ -937,10 +1095,10 @@
 }
 
 @keyframes ux-shimmer {
-  0% {
+  from {
     background-position: 200% 0;
   }
-  100% {
+  to {
     background-position: -200% 0;
   }
 }
@@ -971,7 +1129,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 3px solid rgba(0, 0, 0, 0.15);
+  border: 3px solid rgba(var(--shadow-color), 0.15);
   border-top-color: var(--clay);
   animation: ux-spin 0.9s linear infinite;
 }
@@ -1070,7 +1228,7 @@ html.no-scroll {
   #portfolio-uiux .project__card::after {
     box-shadow:
       0 0 0 3px #fff,
-      0 8px 16px rgba(0, 0, 0, 0.1);
+      0 8px 16px rgba(var(--shadow-color), 0.1);
   }
 }
 
@@ -1121,10 +1279,14 @@ html.no-scroll {
  * Disables all animations and transitions
  */
 @media (prefers-reduced-motion: reduce) {
+  #portfolio-uiux .ux-section-title__text,
+  #portfolio-uiux .ux-section-title__flourish,
+  #portfolio-uiux .ux-section-title__sub,
   #portfolio-uiux .project__text,
   #portfolio-uiux .project__frame,
   #portfolio-uiux .btn,
   #portfolio-uiux .project__card {
+    animation: none !important;
     transition: none !important;
     transform: none !important;
     opacity: 1 !important; /* Show immediately */
