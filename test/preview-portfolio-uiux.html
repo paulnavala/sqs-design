@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio UI/UX Preview</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Google Fonts for typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Local CSS Loader -->
+    <script>
+      (function () {
+        'use strict';
+
+        const BASE_URL = '..';
+        const V = String(Date.now()) + '-' + Math.random().toString(36).substr(2, 9);
+        const CSS_FILES = [
+          '/components/portfolio-uiux/portfolio-uiux.css',
+        ];
+
+        function loadCSS(href) {
+          const existing = document.querySelector(`link[href*="${href}"]`);
+          if (existing) return;
+
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = BASE_URL + href + '?v=' + V;
+          document.head.appendChild(link);
+        }
+
+        CSS_FILES.forEach(function (file) {
+          loadCSS(file);
+        });
+      })();
+    </script>
+
+    <!-- Local JS Loader -->
+    <script>
+      (function () {
+        'use strict';
+
+        const BASE_URL = '..';
+        const V = String(Date.now()) + '-' + Math.random().toString(36).substr(2, 9);
+        const JS_FILES = [
+          '/components/portfolio-uiux/portfolio.js',
+        ];
+
+        function loadJS(src, callback) {
+          const existing = document.querySelector(`script[src*="${src}"]`);
+          if (existing) {
+            if (callback) callback();
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = BASE_URL + src + '?v=' + V;
+          script.onerror = function () {
+            console.warn('Failed to load:', src);
+            if (callback) callback();
+          };
+          if (callback) {
+            script.onload = callback;
+          }
+          document.head.appendChild(script);
+        }
+
+        let index = 0;
+        function loadNext() {
+          if (index >= JS_FILES.length) return;
+
+          loadJS(JS_FILES[index], function () {
+            index++;
+            loadNext();
+          });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadNext);
+        } else {
+          loadNext();
+        }
+      })();
+    </script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Inter,
+          Roboto,
+          Arial,
+          sans-serif;
+        background: #efe1d4;
+        min-height: 100vh;
+      }
+      
+      .test-header {
+        background: #FAF6F2;
+        padding: 24px;
+        border-bottom: 1px solid rgba(88, 67, 59, 0.1);
+        text-align: center;
+      }
+      
+      .test-header h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+        color: #3D2E28;
+        font-weight: 600;
+      }
+      
+      .test-header p {
+        margin: 0;
+        color: #7A6459;
+        font-size: 14px;
+      }
+      
+      .test-header code {
+        background: rgba(88, 67, 59, 0.08);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-family: monospace;
+        color: #58433b;
+      }
+      
+      .component-wrapper {
+        background: #efe1d4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-header">
+      <h1>Portfolio UI/UX Preview</h1>
+      <p>
+        Interactive Figma prototypes with fullscreen modal • Data from <code>#projects-data</code>
+      </p>
+    </div>
+
+    <!-- Portfolio UI/UX Component -->
+    <div class="component-wrapper">
+      <section id="portfolio-uiux" class="portfolio" data-ux-portfolio aria-label="UI/UX Projects">
+        <!-- Skip link (a11y) -->
+        <a class="portfolio__skip" href="#projects-list">Skip to projects</a>
+
+        <!-- Section Title -->
+        <header class="ux-section-title">
+          <h2 class="ux-section-title__text">UI/UX Design</h2>
+          <div class="ux-section-title__flourish" aria-hidden="true">
+            <span class="ux-section-title__flourish-icon"></span>
+          </div>
+          <span class="ux-section-title__sub">Interactive prototypes</span>
+        </header>
+
+        <!-- Projects mount (JS will render cards here) -->
+        <div class="portfolio__wrap" id="projects-list" data-mount></div>
+
+        <!-- Shared fullscreen modal (JS controls visibility/content) -->
+        <div
+          class="portfolio-modal"
+          id="portfolio-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="portfolio-modal-title"
+          hidden
+        >
+          <div class="portfolio-modal__backdrop" data-close></div>
+          <div class="portfolio-modal__dialog" role="document">
+            <header class="portfolio-modal__header">
+              <h3 id="portfolio-modal-title" class="portfolio-modal__title"></h3>
+              <div class="portfolio-modal__actions">
+                <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in new tab</a>
+                <button
+                  class="portfolio-modal__close"
+                  type="button"
+                  aria-label="Close fullscreen"
+                  data-close
+                >
+                  ✕
+                </button>
+              </div>
+            </header>
+            <div class="portfolio-modal__body">
+              <div class="portfolio-modal__frame">
+                <div class="portfolio-modal__spinner" aria-hidden="true"></div>
+                <iframe
+                  class="portfolio-modal__iframe"
+                  title="Project (fullscreen)"
+                  loading="lazy"
+                  allow="fullscreen; clipboard-write"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </div>
+            <p class="portfolio-modal__fallback" hidden>
+              Couldn't load the embedded prototype.
+              <a class="portfolio-modal__open" href="#" target="_blank" rel="noopener">Open in a new tab</a>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Template for each project card (JS clones & fills) -->
+        <template id="project-card-template">
+          <section class="project" aria-label="">
+            <div class="project__card">
+              <div class="project__grid">
+                <!-- Text -->
+                <div class="project__text">
+                  <h3 class="project__title"></h3>
+                  <p class="project__sub"></p>
+                  <div class="project__meta">
+                    <span class="badge" data-badges></span>
+                  </div>
+                  <div class="project__actions">
+                    <button
+                      class="btn btn--primary"
+                      data-action="open-modal"
+                      aria-haspopup="dialog"
+                      aria-controls="portfolio-modal"
+                    >
+                      Open fullscreen prototype
+                    </button>
+                    <a class="btn btn--ghost" data-internal-link target="_self">View case study</a>
+                  </div>
+                </div>
+
+                <!-- Media -->
+                <div class="project__frame">
+                  <iframe
+                    class="project__iframe"
+                    title=""
+                    loading="lazy"
+                    allow="fullscreen; clipboard-write"
+                    allowfullscreen
+                  ></iframe>
+
+                  <button
+                    class="proto-chip"
+                    type="button"
+                    data-action="open-modal"
+                    aria-label="Open prototype in fullscreen"
+                  >
+                    <span class="proto-chip__icon" aria-hidden="true">▶︎</span>
+                    <span class="proto-chip__label">Try the prototype</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Caption below the card -->
+            <p class="project__cap">
+              <span class="project__cap-prefix">Prototype</span>:
+              <span class="project__cap-name"></span> — designed in Figma. ©
+              <span class="project__year"></span> peachless.
+            </p>
+
+            <hr class="project__divider" aria-hidden="true" />
+          </section>
+        </template>
+
+        <!-- Sample Project Data -->
+        <ul id="projects-data" hidden>
+          <li
+            data-id="cern"
+            data-title="CERN Prototype"
+            data-description="An interactive exploration of interface systems for CERN's design evolution. This prototype demonstrates structure, flow, and motion language in a responsive context."
+            data-figma="https://www.figma.com/proto/OUowEnozqwEO4wIcu5qcxh/CERN?node-id=1-105&page-id=0%3A1&starting-point-node-id=1%3A105&scaling=scale-down-width&show-proto-sidebar=0"
+            data-case="/projects/cern"
+            data-badges="Prototype|Figma"
+            data-categories="prototype|cern"
+            data-year="2025"
+            data-accent=""
+          ></li>
+
+          <li
+            data-id="ton"
+            data-title="TON Prototype"
+            data-description="An interactive exploration of interface systems for TON's design evolution. This prototype demonstrates structure, flow, and motion language in a responsive context."
+            data-figma="https://www.figma.com/proto/RBhMF1Cg9vQJDEg2iTsJoO/Project-TON-ui-ux?node-id=1-54&p=f&t=AZlMwB4kDwuTqA2X-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A3&show-proto-sidebar=1"
+            data-case="/projects/ton"
+            data-badges="Prototype|Figma"
+            data-categories="prototype|ton"
+            data-year="2025"
+            data-accent="#D29A84"
+          ></li>
+
+          <li
+            data-id="melody-memoirs"
+            data-title="Melody Memoirs Prototype"
+            data-description="An interactive exploration of interface systems for Melody Memoirs' design evolution. This prototype demonstrates structure, flow, and motion language in a responsive context."
+            data-figma="https://www.figma.com/make/BQtydWnM0aJYReMTqpOiaB/Melody-Memoirs--Community-?node-id=0-1&p=f&t=18eWXd6TlkRVcn16-0&fullscreen=1"
+            data-case="/projects/melody-memoirs"
+            data-badges="Prototype|Figma"
+            data-categories="prototype|melody-memoirs"
+            data-year="2025"
+            data-accent="#58433B"
+          ></li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Live reload client (SSE) -->
+    <script>
+      (function () {
+        'use strict';
+        function connect() {
+          var es = new EventSource('/__livereload');
+          es.onmessage = function (e) {
+            if (e.data === 'reload') {
+              if (document.visibilityState === 'hidden') { location.reload(); return; }
+              location.reload();
+            }
+          };
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', connect); else connect();
+      })();
+    </script>
+  </body>
+</html>
+

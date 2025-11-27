@@ -87,6 +87,10 @@
   --badge-size: 30px;
   --badge-top-offset: -12px; /* Float above card */
   --accent-gap: 26px; /* Space below accent (prevents overlap) */
+
+  /* Easing Curves - matching logo-showcase */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* ============================================================================
@@ -101,6 +105,38 @@
   color: var(--ink);
   padding: var(--sectionY) var(--padX);
   background: var(--bg);
+  position: relative;
+}
+
+/**
+ * Top accent line decoration
+ */
+#portfolio-uiux.portfolio::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(280px, 40vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--clay), transparent);
+  opacity: 0.5;
+}
+
+/**
+ * Bottom decorative dot
+ */
+#portfolio-uiux.portfolio::after {
+  content: '';
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: var(--clay);
+  border-radius: 50%;
+  opacity: 0.4;
 }
 
 /* ============================================================================
@@ -114,13 +150,20 @@
 #portfolio-uiux .portfolio__skip {
   position: absolute;
   left: -9999px; /* Off-screen */
-  top: 8px;
+  top: 16px;
   z-index: 10000;
-  background: #fff;
+  background: var(--card-bg);
   color: var(--ink-strong);
-  border: 1px solid var(--border);
+  border: 2px solid var(--clay);
   border-radius: 999px;
-  padding: 8px 12px;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: 
+    left 0.2s var(--ease),
+    box-shadow 0.2s var(--ease),
+    transform 0.2s var(--ease);
 }
 
 /**
@@ -129,7 +172,16 @@
  */
 #portfolio-uiux .portfolio__skip:focus {
   left: 16px;
-  box-shadow: 0 6px 16px rgba(var(--shadow-color), 0.12);
+  box-shadow: 
+    0 0 0 4px rgba(var(--accent-rgb), 0.2),
+    0 8px 24px rgba(var(--shadow-color), 0.15);
+  outline: none;
+}
+
+#portfolio-uiux .portfolio__skip:focus:hover {
+  transform: translateY(-2px);
+  background: var(--clay);
+  color: #fff;
 }
 
 /* ============================================================================
@@ -486,10 +538,11 @@
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform 0.2s,
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
+    transform 0.25s var(--ease),
+    background 0.25s var(--ease),
+    color 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
   min-height: 44px; /* Touch-friendly */
 }
 
@@ -497,9 +550,17 @@
  * Keyboard focus state
  */
 #portfolio-uiux .btn:focus-visible {
-  outline: 2px solid color-mix(in oklab, var(--clay) 85%, #fff);
+  outline: 2px solid color-mix(in oklab, var(--clay) 70%, #fff);
   outline-offset: 3px;
   transform: translateY(-2px);
+}
+
+/**
+ * Active state for all buttons
+ */
+#portfolio-uiux .btn:active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
 }
 
 /**
@@ -509,8 +570,9 @@
 #portfolio-uiux .btn--primary {
   background: var(--ink-strong);
   color: #fff;
-  border-color: color-mix(in oklab, var(--ink-strong) 85%, #fff);
+  border-color: var(--ink-strong);
   letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(var(--shadow-color), 0.15);
 }
 
 /**
@@ -520,11 +582,18 @@
   content: '↗';
   font-size: 1rem;
   transform: translateY(-1px);
+  transition: transform 0.25s var(--ease);
 }
 
 #portfolio-uiux .btn--primary:hover {
   background: var(--clay);
   border-color: var(--clay);
+  box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.3);
+  transform: translateY(-2px);
+}
+
+#portfolio-uiux .btn--primary:hover::after {
+  transform: translate(2px, -3px);
 }
 
 /**
@@ -532,13 +601,17 @@
  * Outlined style
  */
 #portfolio-uiux .btn--ghost {
-  background: #fff;
+  background: var(--card-bg);
   color: var(--ink-strong);
   border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(var(--shadow-color), 0.04);
 }
 
 #portfolio-uiux .btn--ghost:hover {
-  background: color-mix(in oklab, #fff 72%, var(--linen));
+  background: #fff;
+  border-color: rgba(var(--accent-rgb), 0.3);
+  box-shadow: 0 4px 12px rgba(var(--shadow-color), 0.08);
+  transform: translateY(-2px);
 }
 
 /* ============================================================================
@@ -579,32 +652,78 @@
   z-index: 1;
   border-radius: var(--radius-xl);
   background: var(--surface);
-  border: 1px solid transparent;
-  /* Gradient border effect */
-  background-image:
-    linear-gradient(var(--surface), var(--surface)),
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--border) 90%, #fff),
-      color-mix(in oklab, var(--border-strong) 70%, #fff)
-    );
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  box-shadow: var(--shadow);
+  border: 1px solid rgba(var(--shadow-color), 0.06);
+  box-shadow: 
+    0 1px 2px rgba(var(--shadow-color), 0.04),
+    0 4px 16px rgba(var(--shadow-color), 0.06);
   padding: clamp(18px, 2.1vw, 28px);
-  transition:
-    box-shadow 0.28s,
-    transform 0.28s;
+  transition: 
+    transform 0.35s var(--ease),
+    box-shadow 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+  /* Note: no overflow:hidden to allow badge to float above */
 }
 
 /**
- * Hover state: lift and enhance shadow
+ * Inner glow overlay for hover effect
+ */
+#portfolio-uiux .project__card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/**
+ * Hover state: lift, enhance shadow with accent tint, show inner glow
  */
 @media (hover: hover) {
   #portfolio-uiux .project__card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
+    transform: translate3d(0, -6px, 0);
+    box-shadow: 
+      0 8px 24px rgba(var(--shadow-color), 0.08),
+      0 16px 48px rgba(var(--accent-rgb), 0.12);
+    border-color: rgba(var(--accent-rgb), 0.2);
   }
+  
+  #portfolio-uiux .project__card:hover::before {
+    opacity: 1;
+  }
+}
+
+/**
+ * Focus-within state for cards (keyboard navigation only)
+ * Uses :has() to only show when a child has focus-visible
+ */
+#portfolio-uiux .project__card:has(:focus-visible) {
+  box-shadow: 
+    0 0 0 3px rgba(var(--accent-rgb), 0.3),
+    0 8px 24px rgba(var(--shadow-color), 0.08);
+  border-color: var(--clay);
+}
+
+/* Fallback for browsers without :has() support */
+@supports not selector(:has(*)) {
+  #portfolio-uiux .project__card:focus-within {
+    box-shadow: 
+      0 0 0 3px rgba(var(--accent-rgb), 0.3),
+      0 8px 24px rgba(var(--shadow-color), 0.08);
+    border-color: var(--clay);
+  }
+}
+
+/**
+ * Subtle scale feedback on card interaction
+ */
+#portfolio-uiux .project__card:active {
+  transform: scale(0.995);
+  transition-duration: 0.1s;
 }
 
 /**
@@ -636,13 +755,14 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--ink-strong);
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 999px;
   box-shadow:
-    0 0 0 4px #fff,
-    0 10px 20px rgba(var(--shadow-color), 0.1);
-  z-index: 2; /* Above card */
+    0 0 0 4px var(--card-bg),
+    0 4px 12px rgba(var(--shadow-color), 0.08);
+  z-index: 3; /* Above card and inner glow */
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
 }
 
 /* ============================================================================
@@ -665,11 +785,13 @@
  * Initially hidden, reveals on scroll
  */
 #portfolio-uiux .project__text {
+  position: relative;
+  z-index: 1;
   opacity: 0;
-  transform: translateY(12px);
+  transform: translate3d(0, 16px, 0);
   transition:
-    opacity 0.5s,
-    transform 0.5s;
+    opacity 0.6s var(--ease-out),
+    transform 0.6s var(--ease-out);
   max-width: 65ch; /* Optimal reading width */
   display: flex;
   flex-direction: column;
@@ -767,15 +889,17 @@
   padding-bottom: 71.1%; /* Aspect ratio */
   border-radius: 22px;
   overflow: hidden;
-  background: #f7f7f7; /* Loading background */
-  border: 1px solid #eaeaea;
-  box-shadow: 0 20px 60px rgba(var(--shadow-color), 0.08);
+  background: var(--card-bg); /* Loading background */
+  border: 1px solid rgba(var(--shadow-color), 0.06);
+  box-shadow: 
+    0 4px 16px rgba(var(--shadow-color), 0.06),
+    0 12px 40px rgba(var(--shadow-color), 0.08);
   opacity: 0;
-  transform: translateY(16px);
+  transform: translate3d(0, 24px, 0) scale(0.98);
   transition:
-    opacity 0.8s ease 0.1s,
-    transform 0.8s ease 0.1s,
-    box-shadow 0.4s ease;
+    opacity 0.7s var(--ease-out) 0.15s,
+    transform 0.7s var(--ease-out) 0.15s,
+    box-shadow 0.4s var(--ease);
   align-self: start;
   justify-self: stretch;
   min-width: 0;
@@ -784,15 +908,74 @@
 }
 
 /**
- * Inner frame border effect
+ * Loading skeleton shimmer for frame
+ */
+#portfolio-uiux .project__frame.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--shadow-color), 0.03) 0%,
+    rgba(var(--shadow-color), 0.06) 40%,
+    rgba(var(--shadow-color), 0.03) 60%,
+    rgba(var(--shadow-color), 0.02) 100%
+  );
+  background-size: 200% 100%;
+  animation: ux-frame-shimmer 1.5s var(--ease) infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes ux-frame-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/**
+ * Optional: Iframe loaded state - smooth fade in
+ * Add .is-loading class via JS, then replace with .is-loaded when iframe loads
+ */
+#portfolio-uiux .project__frame.is-loading .project__iframe {
+  opacity: 0;
+}
+
+#portfolio-uiux .project__frame.is-loaded .project__iframe {
+  opacity: 1;
+  transition: opacity 0.4s var(--ease);
+}
+
+#portfolio-uiux .project__frame.is-loaded::after {
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+
+/**
+ * Inner frame border effect and accent overlay
  */
 #portfolio-uiux .project__frame::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 22px;
-  box-shadow: inset 0 0 0 10px rgba(var(--shadow-color), 0.04);
+  box-shadow: inset 0 0 0 1px rgba(var(--shadow-color), 0.06);
+  background: color-mix(in oklab, var(--clay) 5%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
   pointer-events: none;
+  z-index: 1;
+}
+
+@media (hover: hover) {
+  #portfolio-uiux .project__frame:hover::before {
+    opacity: 1;
+  }
+  
+  #portfolio-uiux .project__frame:hover {
+    box-shadow: 
+      0 8px 24px rgba(var(--shadow-color), 0.1),
+      0 20px 60px rgba(var(--accent-rgb), 0.12);
+  }
 }
 
 /**
@@ -805,35 +988,73 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  font-size: 0.88rem;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   line-height: 1;
   color: #fff;
   background: rgba(var(--shadow-color), 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 999px;
-  backdrop-filter: saturate(130%) blur(2px);
-  box-shadow: 0 6px 16px rgba(var(--shadow-color), 0.2);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 
+    0 4px 16px rgba(var(--shadow-color), 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition:
-    opacity 0.22s,
-    transform 0.22s,
-    background 0.22s,
-    border-color 0.22s;
+    opacity 0.3s var(--ease),
+    transform 0.3s var(--ease),
+    background 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
 }
 
 #portfolio-uiux .proto-chip:hover {
-  background: rgba(var(--shadow-color), 0.7);
+  background: rgba(var(--accent-rgb), 0.85);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 6px 20px rgba(var(--accent-rgb), 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 #portfolio-uiux .proto-chip:focus-visible {
-  outline: 2px solid color-mix(in oklab, var(--clay) 85%, #fff);
-  outline-offset: 2px;
+  outline: 2px solid color-mix(in oklab, var(--clay) 70%, #fff);
+  outline-offset: 3px;
+}
+
+#portfolio-uiux .proto-chip:active {
+  transform: scale(0.96);
+  transition-duration: 0.1s;
 }
 
 #portfolio-uiux .proto-chip__icon {
   display: inline-block;
   transform: translateY(1px);
+  transition: transform 0.25s var(--ease);
+}
+
+#portfolio-uiux .proto-chip:hover .proto-chip__icon {
+  transform: translateY(1px) scale(1.1);
+}
+
+/**
+ * Subtle pulse animation for proto-chip on idle
+ */
+@keyframes ux-chip-pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(var(--shadow-color), 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
+}
+
+#portfolio-uiux .project.is-inview .proto-chip {
+  animation: ux-chip-pulse 3s var(--ease) 2s infinite;
+}
+
+#portfolio-uiux .proto-chip:hover,
+#portfolio-uiux .proto-chip:focus {
+  animation: none;
 }
 
 /**
@@ -863,10 +1084,10 @@
   height: 100%;
   border: 0;
   display: block;
-  transition: transform 0.4s ease;
+  transition: transform 0.5s var(--ease);
   will-change: transform;
   backface-visibility: hidden; /* Prevent flicker */
-  transform: scale(1.003); /* Slight scale for hover */
+  transform: scale(1.002); /* Slight scale for hover */
 }
 
 /**
@@ -874,7 +1095,7 @@
  */
 @media (hover: hover) {
   #portfolio-uiux .project__frame:hover .project__iframe {
-    transform: scale(1.01);
+    transform: scale(1.015);
   }
 }
 
@@ -885,8 +1106,30 @@
 #portfolio-uiux .project.is-inview .project__text,
 #portfolio-uiux .project.is-inview .project__frame {
   opacity: 1;
-  transform: none;
+  transform: translate3d(0, 0, 0) scale(1);
 }
+
+/**
+ * Staggered reveal for project cards
+ */
+#portfolio-uiux .project {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+
+#portfolio-uiux .project.is-inview {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Staggered delays for first batch */
+#portfolio-uiux .project:nth-child(1) { transition-delay: 0.1s; }
+#portfolio-uiux .project:nth-child(2) { transition-delay: 0.2s; }
+#portfolio-uiux .project:nth-child(3) { transition-delay: 0.3s; }
+#portfolio-uiux .project:nth-child(4) { transition-delay: 0.4s; }
+#portfolio-uiux .project:nth-child(5) { transition-delay: 0.5s; }
+#portfolio-uiux .project:nth-child(n+6) { transition-delay: 0.6s; }
 
 /* ============================================================================
    Project Caption
@@ -968,23 +1211,42 @@
   z-index: 9999;
   display: grid;
   place-items: center;
+  isolation: isolate;
 }
 
 /**
  * Backdrop overlay
- * Darkened background with blur
+ * Radial gradient with blur
  */
 #portfolio-uiux .portfolio-modal__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(var(--shadow-color), 0.5);
-  backdrop-filter: blur(2px);
-  cursor: pointer; /* Indicates clickable */
+  background: radial-gradient(circle at center, rgba(var(--shadow-color), 0.6), rgba(var(--shadow-color), 0.85));
+  backdrop-filter: blur(12px) saturate(120%);
+  cursor: pointer;
+  animation: ux-backdrop-in 0.3s var(--ease);
+}
+
+@keyframes ux-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ux-backdrop-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/**
+ * Backdrop click feedback
+ */
+#portfolio-uiux .portfolio-modal__backdrop:active {
+  background: radial-gradient(circle at center, rgba(var(--shadow-color), 0.65), rgba(var(--shadow-color), 0.9));
 }
 
 /**
  * Modal dialog container
- * White card with rounded corners
+ * White card with rounded corners and scale-in animation
  */
 #portfolio-uiux .portfolio-modal__dialog {
   position: relative;
@@ -993,11 +1255,47 @@
   background: var(--card-bg);
   color: var(--ink-strong);
   border-radius: 18px;
-  border: 1px solid var(--border);
-  box-shadow: 0 26px 80px rgba(var(--shadow-color), 0.25);
+  border: 1px solid rgba(var(--shadow-color), 0.08);
+  box-shadow: 
+    0 24px 64px rgba(var(--shadow-color), 0.25),
+    0 8px 24px rgba(var(--shadow-color), 0.15);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  animation: ux-modal-in 0.4s var(--ease-out);
+}
+
+@keyframes ux-modal-in {
+  from { 
+    opacity: 0; 
+    transform: scale(0.92) translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+@keyframes ux-modal-out {
+  from { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+  to { 
+    opacity: 0; 
+    transform: scale(0.95) translateY(10px); 
+  }
+}
+
+/**
+ * Modal closing state (add via JS)
+ */
+#portfolio-uiux .portfolio-modal.is-closing .portfolio-modal__backdrop {
+  animation: ux-backdrop-out 0.25s var(--ease) forwards;
+}
+
+#portfolio-uiux .portfolio-modal.is-closing .portfolio-modal__dialog {
+  animation: ux-modal-out 0.25s var(--ease) forwards;
 }
 
 /**
@@ -1034,18 +1332,44 @@
 }
 
 /**
- * Close button
+ * Close button with accent hover
  */
 #portfolio-uiux .portfolio-modal__close {
   appearance: none;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--card-bg);
   color: var(--ink-strong);
   border-radius: 10px;
-  padding: 8px 12px;
+  padding: 8px 16px;
   cursor: pointer;
   font-weight: 650;
   min-height: 44px;
+  transition: 
+    background 0.25s var(--ease),
+    color 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    transform 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
+}
+
+#portfolio-uiux .portfolio-modal__close:hover {
+  background: var(--clay);
+  color: #fff;
+  border-color: var(--clay);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+}
+
+#portfolio-uiux .portfolio-modal__close:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 3px rgba(var(--accent-rgb), 0.4),
+    0 4px 12px rgba(var(--accent-rgb), 0.2);
+  border-color: var(--clay);
+}
+
+#portfolio-uiux .portfolio-modal__close:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
 }
 
 /**
@@ -1057,6 +1381,61 @@
   padding-bottom: 71.1%; /* Same aspect ratio */
   background: color-mix(in oklab, #fff 70%, var(--linen));
   overflow: hidden;
+}
+
+/**
+ * Loading progress indicator in modal
+ */
+#portfolio-uiux .portfolio-modal.is-loading .portfolio-modal__frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 30%;
+  background: linear-gradient(90deg, var(--clay), var(--accent-light));
+  border-radius: 0 2px 2px 0;
+  animation: ux-progress 1.5s var(--ease) infinite;
+}
+
+@keyframes ux-progress {
+  0% { width: 0%; left: 0; }
+  50% { width: 60%; left: 20%; }
+  100% { width: 0%; left: 100%; }
+}
+
+/**
+ * Mobile fullscreen modal
+ */
+@media (max-width: 600px) {
+  #portfolio-uiux .portfolio-modal__dialog {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+  }
+  
+  #portfolio-uiux .portfolio-modal__frame {
+    padding-bottom: 0;
+    flex: 1;
+    height: auto;
+  }
+  
+  #portfolio-uiux .portfolio-modal__iframe {
+    position: relative;
+    height: 100%;
+  }
+  
+  #portfolio-uiux .portfolio-modal__header {
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px 16px;
+  }
+  
+  #portfolio-uiux .portfolio-modal__close {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 #portfolio-uiux .portfolio-modal__iframe {
@@ -1269,7 +1648,31 @@ html.no-scroll {
 
   #portfolio-uiux .project__card {
     box-shadow: none;
-    border-color: var(--border-strong); /* Stronger border */
+    border: 2px solid var(--ink-strong); /* Stronger border */
+  }
+  
+  #portfolio-uiux .btn {
+    border-width: 2px;
+  }
+  
+  #portfolio-uiux .btn--primary {
+    background: var(--ink-strong);
+    border-color: var(--ink-strong);
+  }
+  
+  #portfolio-uiux .proto-chip {
+    background: var(--ink-strong);
+    border: 2px solid #fff;
+  }
+  
+  #portfolio-uiux .project__frame {
+    border: 2px solid var(--ink-strong);
+  }
+  
+  /* Stronger focus indicators */
+  #portfolio-uiux *:focus-visible {
+    outline: 3px solid var(--ink-strong) !important;
+    outline-offset: 3px !important;
   }
 }
 
@@ -1297,10 +1700,33 @@ html.no-scroll {
  * Prevents hover effects from sticking
  */
 @media (pointer: coarse) {
-  /* Active state feedback */
+  /* Ensure minimum touch targets (44px) */
+  #portfolio-uiux .btn,
+  #portfolio-uiux .pill,
+  #portfolio-uiux .proto-chip {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove tap highlight and use custom feedback */
+  #portfolio-uiux .btn,
+  #portfolio-uiux .pill,
+  #portfolio-uiux .proto-chip,
+  #portfolio-uiux .project__card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* Haptic-style scale feedback on active */
   #portfolio-uiux .btn:active,
   #portfolio-uiux .pill:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
+    transition-duration: 0.08s;
+  }
+  
+  #portfolio-uiux .proto-chip:active {
+    transform: scale(0.94);
+    transition-duration: 0.08s;
   }
 
   /* Disable hover transforms on touch devices */
@@ -1309,17 +1735,53 @@ html.no-scroll {
   #portfolio-uiux .btn:hover {
     transform: none;
   }
+  
+  /* Card active state for touch */
+  #portfolio-uiux .project__card:active {
+    transform: scale(0.985);
+    transition-duration: 0.1s;
+  }
 
   /* Keep chip visible on touch */
+  #portfolio-uiux .proto-chip {
+    opacity: 1 !important;
+  }
+  
   #portfolio-uiux .project__frame:hover .proto-chip {
     opacity: 1;
     transform: none;
   }
+  
+  /* Larger proto-chip on touch devices */
+  #portfolio-uiux .proto-chip {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+  
+  /* Better tap target for modal close */
+  #portfolio-uiux .portfolio-modal__close {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 12px 20px;
+  }
 }
 
 /* ============================================================================
-   Scroll Anchoring
+   Scroll Behavior
    ============================================================================ */
+
+/**
+ * Smooth scroll for anchor links
+ */
+#portfolio-uiux {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #portfolio-uiux {
+    scroll-behavior: auto;
+  }
+}
 
 /**
  * Scroll margin for anchor links
@@ -1327,6 +1789,18 @@ html.no-scroll {
  */
 #projects-list {
   scroll-margin-top: 84px;
+}
+
+/**
+ * Scroll-linked section title fade
+ * Fades slightly as user scrolls past
+ */
+#portfolio-uiux .ux-section-title {
+  transition: opacity 0.3s var(--ease);
+}
+
+#portfolio-uiux.is-scrolled .ux-section-title {
+  opacity: 0.6;
 }
 
 /* ============================================================================
