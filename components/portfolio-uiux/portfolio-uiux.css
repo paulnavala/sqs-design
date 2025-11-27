@@ -100,11 +100,7 @@
 #portfolio-uiux.portfolio {
   color: var(--ink);
   padding: var(--sectionY) var(--padX);
-  background:
-    /* Radial highlight at top */
-    radial-gradient(1200px 600px at 20% -10%, #ffffff80, transparent 60%),
-    /* Subtle vertical gradient */
-      linear-gradient(180deg, color-mix(in oklab, var(--linen) 96%, #fff), var(--linen));
+  background: var(--bg);
 }
 
 /* ============================================================================
@@ -685,7 +681,8 @@
  */
 #portfolio-uiux .project__title {
   margin: 0 0 10px;
-  font-weight: 750;
+  font-family: 'PT Serif', Georgia, serif;
+  font-weight: 400;
   color: var(--ink-strong);
   letter-spacing: 0.01em;
   font-feature-settings:
@@ -699,8 +696,10 @@
  * Project description
  */
 #portfolio-uiux .project__sub {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
   color: var(--muted);
-  line-height: 1.65;
+  line-height: 1.75;
   margin: 0 0 16px;
   max-width: 560px;
 }
