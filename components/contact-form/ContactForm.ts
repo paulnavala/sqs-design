@@ -1,4 +1,5 @@
 import { defineComponent, h, ref, onMounted, PropType } from 'vue';
+import { isReducedMotion } from '../_shared/dom';
 
 type FormField = {
     id: string;
@@ -69,8 +70,10 @@ export default defineComponent({
                 container!.style.setProperty('--bg-y', '0px');
             }
 
-            container.addEventListener('mousemove', onMove);
-            container.addEventListener('mouseleave', onLeave);
+            if (!isReducedMotion()) {
+                container.addEventListener('mousemove', onMove);
+                container.addEventListener('mouseleave', onLeave);
+            }
         });
 
         return () => {

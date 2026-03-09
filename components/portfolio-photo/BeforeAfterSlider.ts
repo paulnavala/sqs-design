@@ -137,11 +137,8 @@ export default defineComponent({
             beforeImg.value.style.opacity = '1';
             beforeImg.value.style.transition = 'opacity 0.3s ease';
           }
-          // Multiple resize calls to ensure proper layout
+          // ResizeObserver will handle layout updates automatically
           onResize();
-          setTimeout(onResize, 50);
-          setTimeout(onResize, 150);
-          setTimeout(onResize, 300);
         }
       };
 
@@ -207,24 +204,26 @@ export default defineComponent({
       posX.value = newPosX;
     }
 
+    let resizeObserver: ResizeObserver | null = null;
+
     onMounted(() => {
       const el = root.value;
       if (el) {
         el.addEventListener('keydown', onKeyDown);
+
+        // Use ResizeObserver instead of setTimeout polling
+        resizeObserver = new ResizeObserver(() => {
+          onResize();
+        });
+        resizeObserver.observe(el);
       }
       window.addEventListener('mouseup', onMouseUp);
       window.addEventListener('touchend', onMouseUp);
-      window.addEventListener('resize', onResize);
 
       setTimeout(() => {
         setupImageLoading();
         onResize();
       }, 50);
-
-      // Additional resize calls to ensure proper layout after modal opens
-      setTimeout(onResize, 100);
-      setTimeout(onResize, 200);
-      setTimeout(onResize, 500);
     });
 
     onBeforeUnmount(() => {
@@ -232,11 +231,14 @@ export default defineComponent({
       if (el) {
         el.removeEventListener('keydown', onKeyDown);
       }
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
+      }
       window.removeEventListener('mouseup', onMouseUp);
       window.removeEventListener('touchend', onMouseUp);
       window.removeEventListener('mousemove', onWindowMouseMove);
       window.removeEventListener('touchmove', onWindowTouchMove);
-      window.removeEventListener('resize', onResize);
       cachedRect = null;
     });
 
@@ -289,6 +291,11 @@ export default defineComponent({
           ref: root,
           class: ['image-compare', { 'is-dragging': isDragging.value }],
           tabindex: 0,
+          role: 'slider',
+          'aria-label': 'Compare before and after images',
+          'aria-valuemin': '0',
+          'aria-valuemax': '100',
+          'aria-valuenow': String(width.value > 0 ? Math.round((posX.value / width.value) * 100) : 25),
           onMousemove: (e: MouseEvent) => onMouseMove(e),
           onTouchstart: (e: TouchEvent) => { onMouseMove(e, true); },
           onTouchmove: (e: TouchEvent) => {

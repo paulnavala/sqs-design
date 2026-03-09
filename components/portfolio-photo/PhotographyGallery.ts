@@ -1,5 +1,6 @@
 import { defineComponent, h, PropType, ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import BeforeAfterSlider from './BeforeAfterSlider';
+import { trapFocus, isReducedMotion } from '../_shared/dom';
 
 export type PhotoItem = {
   id: string;
@@ -36,6 +37,7 @@ export default defineComponent({
     const lastFocusEl = ref<HTMLElement | null>(null);
     let lastScrollY = 0;
     const modalRatio = ref<number>(1);
+    let releaseFocusTrap: (() => void) | null = null;
 
 
 
@@ -268,8 +270,12 @@ export default defineComponent({
       modalOpen.value = true;
 
       void nextTick(() => {
+        const modalEl = document.querySelector('.pg-modal') as HTMLElement | null;
         const closeBtn = document.querySelector('.pg-modal__close') as HTMLButtonElement | null;
         if (closeBtn) closeBtn.focus();
+        if (modalEl) {
+          releaseFocusTrap = trapFocus(modalEl, 'button, [href], [tabindex]:not([tabindex="-1"])');
+        }
       });
     }
 
@@ -294,20 +300,21 @@ export default defineComponent({
 
     function closeModal() {
       if (!modalOpen.value) return;
-      
+
+      if (releaseFocusTrap) {
+        releaseFocusTrap();
+        releaseFocusTrap = null;
+      }
+
       modalOpen.value = false;
       modalRatio.value = 1;
       activeIndex.value = -1;
-      
-      // Restore scroll and blur focused element to prevent stuck hover state
+
+      // Restore scroll and focus to the element that opened the modal
       requestAnimationFrame(() => {
         window.scrollTo({ top: lastScrollY });
         if (lastFocusEl.value) {
-          lastFocusEl.value.blur();
-        }
-        // Remove focus from any active element
-        if (document.activeElement instanceof HTMLElement) {
-          document.activeElement.blur();
+          lastFocusEl.value.focus();
         }
       });
     }
@@ -418,10 +425,11 @@ export default defineComponent({
           // Apply class changes in single batch
           if (toReveal.length > 0) {
             requestAnimationFrame(() => {
+              const reduceMotion = isReducedMotion();
               toReveal.forEach((el) => {
                 const htmlEl = el as HTMLElement;
-                // Only animate on initial load, instant reveal on scroll
-                if (initialRevealDone) {
+                // Skip stagger animation if reduced motion or after initial load
+                if (reduceMotion || initialRevealDone) {
                   htmlEl.classList.add('is-visible', 'is-instant');
                 } else {
                   htmlEl.classList.add('is-visible');
@@ -669,7 +677,7 @@ export default defineComponent({
       const active = activeIndex.value >= 0 ? normalizedItems.value[activeIndex.value] : null;
       const modal = h(
         'div',
-        { class: 'pg-modal', 'data-modal': '', hidden: !modalOpen.value, 'aria-hidden': String(!modalOpen.value), role: 'dialog', 'aria-label': 'Photo fullscreen' },
+        { class: 'pg-modal', 'data-modal': '', hidden: !modalOpen.value, 'aria-hidden': String(!modalOpen.value), role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Photo fullscreen' },
         [
           h('div', { class: 'pg-modal__backdrop', 'data-close': '', onClick: closeModal }),
           // Close button for mobile

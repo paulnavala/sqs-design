@@ -1,4 +1,5 @@
 import { defineComponent, h, ref, PropType, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { trapFocus } from '../_shared/dom';
 
 export type LogoItem = {
     id: string;
@@ -125,6 +126,9 @@ export default defineComponent({
         const historyStatePushed = ref(false);
         const isClosingFromHistory = ref(false);
 
+        // Focus trap cleanup
+        let releaseFocusTrap: (() => void) | null = null;
+
         const checkScroll = () => {
             if (!mainContentRef.value) return;
             const el = mainContentRef.value;
@@ -186,15 +190,23 @@ export default defineComponent({
                     document.body.classList.add('ls-panel-open');
                 }
                 
-                // Focus the close button after panel opens
+                // Focus the close button and trap focus after panel opens
                 nextTick(() => {
                     closeButtonRef.value?.focus();
+                    const panel = closeButtonRef.value?.closest('.detail-panel') as HTMLElement | null;
+                    if (panel) {
+                        releaseFocusTrap = trapFocus(panel, 'button, [href], [tabindex]:not([tabindex="-1"])');
+                    }
                 });
             }
             setTimeout(checkScroll, 650);
         };
 
         const closeDetail = (fromPopstate = false) => {
+            if (releaseFocusTrap) {
+                releaseFocusTrap();
+                releaseFocusTrap = null;
+            }
             selectedLogo.value = null;
             focusedIndex.value = -1;
             setTimeout(checkScroll, 650);
@@ -367,7 +379,7 @@ export default defineComponent({
                         }, [
                             h('div', {
                                 class: 'logo-grid',
-                                role: 'grid',
+                                role: 'list',
                                 'aria-label': 'Logo gallery'
                             },
                                 logoItems.map((logo, index) => {
@@ -378,7 +390,7 @@ export default defineComponent({
                                     return h('div', {
                                         class: 'logo-item',
                                         key: logo.id,
-                                        role: 'gridcell'
+                                        role: 'listitem'
                                     }, [
                                         h('div', {
                                             class: ['logo-placeholder', {
@@ -408,7 +420,8 @@ export default defineComponent({
                                             h('img', {
                                                 class: 'logo-image logo-image-grid',
                                                 alt: logo.alt || logo.name,
-                                                loading: 'lazy',
+                                                loading: index < 4 ? 'eager' : 'lazy',
+                                                fetchpriority: index < 2 ? 'high' : undefined,
                                                 decoding: 'async',
                                                 src: unique([
                                                     ...variantFromBasename(fileBaseFromPath(logo.gridSrc), ['sm', 'md', '']),
@@ -504,7 +517,7 @@ export default defineComponent({
                         class: 'detail-panel',
                         role: 'dialog',
                         'aria-label': `Details for ${selectedLogoData.name}`,
-                        'aria-modal': 'false'
+                        'aria-modal': 'true'
                     }, [
                         h('div', { class: 'detail-content' }, [
                             h('button', {

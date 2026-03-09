@@ -1,4 +1,5 @@
 import { defineComponent, h, onMounted, PropType } from 'vue';
+import { isReducedMotion } from '../_shared/dom';
 
 type CardItem = {
   href: string;
@@ -29,6 +30,8 @@ export default defineComponent({
     const MAX_SHIFT = 6;
 
     onMounted(() => {
+      if (isReducedMotion()) return;
+
       const root = document.querySelector('.projects-text-grid');
       if (!root) return;
       const cards = Array.from(root.querySelectorAll('.project-card')) as HTMLElement[];

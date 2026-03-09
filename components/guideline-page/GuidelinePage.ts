@@ -267,6 +267,9 @@ export default defineComponent({
                 // SVG Viewer Modal
                 selectedBrand.value ? h('div', {
                     class: 'svg-viewer-modal',
+                    role: 'dialog',
+                    'aria-modal': 'true',
+                    'aria-label': 'Brand guidelines viewer',
                     onClick: (e: MouseEvent) => {
                         if ((e.target as HTMLElement).classList.contains('svg-viewer-modal')) {
                             closeBrand();
