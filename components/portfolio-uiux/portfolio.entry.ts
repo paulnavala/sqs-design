@@ -263,24 +263,30 @@ async function initOnce(): Promise<void> {
     lastTrigger = null;
   }
 
+  // Use AbortController so listeners are cleaned up if component re-initializes
+  const ac = new AbortController();
+  const sig = { signal: ac.signal };
+  (root as any)._portfolioAbort?.abort();
+  (root as any)._portfolioAbort = ac;
+
   root.addEventListener('click', (e: any) => {
     const op = e.target.closest('[data-action="open-modal"]');
     if (op) {
       e.preventDefault();
       openModalFrom(op);
     }
-  });
+  }, sig);
   backdrop?.addEventListener('click', (e) => {
     e.preventDefault();
     closeModal();
-  });
-  closeBtns.forEach((b) => (b as HTMLElement).addEventListener('click', closeModal));
+  }, sig);
+  closeBtns.forEach((b) => (b as HTMLElement).addEventListener('click', closeModal, sig));
   document.addEventListener('keydown', (e) => {
     if (!(modal as any).hidden && e.key === 'Escape') {
       e.preventDefault();
       closeModal();
     }
-  });
+  }, sig);
 
   const projects = readDataItems();
   if (!projects.length) {

@@ -130,42 +130,30 @@ async function mountInto(container: HTMLElement) {
   // Mount onto the section if present; otherwise on container itself
   const section = (container.querySelector('#portfolio-photo') as HTMLElement | null) || container;
   
-  console.log('[portfolio-photo] mountInto called', { 
-    hasSection: !!section, 
-    sectionId: section?.id,
-    dataSrc: section?.getAttribute('data-src') || container.getAttribute('data-src')
-  });
-  
   // Check if already mounted via explicit flag
   const mountedFlag = (section as any)._pgMounted || section.hasAttribute('data-pg-mounted');
   if (mountedFlag) {
-    console.warn('[portfolio-photo] Already mounted (flag), skipping');
     return;
   }
 
+  // Set mount guard immediately to prevent concurrent calls
+  (section as any)._pgMounted = true;
+  section.setAttribute('data-pg-mounted', '1');
+
   // Read inline data (JSON + HTML) before any DOM cleanup
   const inline = parseFromJson(section).concat(parseFromHtml(section));
-  console.log('[portfolio-photo] Inline items:', inline.length);
 
   // External JSON via data-src (supports array root or { photos: [] })
   const srcAttr = section.getAttribute('data-src') || container.getAttribute('data-src') || '';
-  console.log('[portfolio-photo] Fetching from:', srcAttr || '(no data-src)');
   let remote: PhotoItem[] = [];
   if (srcAttr) {
     try {
-      console.log('[portfolio-photo] Fetching JSON...');
       const res = await fetch(srcAttr, { credentials: 'omit' });
-      console.log('[portfolio-photo] Fetch response:', res.status, res.ok);
       if (res.ok) {
         const raw = await res.json();
-        console.log('[portfolio-photo] Raw JSON:', raw);
         remote = coerceExternalData(raw).map((it: any, idx: number) => normalizeItem(it, idx));
-        console.log('[portfolio-photo] Parsed remote items:', remote.length, remote);
-      } else {
-        console.error('[portfolio-photo] Fetch failed with status:', res.status);
       }
-    } catch (err) {
-      console.error('[portfolio-photo] Failed to fetch external JSON:', err);
+    } catch {
       // ignore fetch errors; fall back to inline
     }
   }
@@ -174,12 +162,9 @@ async function mountInto(container: HTMLElement) {
   [...inline, ...remote].forEach((it) => uniqueById.set(it.id, it));
   const deduped = Array.from(uniqueById.values());
 
-  console.log('[portfolio-photo] Final items count:', deduped.length, deduped);
-
   // If loader HTML header exists, clear it now (post data read) so Vue can render cleanly
   const existingVueRoot = section.querySelector('.pg__header');
   if (existingVueRoot) {
-    console.log('[portfolio-photo] Clearing loader HTML before Vue mount');
     section.innerHTML = '';
   }
 
@@ -192,14 +177,8 @@ async function mountInto(container: HTMLElement) {
     return;
   }
 
-  console.log(`[portfolio-photo] Mounting Vue app with ${deduped.length} photos`);
   const app = createApp(PhotographyGallery, { items: deduped });
   app.mount(section);
-  try {
-    (section as any)._pgMounted = true;
-    section.setAttribute('data-pg-mounted', '1');
-  } catch {}
-  console.log('[portfolio-photo] Vue app mounted successfully');
 }
 
 function mountAll() {
@@ -209,17 +188,14 @@ function mountAll() {
 
     // If loader HTML is already present, mount immediately
     if (target.querySelector('#portfolio-photo')) {
-      console.log('[portfolio-photo] Section found immediately, mounting');
       tryMount();
       return;
     }
 
     // Otherwise, observe for injected loader HTML
-    console.log('[portfolio-photo] Waiting for loader HTML via MutationObserver');
     const obs = new MutationObserver(() => {
       if (target.querySelector('#portfolio-photo')) {
         obs.disconnect();
-        console.log('[portfolio-photo] Section detected by observer, mounting');
         tryMount();
       }
     });
@@ -236,10 +212,8 @@ if (document.readyState === 'loading') {
 document.addEventListener('componentLoaded' as any, (e: Event) => {
   const evt = e as CustomEvent<{ componentName?: string; target?: HTMLElement }>;
   const base = String(evt.detail?.componentName || '').replace('-loader.html', '').replace('.html', '');
-  console.log('[portfolio-photo] componentLoaded event:', base, evt.detail);
   if (base !== 'portfolio-photo') return;
   if (evt.detail?.target) {
-    console.log('[portfolio-photo] Mounting from componentLoaded event');
     mountInto(evt.detail.target);
   }
 });

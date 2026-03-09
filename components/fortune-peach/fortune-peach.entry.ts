@@ -117,6 +117,8 @@ function reset(elements: Elements) {
 function initFortuneLogoWidget(): void {
   const stage = document.getElementById('flwStage') as HTMLElement | null;
   if (!stage) return;
+  if (stage.hasAttribute('data-fortune-initialized')) return;
+  stage.setAttribute('data-fortune-initialized', 'true');
   const logoBtn = document.getElementById('flwLogoBtn') as HTMLElement | null;
   const tapBtn = document.getElementById('flwTap') as HTMLElement | null;
   const cracking = document.getElementById('flwCracking') as HTMLElement | null;

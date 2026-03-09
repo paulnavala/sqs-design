@@ -16,7 +16,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, execFile } = require('child_process');
 
 const PORT = Number(process.env.PORT || 8080);
 const ROOT = path.resolve(__dirname, '..');
@@ -120,12 +120,13 @@ server.listen(PORT, () => {
   const url = `http://localhost:${PORT}/test/live.html`;
   console.log(`\nDev server running at ${url}`);
   if (process.argv.includes('--open')) {
-    const cmd = process.platform === 'win32'
-      ? `start "" "${url}"`
-      : process.platform === 'darwin'
-      ? `open "${url}"`
-      : `xdg-open "${url}"`;
-    exec(cmd);
+    if (process.platform === 'win32') {
+      execFile('cmd', ['/c', 'start', '', url]);
+    } else if (process.platform === 'darwin') {
+      execFile('open', [url]);
+    } else {
+      execFile('xdg-open', [url]);
+    }
   }
 });
 

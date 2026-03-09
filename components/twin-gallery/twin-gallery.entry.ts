@@ -1,14 +1,21 @@
 import './twin-gallery.css';
-import { isTouchDevice, rafThrottle } from '../_shared/dom';
+import { isTouchDevice, rafThrottle, isReducedMotion } from '../_shared/dom';
 
 // Touch feedback duration
 const TAP_FOCUS_DURATION = 900;
 
+// Track tap timers without expando properties on DOM nodes
+const tapTimers = new WeakMap<Element, number>();
+
 function initTwinGallery(): void {
   const galleries = document.querySelectorAll<HTMLElement>('.twin-gallery');
   if (galleries.length === 0) return;
+  if (isReducedMotion()) return;
 
   galleries.forEach((gallery) => {
+    if (gallery.hasAttribute('data-twin-initialized')) return;
+    gallery.setAttribute('data-twin-initialized', 'true');
+
     const left = gallery.querySelector<HTMLElement>('.panel.left');
     const right = gallery.querySelector<HTMLElement>('.panel.right');
     if (!left || !right) return;
@@ -30,19 +37,23 @@ function initTwinGallery(): void {
 function initMobileTouchBehavior(): void {
   const gallery = document.querySelector<HTMLElement>('.twin-gallery');
   if (!gallery) return;
+  if (gallery.hasAttribute('data-twin-touch-initialized')) return;
+  gallery.setAttribute('data-twin-touch-initialized', 'true');
   const panels = Array.from(gallery.querySelectorAll<HTMLElement>('.panel'));
   if (!isTouchDevice()) return;
+  if (isReducedMotion()) return;
   gallery.classList.add('touch-mode');
 
-  panels.forEach((panel: any) => {
+  panels.forEach((panel) => {
     panel.addEventListener(
       'touchstart',
       () => {
         panel.classList.add('tap-focus');
-        clearTimeout(panel._tapTimer);
-        panel._tapTimer = setTimeout(() => {
+        const prev = tapTimers.get(panel);
+        if (prev) clearTimeout(prev);
+        tapTimers.set(panel, window.setTimeout(() => {
           panel.classList.remove('tap-focus');
-        }, TAP_FOCUS_DURATION);
+        }, TAP_FOCUS_DURATION));
       },
       { passive: true }
     );
@@ -68,19 +79,23 @@ function initMobileTouchBehavior(): void {
 function initGuidelinesPanel(): void {
   const guidelinesWrapper = document.querySelector<HTMLElement>('.guidelines-wrapper');
   if (!guidelinesWrapper) return;
-  const guidelinesPanel: any = guidelinesWrapper.querySelector('.guidelines-panel');
+  if (guidelinesWrapper.hasAttribute('data-guidelines-touch-initialized')) return;
+  guidelinesWrapper.setAttribute('data-guidelines-touch-initialized', 'true');
+  const guidelinesPanel = guidelinesWrapper.querySelector<HTMLElement>('.guidelines-panel');
   if (!guidelinesPanel) return;
   if (!isTouchDevice()) return;
+  if (isReducedMotion()) return;
   guidelinesWrapper.classList.add('touch-mode');
 
   guidelinesPanel.addEventListener(
     'touchstart',
     () => {
       guidelinesPanel.classList.add('tap-focus');
-      clearTimeout(guidelinesPanel._tapTimer);
-      guidelinesPanel._tapTimer = setTimeout(() => {
+      const prev = tapTimers.get(guidelinesPanel);
+      if (prev) clearTimeout(prev);
+      tapTimers.set(guidelinesPanel, window.setTimeout(() => {
         guidelinesPanel.classList.remove('tap-focus');
-      }, TAP_FOCUS_DURATION);
+      }, TAP_FOCUS_DURATION));
     },
     { passive: true }
   );

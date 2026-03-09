@@ -114,21 +114,14 @@ async function initGuidelinePage() {
 
 // Auto-initialize on page load
 if (typeof window !== 'undefined') {
-    // Check if DOM is already loaded
     if (document.readyState === 'loading') {
-        // DOM not ready yet, wait for it
         document.addEventListener('DOMContentLoaded', initGuidelinePage);
     } else {
-        // DOM is already ready, initialize immediately
         initGuidelinePage();
     }
 
-    // Support for dynamic loading (e.g., via Squarespace code blocks loaded after page load)
-    // Run initialization again after a short delay to catch any late-loaded elements
-    setTimeout(initGuidelinePage, 100);
-    setTimeout(initGuidelinePage, 500);
+    // Single delayed retry for late-loaded Squarespace elements
     setTimeout(initGuidelinePage, 1000);
 
-    // Also expose as global function for manual initialization
     (window as any).initGuidelinePage = initGuidelinePage;
 }

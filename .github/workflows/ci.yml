@@ -43,6 +43,13 @@ jobs:
       - name: Unit tests
         run: npm run test -- --reporter=verbose
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E tests
+        run: npx playwright test
+        continue-on-error: true
+
       - name: Build components (IIFE)
         run: npm run build:vue
 
