@@ -47,15 +47,21 @@
     })();
   </script>
 
-  <!-- Local JS Loader -->
+  <!-- Local JS Loader (utilities + component-loader first, then rest in parallel) -->
   <script>
     (function () {
       'use strict';
 
-      const BASE_URL = '..'; // Parent directory for local paths
-      const JS_FILES = [
-    '/core/utilities.js',
-    '/core/component-loader.js',
+      const BASE_URL = '..';
+
+      // Must load sequentially first
+      const PRIORITY_JS = [
+        '/core/utilities.js',
+        '/core/component-loader.js'
+      ];
+
+      // Can load in parallel after priority scripts
+      const COMPONENT_JS = [
     '/core/elegant-footer.js',
     '/core/mobile-menu.js',
     '/core/project-card.js',
@@ -72,39 +78,42 @@
     '/components/twin-gallery/twin-gallery.js'
 ];
 
-      function loadJS(src, callback) {
-        const existing = document.querySelector(`script[src*="${src}"]`);
-        if (existing) {
-          if (callback) callback();
-          return;
-        }
+      function loadJS(src) {
+        return new Promise(function (resolve) {
+          var existing = document.querySelector('script[src*="' + src + '"]');
+          if (existing) { resolve(); return; }
 
-        const script = document.createElement('script');
-        script.src = BASE_URL + src;
-        script.onerror = function () {
-          console.warn('Failed to load:', src);
-          if (callback) callback();
-        };
-        if (callback) {
-          script.onload = callback;
-        }
-        document.head.appendChild(script);
+          var script = document.createElement('script');
+          script.src = BASE_URL + src;
+          script.onload = resolve;
+          script.onerror = function () {
+            console.warn('Failed to load:', src);
+            resolve();
+          };
+          document.head.appendChild(script);
+        });
       }
 
-      let index = 0;
-      function loadNext() {
-        if (index >= JS_FILES.length) return;
+      function loadSequential(files) {
+        return files.reduce(function (p, file) {
+          return p.then(function () { return loadJS(file); });
+        }, Promise.resolve());
+      }
 
-        loadJS(JS_FILES[index], function () {
-          index++;
-          loadNext();
+      function loadParallel(files) {
+        return Promise.all(files.map(loadJS));
+      }
+
+      function start() {
+        loadSequential(PRIORITY_JS).then(function () {
+          return loadParallel(COMPONENT_JS);
         });
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadNext);
+        document.addEventListener('DOMContentLoaded', start);
       } else {
-        loadNext();
+        start();
       }
     })();
   </script>
@@ -168,73 +177,123 @@
     <h1 style="text-align: center; margin-bottom: 40px">Component Test Page</h1>
     <p class="loading" id="loading">Loading components...</p>
 
+    <!-- 1. Tagline -->
     <div class="component-section">
-      <h2 class="component-title">Project Cards (Vue, one-line)</h2>
-      <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
-      <div class="component-content">
-        <div data-component="project-cards" id="demo-project-cards"></div>
-      </div>
-    </div>
-
-    <div class="component-section">
-      <h2 class="component-title">Tagline (Vue, one-line)</h2>
-      <div class="component-info">Local injection of loader HTML, then auto-mounts.</div>
+      <h2 class="component-title">Tagline</h2>
+      <div class="component-info">Animated tagline with two lines of text.</div>
       <div class="component-content">
         <div data-component="tagline" id="demo-tagline"></div>
       </div>
     </div>
 
+    <!-- 2. Twin Gallery -->
     <div class="component-section">
-      <h2 class="component-title">Photography Gallery (Vue, external JSON)</h2>
-      <div class="component-info">Using data-src attribute to load JSON from data/portfolio-photos.json</div>
+      <h2 class="component-title">Twin Gallery</h2>
+      <div class="component-info">Two-column gallery with hover contrast effects and Ken Burns motion.</div>
+      <div class="component-content" id="demo-twin-gallery"></div>
+    </div>
+
+    <!-- 3. Project Cards -->
+    <div class="component-section">
+      <h2 class="component-title">Project Cards</h2>
+      <div class="component-info">Interactive project cards with embedded JSON data.</div>
+      <div class="component-content">
+        <div data-component="project-cards" id="demo-project-cards"></div>
+      </div>
+    </div>
+
+    <!-- 4. Fortune Peach -->
+    <div class="component-section">
+      <h2 class="component-title">Fortune Peach</h2>
+      <div class="component-info">Interactive fortune reveal widget with cracking animation and particle effects.</div>
+      <div class="component-content" id="demo-fortune-peach"></div>
+    </div>
+
+    <!-- 5. Portfolio UI/UX -->
+    <div class="component-section">
+      <h2 class="component-title">Portfolio UI/UX</h2>
+      <div class="component-info">Portfolio showcase with Figma embeds and fullscreen modal views.</div>
+      <div class="component-content" id="demo-portfolio-uiux"></div>
+    </div>
+
+    <!-- 6. Photography Gallery -->
+    <div class="component-section">
+      <h2 class="component-title">Photography Gallery</h2>
+      <div class="component-info">Masonry photo gallery with modal lightbox. Using local JSON data.</div>
       <div class="component-content">
         <div data-component="portfolio-photo" data-src="../data/portfolio-photos.json" id="demo-portfolio-photo"></div>
       </div>
     </div>
 
+    <!-- 7. Logo Showcase -->
     <div class="component-section">
-      <h2 class="component-title">Modern Footer (Vue)</h2>
-      <div class="component-info">Modern footer with dark theme and navigation.</div>
+      <h2 class="component-title">Logo Showcase</h2>
+      <div class="component-info">Dynamic logo grid with interactive detail panel. Loads from logos.json.</div>
       <div class="component-content">
-        <div data-component="modern-footer" id="demo-modern-footer"></div>
+        <div data-component="logo-showcase" id="demo-logo-showcase"></div>
+      </div>
+    </div>
+
+    <!-- 8. Guideline Page -->
+    <div class="component-section">
+      <h2 class="component-title">Guideline Page</h2>
+      <div class="component-info">Brand guidelines with expandable sections, color palette, and typography.</div>
+      <div class="component-content">
+        <div data-component="guideline-page" id="demo-guideline-page"></div>
+      </div>
+    </div>
+
+    <!-- 9. Contact Form -->
+    <div class="component-section">
+      <h2 class="component-title">Contact Form</h2>
+      <div class="component-info">Contact form with validation and customizable fields.</div>
+      <div class="component-content">
+        <div data-component="contact-form" id="demo-contact-form"></div>
       </div>
     </div>
   </div>
 
-  <!-- Auto-load all components from registry -->
-  <script src="components.js"></script>
-  <script>
-    // Hide loading message once components start loading
-    setTimeout(() => {
-      const loading = document.getElementById('loading');
-      if (loading) loading.style.display = 'none';
-    }, 500);
-  </script>
-
-  <!-- Local loader HTML injection for the new Vue components (bypass CDN) -->
+  <!-- Local loader HTML injection for all components -->
   <script>
     (function () {
       'use strict';
       function ready(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+
       function injectLocal(targetSel, localPath, componentBase) {
         var target = document.querySelector(targetSel);
         if (!target) return;
-        fetch(localPath).then(r => r.text()).then(html => {
-          var clean = html.replace(/<!--[\s\S]*?-->/g,'').trim();
-            target.innerHTML = clean;
+        fetch(localPath).then(function (r) { return r.text(); }).then(function (html) {
+          var clean = html.replace(/<!--[\s\S]*?-->/g, '').trim();
+          target.innerHTML = clean;
           var evt = new CustomEvent('componentLoaded', { detail: { componentName: componentBase + '-loader.html', target: target, url: localPath } });
           try { target.dispatchEvent(evt); } catch (e) { }
           try { document.dispatchEvent(evt); } catch (e) { }
-        }).catch(err => {
-          target.innerHTML = '<div style="color:red">Failed to load loader HTML.</div>';
+        }).catch(function (err) {
+          target.innerHTML = '<div style="color:red">Failed to load loader HTML for ' + componentBase + '.</div>';
           console.error('Local loader load failed:', localPath, err);
         });
       }
+
       ready(function () {
-        injectLocal('#demo-project-cards', '../components/project-cards/project-cards-loader.html', 'project-cards');
+        // Components using data-component attribute are auto-initialized by component-loader.js
+        // Just inject their loader HTML content
         injectLocal('#demo-tagline', '../components/tagline/tagline-loader.html', 'tagline');
+        injectLocal('#demo-project-cards', '../components/project-cards/project-cards-loader.html', 'project-cards');
         injectLocal('#demo-portfolio-photo', '../components/portfolio-photo/portfolio-photo-loader.html', 'portfolio-photo');
-        injectLocal('#demo-modern-footer', '../components/modern-footer/modern-footer-loader.html', 'modern-footer');
+        injectLocal('#demo-logo-showcase', '../components/logo-showcase/logo-showcase-loader.html', 'logo-showcase');
+        injectLocal('#demo-guideline-page', '../components/guideline-page/guideline-page-loader.html', 'guideline-page');
+        injectLocal('#demo-contact-form', '../components/contact-form/contact-form-loader.html', 'contact-form');
+
+        // Components that need direct HTML injection (no data-component wrapper)
+        injectLocal('#demo-twin-gallery', '../components/twin-gallery/twin-gallery-loader.html', 'twin-gallery');
+        injectLocal('#demo-fortune-peach', '../components/fortune-peach/fortune-peach-loader.html', 'fortune-peach');
+        injectLocal('#demo-portfolio-uiux', '../components/portfolio-uiux/portfolio-uiux-loader.html', 'portfolio-uiux');
+
+        // Hide loading message
+        setTimeout(function () {
+          var loading = document.getElementById('loading');
+          if (loading) loading.style.display = 'none';
+        }, 500);
       });
     })();
   </script>
